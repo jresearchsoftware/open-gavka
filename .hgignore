@@ -1,0 +1,12 @@
+syntax: glob
+**/target/**
+**/.project
+**/.classpath
+**/.settings/**
+**/.spring*
+**/gwt-unitCache/**
+**/*.launch
+**/rebel.xml
+**/webapp/gavka/**
+**/src/main/webapp/WEB-INF/deploy/**
+*/war/**

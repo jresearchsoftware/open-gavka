@@ -1,0 +1,40 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:c="urn:import:com.google.gwt.user.cellview.client">
+    <ui:style>
+    .dockLayoutPanel>div {
+    	overflow: visible !important;
+    }
+    .header {
+    	padding: 10px;
+    }
+    .header>* {
+		margin-right: 10px;
+	}
+    </ui:style>
+    <g:DockLayoutPanel unit="EM" height="100%" addStyleNames="{style.dockLayoutPanel}">
+        <!-- Controls. -->
+        <g:north size="3">
+            <g:HTMLPanel width="100%" addStyleNames="{style.header}">
+                <label>Create new appender with type: </label><g:ListBox ui:field="type"/><g:Button text="Add" ui:field="addBtn"/>
+            </g:HTMLPanel>
+        </g:north>
+        <!-- DataGrid. -->
+        <g:center>
+            <c:DataGrid ui:field='appenders'/>
+        </g:center>
+
+        <!-- Pager. -->
+        <g:south size="3">
+            <g:HTMLPanel>
+                <table style="width:100%">
+                    <tr>
+                        <td align='center'>
+                            <c:SimplePager ui:field='pager'/>
+                        </td>
+                    </tr>
+                </table>
+            </g:HTMLPanel>
+        </g:south>
+    </g:DockLayoutPanel>
+
+</ui:UiBinder>
