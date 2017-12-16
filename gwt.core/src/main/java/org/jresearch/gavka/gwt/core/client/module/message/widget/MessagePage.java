@@ -11,7 +11,7 @@ import org.jresearch.commons.gwt.client.mvc.event.Bus;
 import org.jresearch.commons.gwt.client.tool.GwtDeferredTask;
 import org.jresearch.commons.gwt.client.widget.Uis;
 import org.jresearch.gavka.domain.Message;
-import org.jresearch.gavka.gwt.core.client.module.message.srv.LogUiLoggerService;
+import org.jresearch.gavka.gwt.core.client.module.message.srv.GavkaMessageService;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
@@ -56,13 +56,13 @@ public class MessagePage extends Composite {
 	CheckBox inherited;
 
 	private final GwtDeferredTask refreshTask = new GwtDeferredTask(this::updateData);
-	private final LogUiLoggerService srv;
+	private final GavkaMessageService srv;
 	private final Bus bus;
 	private String lastFilterValue = Uis.NOTHING;
 	private boolean lastInheritedValue = true;
 
 	@Inject
-	protected MessagePage(@Nonnull final Binder binder, final LogUiLoggerService srv, final Bus bus) {
+	protected MessagePage(@Nonnull final Binder binder, final GavkaMessageService srv, final Bus bus) {
 		this.srv = srv;
 		this.bus = bus;
 		loggers = createDatagrid();
@@ -132,7 +132,7 @@ public class MessagePage extends Composite {
 			protected void onRangeChanged(final HasData<Message> display) {
 				final Range range = display.getVisibleRange();
 				final int start = range.getStart();
-				srv.get(getFilter(), getInherited(), new AbstractMethodCallback<List<Message>>(bus) {
+				srv.get(getFilter(), new AbstractMethodCallback<List<Message>>(bus) {
 					@Override
 					public void onSuccess(final Method method, final List<Message> result) {
 						dataGrid.setRowCount(result.size());
