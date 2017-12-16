@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.jresearch.gavka.domain.LogUiLogger;
-import org.jresearch.gavka.tool.Appenders;
 import org.jresearch.gavka.tool.Loggers;
 import org.jresearch.gavka.tool.Logs;
 import org.slf4j.LoggerFactory;
@@ -19,11 +18,11 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Splitter;
 
-public class LogUiServlet extends HttpServlet {
+public class GavkaServlet extends HttpServlet {
 
 	private static final Splitter REST_COMMAND_SPLITTER = Splitter.on('/').omitEmptyStrings();
 
-	private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(LogUiServlet.class);
+	private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(GavkaServlet.class);
 
 	private static final String APPLICATION_JSON = "application/json"; //$NON-NLS-1$
 
@@ -34,9 +33,6 @@ public class LogUiServlet extends HttpServlet {
 	public static final String REST = "/rest"; //$NON-NLS-1$
 	private static final String GWT_HTML = "gwt.html"; //$NON-NLS-1$
 
-	public static final String CMD_GET_APPENDERS = "appenders"; //$NON-NLS-1$
-	public static final String CMD_GET_APPENDER_TYPES = "appenderTypes"; //$NON-NLS-1$
-
 	private ObjectMapper mapper;
 
 	@Override
@@ -45,7 +41,7 @@ public class LogUiServlet extends HttpServlet {
 		ForkJoinPool.commonPool().execute(Logs::getLoggers);
 		// Create Object JSON mapper
 		mapper = new ObjectMapper();
-		LOGGER.trace("Init of LogUiServlet complete."); //$NON-NLS-1$
+		LOGGER.trace("Init of GavkaServlet complete."); //$NON-NLS-1$
 		super.init();
 	}
 
@@ -90,14 +86,6 @@ public class LogUiServlet extends HttpServlet {
 				final String filter = getFilter(list);
 				LOGGER.trace("Filter logger list with {}", filter); //$NON-NLS-1$
 				mapper.writeValue(resp.getOutputStream(), Loggers.getLoggers(filter, inherited));
-				resp.setContentType(APPLICATION_JSON);
-				break;
-			case CMD_GET_APPENDERS:
-				mapper.writeValue(resp.getOutputStream(), Appenders.getAppenders());
-				resp.setContentType(APPLICATION_JSON);
-				break;
-			case CMD_GET_APPENDER_TYPES:
-				mapper.writeValue(resp.getOutputStream(), Appenders.getAppenderTypes());
 				resp.setContentType(APPLICATION_JSON);
 				break;
 			default:

@@ -4,7 +4,6 @@ import org.jresearch.commons.gwt.client.gin.UtilsGinModule;
 import org.jresearch.commons.gwt.client.mvc.INotificator;
 import org.jresearch.commons.gwt.client.mvc.LogNotificator;
 import org.jresearch.gavka.gwt.core.client.app.LogbackUiController;
-import org.jresearch.gavka.gwt.core.client.module.appender.gin.AppenderGinModule;
 import org.jresearch.gavka.gwt.core.client.module.logger.gin.LoggerGinModule;
 
 import com.google.gwt.inject.client.AbstractGinModule;
@@ -17,8 +16,6 @@ public class LogbackUiGinModule extends AbstractGinModule {
 		install(new UtilsGinModule());
 		// modules
 		install(new LoggerGinModule());
-		install(new AppenderGinModule());
-		// install(new OverviewGinModule());
 
 		bind(LogbackUiController.class).asEagerSingleton();
 		bind(INotificator.class).to(LogNotificator.class).asEagerSingleton();

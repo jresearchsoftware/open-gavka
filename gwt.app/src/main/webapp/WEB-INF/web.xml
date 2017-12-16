@@ -6,7 +6,7 @@
 	<!-- Servlets -->
     <servlet>
         <servlet-name>gavka</servlet-name>
-        <servlet-class>org.jresearch.gavka.web.LogUiServlet</servlet-class>
+        <servlet-class>org.jresearch.gavka.web.GavkaServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet-mapping>

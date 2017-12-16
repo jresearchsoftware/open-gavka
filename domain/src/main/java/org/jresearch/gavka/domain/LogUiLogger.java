@@ -1,12 +1,9 @@
 package org.jresearch.gavka.domain;
 
-import java.util.List;
-
 import javax.annotation.Nonnull;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
-import com.google.common.collect.ImmutableList;
 
 public class LogUiLogger {
 
@@ -16,8 +13,6 @@ public class LogUiLogger {
 	private LogUiLevel level = LogUiLevel.OFF;
 	@Nonnull
 	private LogUiLevel effectiveLevel = LogUiLevel.OFF;
-	@Nonnull
-	private List<LogUiAppender> appenders = ImmutableList.of();
 	private boolean additive;
 
 	/**
@@ -83,22 +78,6 @@ public class LogUiLogger {
 		this.additive = additive;
 	}
 
-	/**
-	 * @return the appenders
-	 */
-	@Nonnull
-	public List<LogUiAppender> getAppenders() {
-		return appenders;
-	}
-
-	/**
-	 * @param appenders
-	 *            the appenders to set
-	 */
-	public void setAppenders(@Nonnull final List<LogUiAppender> appenders) {
-		this.appenders = appenders;
-	}
-
 	/** Only name */
 	@Override
 	public int hashCode() {
@@ -123,7 +102,6 @@ public class LogUiLogger {
 				.add("name", name)
 				.add("level", level)
 				.add("effectiveLevel", effectiveLevel)
-				.add("appenders", appenders)
 				.add("additive", additive)
 				.toString();
 	}

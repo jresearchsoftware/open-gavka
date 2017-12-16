@@ -55,7 +55,6 @@ public class Loggers {
 		result.setEffectiveLevel(toUi(logger.getEffectiveLevel()));
 		result.setLevel(toUi(logger.getLevel()));
 		result.setName(logger.getName());
-		result.setAppenders(Appenders.getAppenders(logger));
 		return result;
 	}
 

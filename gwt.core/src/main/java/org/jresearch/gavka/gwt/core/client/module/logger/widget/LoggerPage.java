@@ -10,16 +10,13 @@ import org.jresearch.commons.gwt.client.mvc.AbstractMethodCallback;
 import org.jresearch.commons.gwt.client.mvc.event.Bus;
 import org.jresearch.commons.gwt.client.tool.GwtDeferredTask;
 import org.jresearch.commons.gwt.client.widget.Uis;
-import org.jresearch.gavka.domain.LogUiAppender;
 import org.jresearch.gavka.domain.LogUiLevel;
 import org.jresearch.gavka.domain.LogUiLogger;
 import org.jresearch.gavka.gwt.core.client.module.logger.srv.LogUiLoggerService;
-import org.jresearch.gavka.gwt.core.client.resource.LogUiRs;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableList.Builder;
 import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.SelectionCell;
@@ -110,19 +107,6 @@ public class LoggerPage extends Composite {
 			}
 		};
 
-		// Appenders
-		final TextColumn<LogUiLogger> colAppenders = new TextColumn<LogUiLogger>() {
-			@Override
-			public String getValue(final LogUiLogger object) {
-				final List<LogUiAppender> appenders = object.getAppenders();
-				final Builder<String> builder = ImmutableList.builder();
-				for (final LogUiAppender appender : appenders) {
-					builder.add(LogUiRs.FMT.appender(appender.getName(), appender.getClassName()));
-				}
-				return JOIN_APPENDERS.join(builder.build());
-			}
-		};
-
 		// EffectiveLevel
 		final TextColumn<LogUiLogger> colEffLevel = new TextColumn<LogUiLogger>() {
 			@Override
@@ -177,8 +161,6 @@ public class LoggerPage extends Composite {
 
 		dataGrid.addColumn(colLogger, "Name");
 		dataGrid.setColumnWidth(colLogger, 90, Unit.PCT);
-		dataGrid.addColumn(colAppenders, "Appenders");
-		dataGrid.setColumnWidth(colAppenders, 30, Unit.PCT);
 		dataGrid.addColumn(colEffLevel, "Effective level");
 		dataGrid.setColumnWidth(colEffLevel, 100, Unit.PX);
 		dataGrid.addColumn(colLevel, "Level");
