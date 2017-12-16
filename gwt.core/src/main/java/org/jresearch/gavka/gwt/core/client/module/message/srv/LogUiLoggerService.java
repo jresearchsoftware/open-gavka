@@ -1,4 +1,4 @@
-package org.jresearch.gavka.gwt.core.client.module.logger.srv;
+package org.jresearch.gavka.gwt.core.client.module.message.srv;
 
 import java.util.List;
 

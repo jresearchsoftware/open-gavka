@@ -1,22 +1,22 @@
-package org.jresearch.gavka.gwt.core.client.module.logger;
+package org.jresearch.gavka.gwt.core.client.module.message;
 
 import javax.annotation.Nonnull;
 
 import org.jresearch.commons.gwt.client.mvc.AbstractView;
-import org.jresearch.gavka.gwt.core.client.module.logger.widget.LoggerPage;
+import org.jresearch.gavka.gwt.core.client.module.message.widget.MessagePage;
 
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 @Singleton
-public class LoggerView extends AbstractView<LoggerController> {
+public class MessageView extends AbstractView<MessageController> {
 
 	@Nonnull
-	private final LoggerPage page;
+	private final MessagePage page;
 
 	@Inject
-	public LoggerView(@Nonnull final LoggerPage page, @Nonnull final LoggerController controller) {
+	public MessageView(@Nonnull final MessagePage page, @Nonnull final MessageController controller) {
 		super(controller);
 		this.page = page;
 	}

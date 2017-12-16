@@ -1,4 +1,4 @@
-package org.jresearch.gavka.gwt.core.client.module.logger.widget;
+package org.jresearch.gavka.gwt.core.client.module.message.widget;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,7 +12,7 @@ import org.jresearch.commons.gwt.client.tool.GwtDeferredTask;
 import org.jresearch.commons.gwt.client.widget.Uis;
 import org.jresearch.gavka.domain.LogUiLevel;
 import org.jresearch.gavka.domain.LogUiLogger;
-import org.jresearch.gavka.gwt.core.client.module.logger.srv.LogUiLoggerService;
+import org.jresearch.gavka.gwt.core.client.module.message.srv.LogUiLoggerService;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
@@ -41,12 +41,12 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 @Singleton
-public class LoggerPage extends Composite {
+public class MessagePage extends Composite {
 
 	private static final Joiner JOIN_APPENDERS = Joiner.on(", "); //$NON-NLS-1$
 
 	// @formatter:off
-	interface Binder extends UiBinder<DockLayoutPanel, LoggerPage> {/* nothing */}
+	interface Binder extends UiBinder<DockLayoutPanel, MessagePage> {/* nothing */}
 	// @formatter:on
 
 	@UiField(provided = true)
@@ -65,7 +65,7 @@ public class LoggerPage extends Composite {
 	private boolean lastInheritedValue = true;
 
 	@Inject
-	protected LoggerPage(@Nonnull final Binder binder, final LogUiLoggerService srv, final Bus bus) {
+	protected MessagePage(@Nonnull final Binder binder, final LogUiLoggerService srv, final Bus bus) {
 		this.srv = srv;
 		this.bus = bus;
 		loggers = createDatagrid();
