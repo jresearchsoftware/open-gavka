@@ -9,8 +9,7 @@ import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import org.jresearch.gavka.domain.LogUiLevel;
-import org.jresearch.gavka.domain.LogUiLogger;
+import org.jresearch.gavka.domain.Message;
 
 import com.google.common.base.Joiner;
 
@@ -38,7 +37,7 @@ public class Loggers {
 		// prevent from instantiation
 	}
 
-	public static List<LogUiLogger> getLoggers(final String filter, final boolean inherited) {
+	public static List<Message> getLoggers(final String filter, final boolean inherited) {
 		return filter(filter, inherited, Long.MAX_VALUE, Loggers::toUi);
 	}
 
@@ -49,13 +48,8 @@ public class Loggers {
 	}
 
 	@Nonnull
-	private static LogUiLogger toUi(@Nonnull final Logger logger) {
-		final LogUiLogger result = new LogUiLogger();
-		result.setAdditive(logger.isAdditive());
-		result.setEffectiveLevel(toUi(logger.getEffectiveLevel()));
-		result.setLevel(toUi(logger.getLevel()));
-		result.setName(logger.getName());
-		return result;
+	private static Message toUi(@Nonnull final Logger logger) {
+		return new Message(logger.getName(), toUi(logger.getLevel()), logger.getEffectiveLevel().levelInt);
 	}
 
 	@Nullable
@@ -73,12 +67,12 @@ public class Loggers {
 		return Logger.ROOT_LOGGER_NAME.equals(name);
 	}
 
-	private static LogUiLevel toUi(final Level level) {
-		return level == null ? null : LogUiLevel.valueOf(level.toString());
+	private static String toUi(final Level level) {
+		return level == null ? "" : level.toString();
 	}
 
-	public static boolean updateLogger(final LogUiLogger logger) {
-		return Logs.updateLogger(logger.getName(), logger.getLevel(), logger.isAdditive());
+	public static boolean updateLogger(final Message logger) {
+		return true;
 	}
 
 }

@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.jresearch.gavka.domain.LogUiLogger;
+import org.jresearch.gavka.domain.Message;
 import org.jresearch.gavka.tool.Loggers;
 import org.jresearch.gavka.tool.Logs;
 import org.slf4j.LoggerFactory;
@@ -65,7 +65,7 @@ public class GavkaServlet extends HttpServlet {
 
 	protected void doRestPost(final HttpServletRequest req, final HttpServletResponse resp, final String restCommand) throws IOException {
 		if (restCommand.startsWith(CMD_UPDATE_LOGGER) && (restCommand.length() == CMD_UPDATE_LOGGER.length() || restCommand.charAt(CMD_UPDATE_LOGGER.length()) == '/')) {
-			final LogUiLogger logger = mapper.readValue(req.getReader(), LogUiLogger.class);
+			final Message logger = mapper.readValue(req.getReader(), Message.class);
 			if (logger != null) {
 				final boolean result = Loggers.updateLogger(logger);
 				mapper.writeValue(resp.getOutputStream(), Boolean.valueOf(result));

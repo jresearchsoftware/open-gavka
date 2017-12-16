@@ -9,17 +9,17 @@ import javax.ws.rs.PathParam;
 
 import org.fusesource.restygwt.client.MethodCallback;
 import org.fusesource.restygwt.client.RestService;
-import org.jresearch.gavka.domain.LogUiLogger;
+import org.jresearch.gavka.domain.Message;
 
 public interface LogUiLoggerService extends RestService {
 
 	@GET
 	@Path("/rest/loggers/{inherited}/{filter}")
-	void get(@PathParam("filter") String filter, @PathParam("inherited") boolean inherited, MethodCallback<List<LogUiLogger>> callback);
+	void get(@PathParam("filter") String filter, @PathParam("inherited") boolean inherited, MethodCallback<List<Message>> callback);
 
 	@POST
 	@Path("/rest/logger")
-	void set(LogUiLogger loger, MethodCallback<Boolean> callback);
+	void set(Message loger, MethodCallback<Boolean> callback);
 
 	@GET
 	@Path("/rest/suggestLogger/{query}/{limit}")

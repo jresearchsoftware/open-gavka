@@ -1,16 +1,12 @@
 package org.jresearch.gavka.tool;
 
-import static java.util.Optional.*;
-
 import java.text.MessageFormat;
 import java.util.List;
 
 import javax.annotation.Nonnull;
 
-import org.jresearch.gavka.domain.LogUiLevel;
 import org.slf4j.LoggerFactory;
 
-import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.ILoggingEvent;
@@ -52,20 +48,6 @@ public class Logs {
 			}
 		}
 		return logContext;
-	}
-
-	@SuppressWarnings("boxing")
-	public static boolean updateLogger(final String name, final LogUiLevel level, final boolean additive) {
-		final Logger logger = getContext().getLogger(name);
-		if (logger != null) {
-			synchronized (logger) {
-				logger.setLevel(ofNullable(level).map(l -> Level.toLevel(l.name())).orElse(null));
-				logger.setAdditive(additive);
-				LOGGER.trace("Update logger {} with level {} and additive {}", name, level, additive); //$NON-NLS-1$
-			}
-			return true;
-		}
-		return false;
 	}
 
 }
