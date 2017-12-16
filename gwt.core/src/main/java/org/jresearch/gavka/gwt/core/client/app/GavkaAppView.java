@@ -14,13 +14,13 @@ import com.google.gwt.user.client.ui.HasWidgets.ForIsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 
-public class LogbackUiView extends AbstractAppView<LogbackUiController> {
+public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 
 	@Nonnull
 	private final AppPage page;
 
 	@Inject
-	public LogbackUiView(@Nonnull final LogbackUiController controller, @Nonnull final AppPage page, @Nonnull final Bus bus) {
+	public GavkaAppView(@Nonnull final GavkaAppController controller, @Nonnull final AppPage page, @Nonnull final Bus bus) {
 		super(controller, bus);
 		this.page = page;
 	}
@@ -48,8 +48,12 @@ public class LogbackUiView extends AbstractAppView<LogbackUiController> {
 
 	@Override
 	public void initModules(final List<IAppModule> modules) {
-		for (final IAppModule module : modules) {
-			page.addModule(module);
+		if (modules.size() == 1) {
+			page.addSingleModule(modules.get(0));
+		} else {
+			for (final IAppModule module : modules) {
+				page.addModule(module);
+			}
 		}
 	}
 

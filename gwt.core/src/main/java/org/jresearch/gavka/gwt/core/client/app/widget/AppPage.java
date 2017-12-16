@@ -15,6 +15,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DeckLayoutPanel;
+import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -43,6 +44,8 @@ public class AppPage extends Composite {
 	private final Map<String, HTMLPanel> eventMap = new HashMap<>();
 
 	@UiField
+	DockLayoutPanel container;
+	@UiField
 	HorizontalPanel navBar;
 	@UiField
 	DeckLayoutPanel moduleContainer;
@@ -61,6 +64,15 @@ public class AppPage extends Composite {
 		final Anchor navItem = new Anchor(module.getName());
 		navItem.addClickHandler(handler);
 		navBar.add(navItem);
+		createModulePanel(module);
+	}
+
+	public void addSingleModule(final IAppModule module) {
+		container.setWidgetHidden(navBar, true);
+		createModulePanel(module);
+	}
+
+	private void createModulePanel(final IAppModule module) {
 		final HTMLPanel tab = new HTMLPanel(Uis.NOTHING);
 		tab.setStyleName("moduleTab" + module.getModuleId());
 		moduleContainer.add(tab);

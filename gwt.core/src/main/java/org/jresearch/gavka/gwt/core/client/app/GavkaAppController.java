@@ -15,13 +15,13 @@ import org.jresearch.commons.gwt.client.service.LocalizationRestService;
 import com.google.gwt.inject.client.AsyncProvider;
 import com.google.inject.Inject;
 
-public class LogbackUiController extends AbstractAppController<LogbackUiView> {
+public class GavkaAppController extends AbstractAppController<GavkaAppView> {
 
 	@Nonnull
-	private static final String ID = "org.jresearch.gavka.gwt.core.client.app.LogbackUiController"; //$NON-NLS-1$
+	private static final String ID = "org.jresearch.gavka.gwt.core.client.app.GavkaAppController"; //$NON-NLS-1$
 
 	@Inject
-	public LogbackUiController(@Nonnull final Set<IAppModule> appModules, @Nonnull final AppRestService appService, @Nonnull final AsyncProvider<LogbackUiView> view, @Nonnull final LocalizationRestService localizationService, @Nonnull final Bus bus) {
+	public GavkaAppController(@Nonnull final Set<IAppModule> appModules, @Nonnull final AppRestService appService, @Nonnull final AsyncProvider<GavkaAppView> view, @Nonnull final LocalizationRestService localizationService, @Nonnull final Bus bus) {
 		super(ID, appService, localizationService, appModules, view, bus, false);
 	}
 
