@@ -8,13 +8,16 @@ import javax.annotation.Nonnull;
 import org.fusesource.restygwt.client.Method;
 import org.jresearch.commons.gwt.client.mvc.AbstractMethodCallback;
 import org.jresearch.commons.gwt.client.mvc.event.Bus;
+import org.jresearch.commons.gwt.client.tool.Dates;
 import org.jresearch.commons.gwt.client.tool.GwtDeferredTask;
 import org.jresearch.commons.gwt.client.widget.Uis;
+import org.jresearch.commons.gwt.shared.model.time.GwtLocalDateModel;
 import org.jresearch.gavka.domain.Message;
 import org.jresearch.gavka.gwt.core.client.module.message.srv.GavkaMessageService;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.dom.client.Style.Unit;
@@ -67,7 +70,7 @@ public class MessagePage extends Composite {
 		this.bus = bus;
 		loggers = createDatagrid();
 		initWidget(binder.createAndBindUi(this));
-		setStyleName("AppenderPage");
+		setStyleName("MessagePage");
 	}
 
 	private void updateData() {
@@ -132,13 +135,17 @@ public class MessagePage extends Composite {
 			protected void onRangeChanged(final HasData<Message> display) {
 				final Range range = display.getVisibleRange();
 				final int start = range.getStart();
-				srv.get(getFilter(), new AbstractMethodCallback<List<Message>>(bus) {
-					@Override
-					public void onSuccess(final Method method, final List<Message> result) {
-						dataGrid.setRowCount(result.size());
-						updateRowData(start, result.subList(start, result.size()));
-					}
-				});
+				final GwtLocalDateModel date = Dates.today();
+				final String filter = getFilter();
+				if (!Strings.isNullOrEmpty(filter)) {
+					srv.get(filter, date, new AbstractMethodCallback<List<Message>>(bus) {
+						@Override
+						public void onSuccess(final Method method, final List<Message> result) {
+							dataGrid.setRowCount(result.size());
+							updateRowData(start, result.subList(start, result.size()));
+						}
+					});
+				}
 			}
 		}.addDataDisplay(dataGrid);
 

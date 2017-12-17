@@ -8,12 +8,13 @@ import javax.ws.rs.PathParam;
 
 import org.fusesource.restygwt.client.MethodCallback;
 import org.fusesource.restygwt.client.RestService;
+import org.jresearch.commons.gwt.shared.model.time.GwtLocalDateModel;
 import org.jresearch.gavka.domain.Message;
 
 public interface GavkaMessageService extends RestService {
 
 	@GET
-	@Path("/rest/messages/{topic}")
-	void get(@PathParam("topic") String topic, MethodCallback<List<Message>> callback);
+	@Path("/rest/messages/{topic}/{date}")
+	void get(@PathParam("topic") String topic, @PathParam("date") GwtLocalDateModel date, MethodCallback<List<Message>> callback);
 
 }
