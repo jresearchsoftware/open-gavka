@@ -27,7 +27,7 @@ public class Messages {
 		// prevent from instantiation
 	}
 
-	public static List<Message> getLoggers(final String topic, final LocalDate date) {
+	public static List<Message> getMessages(final String topic, final LocalDate date) {
 		return messages;
 	}
 

@@ -26,9 +26,17 @@
     <properties>
         <!-- Used by the project -->
         <gwtCommons.version>1.0.174-SNAPSHOT</gwtCommons.version>
+		<spring.version>5.0.2.RELEASE</spring.version>
     </properties>
     <dependencyManagement>
         <dependencies>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-framework-bom</artifactId>
+				<version>${spring.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
             <dependency>
                 <groupId>com.google.gwt</groupId>
                 <artifactId>gwt</artifactId>
