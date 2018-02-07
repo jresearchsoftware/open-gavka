@@ -21,9 +21,8 @@
 			<artifactId>javax.servlet-api</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.jresearch.table</groupId>
-			<artifactId>org.jresearch.table.gwt.core</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<groupId>org.jresearch.gavka</groupId>
+			<artifactId>org.jresearch.gavka.gwt.core</artifactId>
 			<type>war</type>
 			<scope>runtime</scope>
 		</dependency>

@@ -136,9 +136,9 @@ public class MessagePage extends Composite {
 				final Range range = display.getVisibleRange();
 				final int start = range.getStart();
 				final GwtLocalDateModel date = Dates.today();
-				final String filter = getFilter();
-				if (!Strings.isNullOrEmpty(filter)) {
-					srv.get(filter, date, new AbstractMethodCallback<List<Message>>(bus) {
+				final String fltr = getFilter();
+				if (!Strings.isNullOrEmpty(fltr)) {
+					srv.get(fltr, date, new AbstractMethodCallback<List<Message>>(bus) {
 						@Override
 						public void onSuccess(final Method method, final List<Message> result) {
 							dataGrid.setRowCount(result.size());
