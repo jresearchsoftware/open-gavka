@@ -1,17 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.jresearch.gavka</groupId>
-        <artifactId>org.jresearch.gavka.pom</artifactId>
-        <version>1.0.14-SNAPSHOT</version>
-        <relativePath>../pom/pom.xml</relativePath>
-    </parent>
-    <artifactId>org.jresearch.gavka.gwt.app</artifactId>
-    <name>JRS kafka UI: Apache Kafka admin application - GWT application to test the GWT core part</name>
-    <packaging>war</packaging>
-    <url>https://bitbucket.org/foal/open-gavka</url>
-    <dependencies>
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.jresearch.gavka</groupId>
+		<artifactId>org.jresearch.gavka.pom</artifactId>
+		<version>1.0.14-SNAPSHOT</version>
+		<relativePath>../pom/pom.xml</relativePath>
+	</parent>
+	<artifactId>org.jresearch.gavka.gwt.app</artifactId>
+	<name>JRS kafka UI: Apache Kafka admin application - GWT application to test the GWT core part</name>
+	<packaging>war</packaging>
+	<url>https://bitbucket.org/foal/open-gavka</url>
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>
@@ -26,18 +34,18 @@
 			<type>war</type>
 			<scope>runtime</scope>
 		</dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jcl-over-slf4j</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jresearch.gavka</groupId>
-            <artifactId>org.jresearch.gavka.backend</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-    </dependencies>
-    <build>
-        <finalName>gavka</finalName>
-    </build>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jresearch.gavka</groupId>
+			<artifactId>org.jresearch.gavka.backend</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+	</dependencies>
+	<build>
+		<finalName>gavka</finalName>
+	</build>
 </project>
