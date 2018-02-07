@@ -13,8 +13,8 @@
 	<packaging>gwt-app</packaging>
 	<dependencies>
 		<dependency>
-			<groupId>com.github.nmorel.gwtjackson</groupId>
-			<artifactId>gwt-jackson</artifactId>
+			<groupId>org.jresearch.commons.gwt</groupId>
+			<artifactId>org.jresearch.commons.gwt.base.model</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
