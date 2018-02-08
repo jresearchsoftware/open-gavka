@@ -25,7 +25,7 @@
 	</modules>
 	<properties>
 		<!-- Used by the project -->
-		<gwtCommons.version>1.0.174-SNAPSHOT</gwtCommons.version>
+		<gwtCommons.version>1.0.177</gwtCommons.version>
 		<spring.version>5.0.2.RELEASE</spring.version>
 	</properties>
 	<dependencyManagement>
@@ -46,13 +46,10 @@
 			</dependency>
 			<dependency>
 				<groupId>org.jresearch.commons.gwt</groupId>
-				<artifactId>org.jresearch.commons.gwt.base</artifactId>
+				<artifactId>org.jresearch.commons.gwt.bom</artifactId>
 				<version>${gwtCommons.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.jresearch.commons.gwt</groupId>
-				<artifactId>org.jresearch.commons.gwt.base.model</artifactId>
-				<version>${gwtCommons.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.jresearch.gavka</groupId>
