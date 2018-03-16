@@ -25,8 +25,7 @@
 	</modules>
 	<properties>
 		<!-- Used by the project -->
-		<gwtCommons.version>1.0.177</gwtCommons.version>
-		<spring.version>5.0.2.RELEASE</spring.version>
+		<gwtCommons.version>1.0.182</gwtCommons.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
