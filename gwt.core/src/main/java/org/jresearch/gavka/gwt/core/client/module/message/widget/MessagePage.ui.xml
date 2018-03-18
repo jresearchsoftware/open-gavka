@@ -14,7 +14,6 @@
             <g:HTMLPanel width="100%" addStyleNames="{style.header}">
                 <label>Filter: </label>
                 <g:TextBox ui:field='filter' width="50%" />
-                <g:CheckBox text="Show inherited" value="true" ui:field="inherited"/>
             </g:HTMLPanel>
         </g:north>
         <!-- DataGrid. -->

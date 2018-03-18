@@ -1,7 +1,6 @@
 package org.jresearch.gavka.gwt.core.client.module.message.widget;
 
 import java.util.List;
-import java.util.Optional;
 
 import javax.annotation.Nonnull;
 
@@ -15,7 +14,6 @@ import org.jresearch.commons.gwt.shared.model.time.GwtLocalDateModel;
 import org.jresearch.gavka.domain.Message;
 import org.jresearch.gavka.gwt.core.client.module.message.srv.GavkaMessageService;
 
-import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
@@ -30,7 +28,6 @@ import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.cellview.client.TextColumn;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.TextBox;
@@ -43,8 +40,6 @@ import com.google.inject.Singleton;
 @Singleton
 public class MessagePage extends Composite {
 
-	private static final Joiner JOIN_APPENDERS = Joiner.on(", "); //$NON-NLS-1$
-
 	// @formatter:off
 	interface Binder extends UiBinder<DockLayoutPanel, MessagePage> {/* nothing */}
 	// @formatter:on
@@ -55,14 +50,11 @@ public class MessagePage extends Composite {
 	SimplePager pager;
 	@UiField
 	TextBox filter;
-	@UiField
-	CheckBox inherited;
 
 	private final GwtDeferredTask refreshTask = new GwtDeferredTask(this::updateData);
 	private final GavkaMessageService srv;
 	private final Bus bus;
 	private String lastFilterValue = Uis.NOTHING;
-	private boolean lastInheritedValue = true;
 
 	@Inject
 	protected MessagePage(@Nonnull final Binder binder, final GavkaMessageService srv, final Bus bus) {
@@ -74,16 +66,10 @@ public class MessagePage extends Composite {
 	}
 
 	private void updateData() {
-		if (lastInheritedValue != getInherited() || !Objects.equal(lastFilterValue, getFilter())) {
+		if (!Objects.equal(lastFilterValue, getFilter())) {
 			lastFilterValue = getFilter();
-			lastInheritedValue = getInherited();
 			refresh();
 		}
-	}
-
-	@UiHandler("inherited")
-	void onInherited(@SuppressWarnings("unused") final ValueChangeEvent<Boolean> event) {
-		refreshTask.defer(750);
 	}
 
 	@UiHandler("filter")
@@ -154,10 +140,6 @@ public class MessagePage extends Composite {
 
 		return dataGrid;
 
-	}
-
-	protected boolean getInherited() {
-		return Optional.ofNullable(inherited).map(CheckBox::getValue).orElse(Boolean.TRUE).booleanValue();
 	}
 
 	@Nonnull
