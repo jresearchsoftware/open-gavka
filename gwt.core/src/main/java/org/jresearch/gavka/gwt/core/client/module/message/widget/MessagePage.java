@@ -1,10 +1,12 @@
 package org.jresearch.gavka.gwt.core.client.module.message.widget;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.annotation.Nonnull;
 
 import org.fusesource.restygwt.client.Method;
+import org.fusesource.restygwt.client.REST;
 import org.jresearch.commons.gwt.client.mvc.AbstractMethodCallback;
 import org.jresearch.commons.gwt.client.mvc.event.Bus;
 import org.jresearch.commons.gwt.client.tool.Dates;
@@ -12,10 +14,12 @@ import org.jresearch.commons.gwt.client.tool.GwtDeferredTask;
 import org.jresearch.commons.gwt.client.widget.Uis;
 import org.jresearch.commons.gwt.shared.model.time.GwtLocalDateModel;
 import org.jresearch.gavka.domain.Message;
-import org.jresearch.gavka.gwt.core.client.module.message.srv.GavkaMessageService;
+import org.jresearch.gavka.gwt.core.client.module.message.srv.GavkaMessageRestService;
+import org.jresearch.gavka.rest.api.MessageParameters;
+import org.jresearch.gavka.rest.api.PagingParameters;
+import org.jresearch.gavka.rest.api.RequestMessagesParameters;
 
 import com.google.common.base.Objects;
-import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.dom.client.Style.Unit;
@@ -45,39 +49,40 @@ public class MessagePage extends Composite {
 	// @formatter:on
 
 	@UiField(provided = true)
-	DataGrid<Message> loggers;
+	DataGrid<Message> messages;
 	@UiField(provided = true)
 	SimplePager pager;
 	@UiField
-	TextBox filter;
+	TextBox topic;
 
 	private final GwtDeferredTask refreshTask = new GwtDeferredTask(this::updateData);
-	private final GavkaMessageService srv;
+	private final GavkaMessageRestService srv;
 	private final Bus bus;
 	private String lastFilterValue = Uis.NOTHING;
 
 	@Inject
-	protected MessagePage(@Nonnull final Binder binder, final GavkaMessageService srv, final Bus bus) {
+	protected MessagePage(@Nonnull final Binder binder, final GavkaMessageRestService srv, final Bus bus) {
 		this.srv = srv;
 		this.bus = bus;
-		loggers = createDatagrid();
+		messages = createDatagrid();
 		initWidget(binder.createAndBindUi(this));
 		setStyleName("MessagePage");
+		new GwtDeferredTask(this::refresh).defer(1);
 	}
 
 	private void updateData() {
-		if (!Objects.equal(lastFilterValue, getFilter())) {
-			lastFilterValue = getFilter();
+		if (!Objects.equal(lastFilterValue, getTopic())) {
+			lastFilterValue = getTopic();
 			refresh();
 		}
 	}
 
-	@UiHandler("filter")
+	@UiHandler("topic")
 	void onChange(@SuppressWarnings("unused") final KeyUpEvent event) {
 		refreshTask.defer(750);
 	}
 
-	@UiHandler("filter")
+	@UiHandler("topic")
 	void onValueChange(@SuppressWarnings("unused") final ValueChangeEvent<String> event) {
 		refreshTask.defer(750);
 	}
@@ -121,17 +126,25 @@ public class MessagePage extends Composite {
 			protected void onRangeChanged(final HasData<Message> display) {
 				final Range range = display.getVisibleRange();
 				final int start = range.getStart();
-				final GwtLocalDateModel date = Dates.today();
-				final String fltr = getFilter();
-				if (!Strings.isNullOrEmpty(fltr)) {
-					srv.get(fltr, date, new AbstractMethodCallback<List<Message>>(bus) {
-						@Override
-						public void onSuccess(final Method method, final List<Message> result) {
+				final GwtLocalDateModel from = Dates.today();
+				final GwtLocalDateModel to = Dates.changeDay(from, 10);
+				final RequestMessagesParameters parameters = new RequestMessagesParameters();
+				final MessageParameters messageParameters = new MessageParameters();
+				messageParameters.setTopic(getTopic());
+				messageParameters.setFrom(from);
+				messageParameters.setFrom(to);
+				messageParameters.setAvro(false);
+				parameters.setMessageParameters(messageParameters);
+				parameters.setPagingParameters(new PagingParameters());
+				REST.withCallback(new AbstractMethodCallback<List<Message>>(bus) {
+					@Override
+					public void onSuccess(final Method method, final List<Message> result) {
+						if (result != null) {
 							dataGrid.setRowCount(result.size());
 							updateRowData(start, result.subList(start, result.size()));
 						}
-					});
-				}
+					}
+				}).call(srv).get(parameters);
 			}
 		}.addDataDisplay(dataGrid);
 
@@ -142,20 +155,18 @@ public class MessagePage extends Composite {
 
 	}
 
+	@SuppressWarnings("null")
 	@Nonnull
-	protected String getFilter() {
-		if (filter != null) {
-			final String value = filter.getValue();
-			if (value != null) {
-				return value;
-			}
-		}
-		return "";
+	protected String getTopic() {
+		return Optional
+				.ofNullable(topic)
+				.map(TextBox::getValue)
+				.orElse(Uis.NOTHING);
 	}
 
 	public void refresh() {
-		loggers.setRowData(0, ImmutableList.<Message> of());
-		loggers.setVisibleRangeAndClearData(new Range(0, loggers.getPageSize()), true);
+		messages.setRowData(0, ImmutableList.<Message> of());
+		messages.setVisibleRangeAndClearData(new Range(0, messages.getPageSize()), true);
 	}
 
 }

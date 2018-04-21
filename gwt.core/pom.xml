@@ -57,6 +57,10 @@
 			<artifactId>org.jresearch.gavka.domain</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.jresearch.gavka</groupId>
+			<artifactId>org.jresearch.gavka.rest.api</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava-gwt</artifactId>
 		</dependency>

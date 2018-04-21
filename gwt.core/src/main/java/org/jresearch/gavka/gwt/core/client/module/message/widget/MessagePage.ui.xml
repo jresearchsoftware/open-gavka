@@ -12,13 +12,13 @@
         <!-- Controls. -->
         <g:north size="3">
             <g:HTMLPanel width="100%" addStyleNames="{style.header}">
-                <label>Filter: </label>
-                <g:TextBox ui:field='filter' width="50%" />
+                <label>Topic: </label>
+                <g:TextBox ui:field='topic' width="50%" />
             </g:HTMLPanel>
         </g:north>
         <!-- DataGrid. -->
         <g:center>
-            <c:DataGrid ui:field='loggers'/>
+            <c:DataGrid ui:field='messages'/>
         </g:center>
         <!-- Pager. -->
         <g:south size="3">
