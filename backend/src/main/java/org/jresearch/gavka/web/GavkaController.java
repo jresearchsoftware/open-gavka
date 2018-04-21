@@ -4,11 +4,14 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.jresearch.commons.gwt.server.tool.ServerDates;
+import org.jresearch.commons.gwt.shared.loader.PageLoadResultBean;
 import org.jresearch.gavka.domain.Message;
 import org.jresearch.gavka.rest.api.GavkaMessageService;
 import org.jresearch.gavka.rest.api.MessageParameters;
+import org.jresearch.gavka.rest.api.PagingParameters;
 import org.jresearch.gavka.rest.api.RequestMessagesParameters;
-import org.jresearch.gavka.tool.Messages;
+import org.jresearch.gavka.srv.MessageService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,19 +22,24 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(GavkaMessageService.SRV_PATH)
 public class GavkaController implements GavkaMessageService {
 
+	@Autowired
+	private MessageService messageService;
+
+	@SuppressWarnings("null")
 	@Override
 	@PostMapping(M_R_GET)
-	public List<Message> get(@RequestBody final RequestMessagesParameters parameters) {
+	public PageLoadResultBean<Message> get(@RequestBody final RequestMessagesParameters parameters) {
 		final MessageParameters messageParameters = parameters.getMessageParameters();
 		final LocalDate from = ServerDates.localDate(messageParameters.getFrom());
 		final LocalDate to = ServerDates.localDate(messageParameters.getTo());
-		return Messages.getMessages(messageParameters.getTopic(), from, to, messageParameters.isAvro());
+		final PagingParameters pagingParameters = parameters.getPagingParameters();
+		return messageService.getMessages(pagingParameters, messageParameters.getTopic(), from, to, messageParameters.isAvro());
 	}
 
 	@Override
 	@GetMapping(M_R_TOPICS)
 	public List<String> topics() {
-		return Messages.getTopics();
+		return messageService.getMessageTopics();
 	}
 
 }

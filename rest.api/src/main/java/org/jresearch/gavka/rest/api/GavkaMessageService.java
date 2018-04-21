@@ -2,6 +2,7 @@ package org.jresearch.gavka.rest.api;
 
 import java.util.List;
 
+import org.jresearch.commons.gwt.shared.loader.PageLoadResultBean;
 import org.jresearch.gavka.domain.Message;
 
 public interface GavkaMessageService {
@@ -17,7 +18,7 @@ public interface GavkaMessageService {
 	/** {@link #topics()} method id */
 	String M_R_TOPICS = "/topics"; //$NON-NLS-1$
 
-	List<Message> get(RequestMessagesParameters parameters);
+	PageLoadResultBean<Message> get(RequestMessagesParameters parameters);
 
 	List<String> topics();
 

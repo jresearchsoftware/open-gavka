@@ -13,6 +13,7 @@ import org.jresearch.commons.gwt.client.mvc.event.Bus;
 import org.jresearch.commons.gwt.client.tool.Dates;
 import org.jresearch.commons.gwt.client.tool.GwtDeferredTask;
 import org.jresearch.commons.gwt.client.widget.Uis;
+import org.jresearch.commons.gwt.shared.loader.PageLoadResultBean;
 import org.jresearch.commons.gwt.shared.model.time.GwtLocalDateModel;
 import org.jresearch.gavka.domain.Message;
 import org.jresearch.gavka.gwt.core.client.module.message.srv.GavkaMessageRestService;
@@ -78,7 +79,6 @@ public class MessagePage extends Composite {
 		initWidget(binder.createAndBindUi(this));
 		setStyleName("MessagePage");
 		REST.withCallback(new GwtMethodCallback<>(bus, this::addTopics)).call(srv).topics();
-		new GwtDeferredTask(this::refresh).defer(1);
 	}
 
 	@UiHandler("topic")
@@ -147,13 +147,16 @@ public class MessagePage extends Composite {
 				messageParameters.setTo(getTo());
 				messageParameters.setAvro(isAvro());
 				parameters.setMessageParameters(messageParameters);
-				parameters.setPagingParameters(new PagingParameters());
-				REST.withCallback(new AbstractMethodCallback<List<Message>>(bus) {
+				final PagingParameters pagingParameters = new PagingParameters();
+				pagingParameters.setOffset(start);
+				pagingParameters.setAmount(range.getLength());
+				parameters.setPagingParameters(pagingParameters);
+				REST.withCallback(new AbstractMethodCallback<PageLoadResultBean<Message>>(bus) {
 					@Override
-					public void onSuccess(final Method method, final List<Message> result) {
+					public void onSuccess(final Method method, final PageLoadResultBean<Message> result) {
 						if (result != null) {
-							dataGrid.setRowCount(result.size());
-							updateRowData(start, result.subList(start, result.size()));
+							dataGrid.setRowCount(result.getTotal());
+							updateRowData(start, result.getItems());
 						}
 					}
 				}).call(srv).get(parameters);
