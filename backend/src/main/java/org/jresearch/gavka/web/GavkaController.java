@@ -1,5 +1,6 @@
 package org.jresearch.gavka.web;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.jresearch.commons.gwt.server.tool.ServerDates;
@@ -22,7 +23,9 @@ public class GavkaController implements GavkaMessageService {
 	@PostMapping(M_R_GET)
 	public List<Message> get(@RequestBody final RequestMessagesParameters parameters) {
 		final MessageParameters messageParameters = parameters.getMessageParameters();
-		return Messages.getMessages(messageParameters.getTopic(), ServerDates.localDate(messageParameters.getFrom()));
+		final LocalDate from = ServerDates.localDate(messageParameters.getFrom());
+		final LocalDate to = ServerDates.localDate(messageParameters.getTo());
+		return Messages.getMessages(messageParameters.getTopic(), from, to, messageParameters.isAvro());
 	}
 
 	@Override

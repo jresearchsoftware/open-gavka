@@ -13,6 +13,16 @@
 	<packaging>gwt-app</packaging>
 	<dependencies>
 		<dependency>
+			<groupId>com.tractionsoftware</groupId>
+			<artifactId>gwt-traction</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>com.google.gwt</groupId>
+					<artifactId>gwt-servlet</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
 			<groupId>org.jresearch.commons.gwt</groupId>
 			<artifactId>org.jresearch.commons.gwt.base.model</artifactId>
 		</dependency>

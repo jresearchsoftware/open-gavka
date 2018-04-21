@@ -1,5 +1,10 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
-<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:c="urn:import:com.google.gwt.user.cellview.client">
+<ui:UiBinder
+	xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui"
+	xmlns:u='urn:import:com.tractionsoftware.gwt.user.client.ui'
+	xmlns:c="urn:import:com.google.gwt.user.cellview.client"
+>
     <ui:style>
     .dockLayoutPanel>div {
     	overflow: visible !important;
@@ -12,8 +17,14 @@
         <!-- Controls. -->
         <g:north size="3">
             <g:HTMLPanel width="100%" addStyleNames="{style.header}">
-                <label>Topic: </label>
-                <g:TextBox ui:field='topic' width="50%" />
+                <label>Topic:</label>
+                <g:ListBox ui:field='topic' width="50%" />
+                <label>AVRO:</label>
+                <g:CheckBox ui:field='avro'/>
+                <label>From:</label>
+				<u:UTCDateBox ui:field="from"/>
+                <label>To:</label>
+				<u:UTCDateBox ui:field="to"/>
             </g:HTMLPanel>
         </g:north>
         <!-- DataGrid. -->
