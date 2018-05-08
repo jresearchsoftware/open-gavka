@@ -17,8 +17,10 @@ import org.apache.kafka.common.TopicPartition;
 import org.jresearch.commons.gwt.shared.loader.PageLoadResultBean;
 import org.jresearch.gavka.domain.Message;
 import org.jresearch.gavka.rest.api.PagingParameters;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+@Profile("default")
 @Component
 public class KafkaMessageService implements MessageService {
 
