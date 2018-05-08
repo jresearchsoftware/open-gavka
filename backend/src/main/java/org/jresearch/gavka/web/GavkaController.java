@@ -10,7 +10,7 @@ import org.jresearch.gavka.rest.api.GavkaMessageService;
 import org.jresearch.gavka.rest.api.MessageParameters;
 import org.jresearch.gavka.rest.api.PagingParameters;
 import org.jresearch.gavka.rest.api.RequestMessagesParameters;
-import org.jresearch.gavka.srv.MessageService;
+import org.jresearch.gavka.srv.KafkaMessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class GavkaController implements GavkaMessageService {
 
 	@Autowired
-	private MessageService messageService;
+	private KafkaMessageService kafkaMessageService;
 
 	@SuppressWarnings("null")
 	@Override
@@ -33,13 +33,13 @@ public class GavkaController implements GavkaMessageService {
 		final LocalDate from = ServerDates.localDate(messageParameters.getFrom());
 		final LocalDate to = ServerDates.localDate(messageParameters.getTo());
 		final PagingParameters pagingParameters = parameters.getPagingParameters();
-		return messageService.getMessages(pagingParameters, messageParameters.getTopic(), from, to, messageParameters.isAvro());
+		return kafkaMessageService.getMessages(pagingParameters, messageParameters.getTopic(), from, to, messageParameters.isAvro());
 	}
 
 	@Override
 	@GetMapping(M_R_TOPICS)
 	public List<String> topics() {
-		return messageService.getMessageTopics();
+		return kafkaMessageService.getMessageTopics();
 	}
 
 }

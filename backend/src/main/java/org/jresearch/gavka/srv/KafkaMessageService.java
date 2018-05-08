@@ -22,11 +22,11 @@ import org.jresearch.gavka.tool.Messages;
 import org.springframework.stereotype.Component;
 
 @Component
-public class MessageService {
+public class KafkaMessageService {
 
 	protected AdminClient kafkaClient;
 	
-	public MessageService(){
+	public KafkaMessageService(){
 		 Properties props = new Properties();
 		 props.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
 

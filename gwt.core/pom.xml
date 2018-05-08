@@ -59,7 +59,7 @@
 			<artifactId>org.jresearch.commons.gwt.base</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.google.gwt.inject</groupId>
+			<groupId>io.github.gwtplus.gin</groupId>
 			<artifactId>gin</artifactId>
 		</dependency>
 		<dependency>
