@@ -2,8 +2,8 @@ package org.jresearch.gavka.rest.api;
 
 import java.util.List;
 
-import org.jresearch.commons.gwt.shared.loader.PageLoadResultBean;
-import org.jresearch.gavka.domain.Message;
+import org.jresearch.gavka.domain.KeyFormat;
+import org.jresearch.gavka.domain.MessageFormat;
 
 public interface GavkaMessageService {
 
@@ -18,8 +18,18 @@ public interface GavkaMessageService {
 	/** {@link #topics()} method id */
 	String M_R_TOPICS = "/topics"; //$NON-NLS-1$
 
-	PageLoadResultBean<Message> get(RequestMessagesParameters parameters);
+	/** {@link #keyFormats()} method id */
+	String M_R_KEY_FORMATS = "/keyFormats"; //$NON-NLS-1$
+
+	/** {@link #messageFormats()} method id */
+	String M_R_MESSAGE_FORMATS = "/messageFormats"; //$NON-NLS-1$
+
+	MessagePortion get(RequestMessagesParameters parameters);
 
 	List<String> topics();
+
+	List<KeyFormat> keyFormats();
+
+	List<MessageFormat> messageFormats();
 
 }

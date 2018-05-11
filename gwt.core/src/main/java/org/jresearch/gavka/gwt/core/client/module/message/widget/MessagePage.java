@@ -2,6 +2,7 @@ package org.jresearch.gavka.gwt.core.client.module.message.widget;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Stack;
 
 import javax.annotation.Nonnull;
 
@@ -13,11 +14,11 @@ import org.jresearch.commons.gwt.client.mvc.event.Bus;
 import org.jresearch.commons.gwt.client.tool.Dates;
 import org.jresearch.commons.gwt.client.tool.GwtDeferredTask;
 import org.jresearch.commons.gwt.client.widget.Uis;
-import org.jresearch.commons.gwt.shared.loader.PageLoadResultBean;
 import org.jresearch.commons.gwt.shared.model.time.GwtLocalDateModel;
 import org.jresearch.gavka.domain.Message;
 import org.jresearch.gavka.gwt.core.client.module.message.srv.GavkaMessageRestService;
 import org.jresearch.gavka.rest.api.MessageParameters;
+import org.jresearch.gavka.rest.api.MessagePortion;
 import org.jresearch.gavka.rest.api.PagingParameters;
 import org.jresearch.gavka.rest.api.RequestMessagesParameters;
 
@@ -25,14 +26,15 @@ import com.google.common.collect.ImmutableList;
 import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.DataGrid;
-import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.cellview.client.TextColumn;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
@@ -55,8 +57,10 @@ public class MessagePage extends Composite {
 
 	@UiField(provided = true)
 	DataGrid<Message> messages;
-	@UiField(provided = true)
-	SimplePager pager;
+	@UiField
+	Button nextBtn;
+	@UiField
+	Button prevBtn;
 	@UiField
 	ListBox topic;
 	@UiField
@@ -70,15 +74,32 @@ public class MessagePage extends Composite {
 	private final GavkaMessageRestService srv;
 	@Nonnull
 	private final Bus bus;
+	@Nonnull
+	private final Stack<PagingParameters> pages;
+	private final int currentAmount = 100;
 
 	@Inject
 	protected MessagePage(@Nonnull final Binder binder, final GavkaMessageRestService srv, @Nonnull final Bus bus) {
 		this.srv = srv;
 		this.bus = bus;
+		pages = new Stack<>();
+		pages.push(new PagingParameters(currentAmount, ImmutableList.of()));
 		messages = createDatagrid();
 		initWidget(binder.createAndBindUi(this));
 		setStyleName("MessagePage");
 		REST.withCallback(new GwtMethodCallback<>(bus, this::addTopics)).call(srv).topics();
+	}
+
+	@UiHandler("nextBtn")
+	void onNextBtn(@SuppressWarnings("unused") final ClickEvent event) {
+		pages.peek().setAmount(getCurrentAmount());
+		refresh();
+	}
+
+	@UiHandler("prevBtn")
+	void onPrevBtn(@SuppressWarnings("unused") final ClickEvent event) {
+		pages.pop();
+		refresh();
 	}
 
 	@UiHandler("topic")
@@ -138,8 +159,6 @@ public class MessagePage extends Composite {
 		new AsyncDataProvider<Message>() {
 			@Override
 			protected void onRangeChanged(final HasData<Message> display) {
-				final Range range = display.getVisibleRange();
-				final int start = range.getStart();
 				final RequestMessagesParameters parameters = new RequestMessagesParameters();
 				final MessageParameters messageParameters = new MessageParameters();
 				messageParameters.setTopic(getTopic());
@@ -147,27 +166,31 @@ public class MessagePage extends Composite {
 				messageParameters.setTo(getTo());
 				messageParameters.setAvro(isAvro());
 				parameters.setMessageParameters(messageParameters);
-				final PagingParameters pagingParameters = new PagingParameters();
-				pagingParameters.setOffset(start);
-				pagingParameters.setAmount(range.getLength());
-				parameters.setPagingParameters(pagingParameters);
-				REST.withCallback(new AbstractMethodCallback<PageLoadResultBean<Message>>(bus) {
+				parameters.setPagingParameters(pages.peek());
+				REST.withCallback(new AbstractMethodCallback<MessagePortion>(bus) {
 					@Override
-					public void onSuccess(final Method method, final PageLoadResultBean<Message> result) {
+					public void onSuccess(final Method method, final MessagePortion result) {
 						if (result != null) {
-							dataGrid.setRowCount(result.getTotal());
-							updateRowData(start, result.getItems());
+							final PagingParameters pagingParameters = new PagingParameters();
+							pagingParameters.setAmount(getCurrentAmount());
+							pagingParameters.setPartitionOffsets(result.getPartitionOffsets());
+							pages.push(pagingParameters);
+							final List<Message> msgs = result.getMessages();
+							dataGrid.setRowCount(msgs.size());
+							updateRowData(0, msgs);
 						}
 					}
 				}).call(srv).get(parameters);
 			}
-		}.addDataDisplay(dataGrid);
 
-		pager = new SimplePager();
-		pager.setDisplay(dataGrid);
+		}.addDataDisplay(dataGrid);
 
 		return dataGrid;
 
+	}
+
+	private int getCurrentAmount() {
+		return currentAmount;
 	}
 
 	@SuppressWarnings("null")
@@ -209,7 +232,7 @@ public class MessagePage extends Composite {
 
 	public void refresh() {
 		messages.setRowData(0, ImmutableList.<Message> of());
-		messages.setVisibleRangeAndClearData(new Range(0, messages.getPageSize()), true);
+		messages.setVisibleRangeAndClearData(new Range(0, getCurrentAmount()), true);
 	}
 
 	public void addTopics(final List<String> topics) {

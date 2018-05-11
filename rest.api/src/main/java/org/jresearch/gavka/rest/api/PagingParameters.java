@@ -9,77 +9,55 @@ public class PagingParameters {
 
 	/** The number of item to return. */
 	private int amount;
-	/** start item to return from 0 */
-	private int offset;
-	/** Optional list of field descriptors, to filter and sort */
-	private List<FieldDescriptor> fieldDescriptors;
+	/** list of offsets for topic partitions */
+	private List<PartitionOffset> partitionOffsets;
 
-	/**
-	 * @return the amount
-	 */
+	public PagingParameters() {
+	}
+
+	public PagingParameters(final int amount, final List<PartitionOffset> partitionOffsets) {
+		this.amount = amount;
+		this.partitionOffsets = partitionOffsets;
+	}
+
 	public int getAmount() {
 		return amount;
 	}
 
-	/**
-	 * @param amount
-	 *            the amount to set
-	 */
 	public void setAmount(final int amount) {
 		this.amount = amount;
 	}
 
-	/**
-	 * @return the offset
-	 */
-	public int getOffset() {
-		return offset;
+	public List<PartitionOffset> getPartitionOffsets() {
+		return partitionOffsets;
 	}
 
-	/**
-	 * @param offset
-	 *            the offset to set
-	 */
-	public void setOffset(final int offset) {
-		this.offset = offset;
+	public void setPartitionOffsets(final List<PartitionOffset> partitionOffsets) {
+		this.partitionOffsets = partitionOffsets;
 	}
 
-	/**
-	 * @return the fieldDescriptors
-	 */
-	public List<FieldDescriptor> getFieldDescriptors() {
-		return fieldDescriptors;
-	}
-
-	/**
-	 * @param fieldDescriptors
-	 *            the fieldDescriptors to set
-	 */
-	public void setFieldDescriptors(final List<FieldDescriptor> fieldDescriptors) {
-		this.fieldDescriptors = fieldDescriptors;
-	}
-
+	@SuppressWarnings("nls")
 	@Override
 	public String toString() {
 		return MoreObjects.toStringHelper(this)
 				.add("amount", amount)
-				.add("offset", offset)
-				.add("fieldDescriptors", fieldDescriptors)
+				.add("partitionOffsets", partitionOffsets)
 				.toString();
 	}
 
+	@SuppressWarnings("boxing")
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(getAmount(), getOffset(), getFieldDescriptors());
+		return Objects.hashCode(getAmount(), getPartitionOffsets());
 	}
 
+	@SuppressWarnings("boxing")
 	@Override
 	public boolean equals(final Object object) {
 		if (object instanceof PagingParameters) {
 			final PagingParameters that = (PagingParameters) object;
 			return Objects.equal(this.getAmount(), that.getAmount())
-					&& Objects.equal(this.getOffset(), that.getOffset())
-					&& Objects.equal(this.getFieldDescriptors(), that.getFieldDescriptors());
+					&& Objects.equal(this.getPartitionOffsets(), that.getPartitionOffsets());
 		}
 		return false;
 	}
