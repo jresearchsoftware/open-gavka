@@ -1,6 +1,5 @@
 package org.jresearch.gavka.srv;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -14,7 +13,9 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.TopicPartition;
+import org.jresearch.gavka.domain.KeyFormat;
 import org.jresearch.gavka.domain.Message;
+import org.jresearch.gavka.domain.MessageFilter;
 import org.jresearch.gavka.rest.api.MessagePortion;
 import org.jresearch.gavka.rest.api.PagingParameters;
 import org.springframework.context.annotation.Profile;
@@ -37,7 +38,7 @@ public class KafkaMessageService extends AbstractMessageService {
 
 	@Override
 	@SuppressWarnings({ "null" })
-	public MessagePortion getMessages(final PagingParameters pagingParameters, final String topic, final LocalDate from, final LocalDate to, final boolean avro) {
+	public MessagePortion getMessages(final PagingParameters pagingParameters, final MessageFilter filter) {
 		final Properties props = new Properties();
 		props.put("bootstrap.servers", "localhost:9092");
 		props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
@@ -46,13 +47,13 @@ public class KafkaMessageService extends AbstractMessageService {
 		props.put("group.id", "gavka-tool");
 		props.put("auto.offset.reset", "earliest");
 
-		if (avro) {
+		if (KeyFormat.AVRO.equals(filter.getKeyFormat())) {
 			props.put("value.deserializer", "io.confluent.kafka.serializers.KafkaAvroDeserializer");
 		} else {
 			props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
 		}
 		try (final KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props)) {
-			consumer.subscribe(Collections.singleton(topic));
+			consumer.subscribe(Collections.singleton(filter.getTopic()));
 			final Set<TopicPartition> assignments = consumer.assignment();
 			assignments.forEach(tp -> consumer.seekToBeginning(assignments));
 			final List<Message> messages = new ArrayList<>();

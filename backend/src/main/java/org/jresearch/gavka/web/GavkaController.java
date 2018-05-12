@@ -1,10 +1,11 @@
 package org.jresearch.gavka.web;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import org.jresearch.commons.gwt.server.tool.ServerDates;
+import org.jresearch.commons.gwt.shared.model.time.GwtLocalDateTimeModel;
 import org.jresearch.gavka.domain.KeyFormat;
+import org.jresearch.gavka.domain.MessageFilter;
 import org.jresearch.gavka.domain.MessageFormat;
 import org.jresearch.gavka.rest.api.GavkaMessageService;
 import org.jresearch.gavka.rest.api.MessageParameters;
@@ -28,15 +29,24 @@ public class GavkaController implements GavkaMessageService {
 	@Autowired
 	private MessageService messageService;
 
-	@SuppressWarnings("null")
 	@Override
 	@PostMapping(M_R_GET)
 	public MessagePortion get(@RequestBody final RequestMessagesParameters parameters) {
 		final MessageParameters messageParameters = parameters.getMessageParameters();
-		final LocalDate from = ServerDates.localDate(messageParameters.getFrom());
-		final LocalDate to = ServerDates.localDate(messageParameters.getTo());
 		final PagingParameters pagingParameters = parameters.getPagingParameters();
-		return messageService.getMessages(pagingParameters, messageParameters.getTopic(), from, to, messageParameters.isAvro());
+		return messageService.getMessages(pagingParameters, toMessageFilter(messageParameters));
+	}
+
+	private static MessageFilter toMessageFilter(final MessageParameters parameters) {
+		final MessageFilter result = new MessageFilter();
+		final GwtLocalDateTimeModel gwtFrom = parameters.getFrom();
+		result.setFrom(ServerDates.localDateTime(gwtFrom.getDate(), gwtFrom.getTime()));
+		result.setKey(parameters.getKey());
+		result.setKeyFormat(parameters.getKeyFormat());
+		result.setMessageFormat(parameters.getMessageFormat());
+		result.setTopic(parameters.getTopic());
+		return result;
+
 	}
 
 	@Override

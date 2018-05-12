@@ -1,17 +1,15 @@
-package org.jresearch.gavka.rest.api;
+package org.jresearch.gavka.domain;
 
-import org.jresearch.commons.gwt.shared.model.time.GwtLocalDateTimeModel;
-import org.jresearch.gavka.domain.KeyFormat;
-import org.jresearch.gavka.domain.MessageFormat;
+import java.time.LocalDateTime;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
-public class MessageParameters {
+public class MessageFilter {
 
 	private String topic;
 	private String key;
-	private GwtLocalDateTimeModel from;
+	private LocalDateTime from;
 	private KeyFormat keyFormat;
 	private MessageFormat messageFormat;
 
@@ -31,11 +29,11 @@ public class MessageParameters {
 		this.key = key;
 	}
 
-	public GwtLocalDateTimeModel getFrom() {
+	public LocalDateTime getFrom() {
 		return from;
 	}
 
-	public void setFrom(final GwtLocalDateTimeModel from) {
+	public void setFrom(final LocalDateTime from) {
 		this.from = from;
 	}
 
@@ -74,8 +72,8 @@ public class MessageParameters {
 
 	@Override
 	public boolean equals(final Object object) {
-		if (object instanceof MessageParameters) {
-			final MessageParameters that = (MessageParameters) object;
+		if (object instanceof MessageFilter) {
+			final MessageFilter that = (MessageFilter) object;
 			return Objects.equal(this.getTopic(), that.getTopic())
 					&& Objects.equal(this.getKey(), that.getKey())
 					&& Objects.equal(this.getFrom(), that.getFrom())

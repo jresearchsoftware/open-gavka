@@ -2,7 +2,6 @@ package org.jresearch.gavka.tool;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.time.LocalDate;
 import java.util.List;
 
 import javax.annotation.Nonnull;
@@ -29,7 +28,7 @@ public class Messages {
 		// prevent from instantiation
 	}
 
-	public static List<Message> getMessages(final String topic, final LocalDate from, final LocalDate tp, final boolean avro) {
+	public static List<Message> getMessages() {
 		return messages;
 	}
 

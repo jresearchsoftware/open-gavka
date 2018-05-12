@@ -1,9 +1,9 @@
 package org.jresearch.gavka.srv;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import org.jresearch.gavka.domain.Message;
+import org.jresearch.gavka.domain.MessageFilter;
 import org.jresearch.gavka.rest.api.MessagePortion;
 import org.jresearch.gavka.rest.api.PagingParameters;
 import org.jresearch.gavka.tool.Messages;
@@ -17,8 +17,8 @@ import com.google.common.collect.ImmutableList;
 public class MockMessageService extends AbstractMessageService {
 
 	@Override
-	public MessagePortion getMessages(final PagingParameters pagingParameters, final String topic, final LocalDate from, final LocalDate to, final boolean avro) {
-		final List<Message> messages = Messages.getMessages(topic, from, to, avro);
+	public MessagePortion getMessages(final PagingParameters pagingParameters, final MessageFilter filter) {
+		final List<Message> messages = Messages.getMessages();
 		return new MessagePortion(ImmutableList.of(), messages);
 	}
 

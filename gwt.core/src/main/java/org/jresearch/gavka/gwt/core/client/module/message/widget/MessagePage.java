@@ -1,5 +1,6 @@
 package org.jresearch.gavka.gwt.core.client.module.message.widget;
 
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Stack;
@@ -15,7 +16,11 @@ import org.jresearch.commons.gwt.client.tool.Dates;
 import org.jresearch.commons.gwt.client.tool.GwtDeferredTask;
 import org.jresearch.commons.gwt.client.widget.Uis;
 import org.jresearch.commons.gwt.shared.model.time.GwtLocalDateModel;
+import org.jresearch.commons.gwt.shared.model.time.GwtLocalDateTimeModel;
+import org.jresearch.commons.gwt.shared.model.time.GwtLocalTimeModel;
+import org.jresearch.gavka.domain.KeyFormat;
 import org.jresearch.gavka.domain.Message;
+import org.jresearch.gavka.domain.MessageFormat;
 import org.jresearch.gavka.gwt.core.client.module.message.srv.GavkaMessageRestService;
 import org.jresearch.gavka.rest.api.MessageParameters;
 import org.jresearch.gavka.rest.api.MessagePortion;
@@ -23,6 +28,7 @@ import org.jresearch.gavka.rest.api.PagingParameters;
 import org.jresearch.gavka.rest.api.RequestMessagesParameters;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.primitives.Ints;
 import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -35,17 +41,18 @@ import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.Range;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.tractionsoftware.gwt.user.client.ui.UTCDateBox;
+import com.tractionsoftware.gwt.user.client.ui.UTCTimeBox;
 
 @SuppressWarnings("nls")
 @Singleton
@@ -64,11 +71,15 @@ public class MessagePage extends Composite {
 	@UiField
 	ListBox topic;
 	@UiField
-	UTCDateBox to;
+	TextBox key;
 	@UiField
-	UTCDateBox from;
+	ListBox keyFormat;
 	@UiField
-	CheckBox avro;
+	ListBox messageFormat;
+	@UiField
+	UTCDateBox date;
+	@UiField
+	UTCTimeBox time;
 
 	private final GwtDeferredTask refreshTask = new GwtDeferredTask(this::refresh);
 	private final GavkaMessageRestService srv;
@@ -88,6 +99,8 @@ public class MessagePage extends Composite {
 		initWidget(binder.createAndBindUi(this));
 		setStyleName("MessagePage");
 		REST.withCallback(new GwtMethodCallback<>(bus, this::addTopics)).call(srv).topics();
+		EnumSet.allOf(KeyFormat.class).stream().map(Enum::name).forEach(keyFormat::addItem);
+		EnumSet.allOf(MessageFormat.class).stream().map(Enum::name).forEach(messageFormat::addItem);
 	}
 
 	@UiHandler("nextBtn")
@@ -107,18 +120,28 @@ public class MessagePage extends Composite {
 		refreshTask.defer(750);
 	}
 
-	@UiHandler("from")
-	void onFrom(@SuppressWarnings("unused") final ValueChangeEvent<Long> event) {
+	@UiHandler("key")
+	void onKey(@SuppressWarnings("unused") final ChangeEvent event) {
 		refreshTask.defer(750);
 	}
 
-	@UiHandler("to")
-	void onTo(@SuppressWarnings("unused") final ValueChangeEvent<Long> event) {
+	@UiHandler("date")
+	void onDate(@SuppressWarnings("unused") final ValueChangeEvent<Long> event) {
 		refreshTask.defer(750);
 	}
 
-	@UiHandler("avro")
-	void onAvto(@SuppressWarnings("unused") final ValueChangeEvent<Boolean> event) {
+	@UiHandler("time")
+	void onTime(@SuppressWarnings("unused") final ValueChangeEvent<Long> event) {
+		refreshTask.defer(750);
+	}
+
+	@UiHandler("keyFormat")
+	void onKeyFormat(@SuppressWarnings("unused") final ChangeEvent event) {
+		refreshTask.defer(750);
+	}
+
+	@UiHandler("messageFormat")
+	void onMessageFormat(@SuppressWarnings("unused") final ChangeEvent event) {
 		refreshTask.defer(750);
 	}
 
@@ -163,8 +186,9 @@ public class MessagePage extends Composite {
 				final MessageParameters messageParameters = new MessageParameters();
 				messageParameters.setTopic(getTopic());
 				messageParameters.setFrom(getFrom());
-				messageParameters.setTo(getTo());
-				messageParameters.setAvro(isAvro());
+				messageParameters.setKey(getKeyValue());
+				messageParameters.setKeyFormat(getKeyFormat());
+				messageParameters.setMessageFormat(getMessageFormat());
 				parameters.setMessageParameters(messageParameters);
 				parameters.setPagingParameters(pages.peek());
 				REST.withCallback(new AbstractMethodCallback<MessagePortion>(bus) {
@@ -189,6 +213,29 @@ public class MessagePage extends Composite {
 
 	}
 
+	protected String getKeyValue() {
+		return Optional
+				.ofNullable(key)
+				.map(TextBox::getValue)
+				.orElse(Uis.NOTHING);
+	}
+
+	protected MessageFormat getMessageFormat() {
+		return Optional
+				.ofNullable(messageFormat)
+				.map(ListBox::getSelectedValue)
+				.map(MessageFormat::valueOf)
+				.orElse(MessageFormat.values()[0]);
+	}
+
+	protected KeyFormat getKeyFormat() {
+		return Optional
+				.ofNullable(keyFormat)
+				.map(ListBox::getSelectedValue)
+				.map(KeyFormat::valueOf)
+				.orElse(KeyFormat.values()[0]);
+	}
+
 	private int getCurrentAmount() {
 		return currentAmount;
 	}
@@ -204,30 +251,19 @@ public class MessagePage extends Composite {
 
 	@SuppressWarnings("null")
 	@Nonnull
-	protected GwtLocalDateModel getFrom() {
-		return Optional
-				.ofNullable(from)
+	protected GwtLocalDateTimeModel getFrom() {
+		final GwtLocalDateModel gwtDate = Optional
+				.ofNullable(date)
 				.map(HasValue::getValue)
 				.map(Dates::toLocalDate)
 				.orElse(Dates.today());
-	}
-
-	@SuppressWarnings("null")
-	@Nonnull
-	protected GwtLocalDateModel getTo() {
-		return Optional
-				.ofNullable(to)
+		final GwtLocalTimeModel gwtTime = Optional
+				.ofNullable(time)
 				.map(HasValue::getValue)
-				.map(Dates::toLocalDate)
-				.orElse(Dates.today());
-	}
-
-	protected boolean isAvro() {
-		return Optional
-				.ofNullable(avro)
-				.map(HasValue::getValue)
-				.orElse(Boolean.FALSE)
-				.booleanValue();
+				.map(Ints::saturatedCast)
+				.map(GwtLocalTimeModel::new)
+				.orElse(Dates.now());
+		return new GwtLocalDateTimeModel(gwtDate, gwtTime);
 	}
 
 	public void refresh() {
