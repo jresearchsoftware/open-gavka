@@ -18,7 +18,8 @@ public class GavkaAppEntryPoint extends AbstractModuleEntryPoint {
 	@Override
 	public void onModuleLoad() {
 		// Set the root URL for rest calls
-		Defaults.setServiceRoot(com.google.gwt.core.client.GWT.getHostPageBaseURL());
+		Defaults.setServiceRoot("/api/");
+		// Defaults.setServiceRoot(com.google.gwt.core.client.GWT.getHostPageBaseURL());
 		super.onModuleLoad();
 	}
 

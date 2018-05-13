@@ -18,6 +18,7 @@
 		<tag>HEAD</tag>
 	</scm>
 	<modules>
+		<module>../api.app</module>
 		<module>../gwt.app</module>
 		<module>../gwt.core</module>
 		<module>../backend</module>
