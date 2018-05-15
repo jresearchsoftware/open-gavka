@@ -12,17 +12,22 @@ public class Message {
 	@Nonnull
 	private String value;
 	private long offset;
+	private int partition;
+	private long timestamp;
 
+	@SuppressWarnings("nls")
 	public Message() {
 		// GWT
 		this.key = "";
 		this.value = "";
 	}
 
-	public Message(final @Nonnull String key, final @Nonnull String value, final long offset) {
+	public Message(final @Nonnull String key, final @Nonnull String value, final long offset, final int partition, final long timestamp) {
 		this.key = key;
 		this.value = value;
 		this.offset = offset;
+		this.partition = partition;
+		this.timestamp = timestamp;
 	}
 
 	/**
@@ -70,6 +75,22 @@ public class Message {
 		this.offset = offset;
 	}
 
+	public int getPartition() {
+		return partition;
+	}
+
+	public void setPartition(final int partition) {
+		this.partition = partition;
+	}
+
+	public long getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(final long timestamp) {
+		this.timestamp = timestamp;
+	}
+
 	@SuppressWarnings("nls")
 	@Override
 	public String toString() {
@@ -77,13 +98,15 @@ public class Message {
 				.add("key", key)
 				.add("value", value)
 				.add("offset", offset)
+				.add("partition", partition)
+				.add("timestamp", timestamp)
 				.toString();
 	}
 
 	@SuppressWarnings("boxing")
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(getKey(), getValue(), getOffset());
+		return Objects.hashCode(getKey(), getValue(), getOffset(), getPartition(), getTimestamp());
 	}
 
 	@SuppressWarnings("boxing")
@@ -93,7 +116,9 @@ public class Message {
 			final Message that = (Message) object;
 			return Objects.equal(this.getKey(), that.getKey())
 					&& Objects.equal(this.getValue(), that.getValue())
-					&& Objects.equal(this.getOffset(), that.getOffset());
+					&& Objects.equal(this.getOffset(), that.getOffset())
+					&& Objects.equal(this.getPartition(), that.getPartition())
+					&& Objects.equal(this.getTimestamp(), that.getTimestamp());
 		}
 		return false;
 	}

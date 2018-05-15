@@ -59,7 +59,7 @@ public class KafkaMessageService extends AbstractMessageService {
 			final List<Message> messages = new ArrayList<>();
 			final ConsumerRecords<String, String> records = consumer.poll(1000);
 			for (final ConsumerRecord<String, String> consumerRecord : records) {
-				messages.add(new Message(consumerRecord.key(), consumerRecord.value(), consumerRecord.offset()));
+				messages.add(new Message(consumerRecord.key(), consumerRecord.value(), consumerRecord.offset(), consumerRecord.partition(), consumerRecord.timestamp()));
 			}
 			return new MessagePortion(ImmutableList.of(), messages);
 		}

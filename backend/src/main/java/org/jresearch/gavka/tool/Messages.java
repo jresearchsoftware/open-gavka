@@ -47,7 +47,7 @@ public class Messages {
 					.map(Messages::pad)
 					.map(String::toUpperCase)
 					.joining(" "); //$NON-NLS-1$
-			return new Message(key, value, r.nextLong());
+			return new Message(key, value, r.nextLong(), r.nextInt(3), r.nextLong());
 		} catch (final NoSuchAlgorithmException e) {
 			throw new IllegalStateException(e);
 		}
