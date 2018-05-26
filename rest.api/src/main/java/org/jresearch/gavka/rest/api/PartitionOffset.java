@@ -6,7 +6,7 @@ import com.google.common.base.Objects;
 public class PartitionOffset {
 
 	private int partition;
-	private int offset;
+	private long offset;
 
 	public int getPartition() {
 		return partition;
@@ -16,11 +16,11 @@ public class PartitionOffset {
 		this.partition = partition;
 	}
 
-	public int getOffset() {
+	public long getOffset() {
 		return offset;
 	}
 
-	public void setOffset(final int offset) {
+	public void setOffset(final long offset) {
 		this.offset = offset;
 	}
 
