@@ -1,10 +1,15 @@
 package org.jresearch.gavka.srv;
 
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
-import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.kafka.clients.CommonClientConfigs;
@@ -12,16 +17,18 @@ import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.consumer.OffsetAndTimestamp;
+import org.apache.kafka.common.PartitionInfo;
 import org.apache.kafka.common.TopicPartition;
 import org.jresearch.gavka.domain.KeyFormat;
 import org.jresearch.gavka.domain.Message;
 import org.jresearch.gavka.domain.MessageFilter;
+import org.jresearch.gavka.domain.MessageFormat;
 import org.jresearch.gavka.rest.api.MessagePortion;
 import org.jresearch.gavka.rest.api.PagingParameters;
+import org.jresearch.gavka.rest.api.PartitionOffset;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
-
-import com.google.common.collect.ImmutableList;
 
 @Profile("default")
 @Component
@@ -41,27 +48,80 @@ public class KafkaMessageService extends AbstractMessageService {
 	public MessagePortion getMessages(final PagingParameters pagingParameters, final MessageFilter filter) {
 		final Properties props = new Properties();
 		props.put("bootstrap.servers", "localhost:9092");
-		props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-
+		props.put("key.deserializer", getKeyDeserializer(filter.getKeyFormat()));
+		props.put("value.deserializer", getMessageDeserializer(filter.getMessageFormat()));
 		props.put("client.id", "gavka-tool");
-		props.put("group.id", "gavka-tool");
+		props.put("group.id", "gavka-tool-" + UUID.randomUUID());
 		props.put("auto.offset.reset", "earliest");
 
-		if (KeyFormat.AVRO.equals(filter.getKeyFormat())) {
-			props.put("value.deserializer", "io.confluent.kafka.serializers.KafkaAvroDeserializer");
-		} else {
-			props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-		}
-		try (final KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props)) {
-			consumer.subscribe(Collections.singleton(filter.getTopic()));
-			final Set<TopicPartition> assignments = consumer.assignment();
-			assignments.forEach(tp -> consumer.seekToBeginning(assignments));
-			final List<Message> messages = new ArrayList<>();
-			final ConsumerRecords<String, String> records = consumer.poll(1000);
-			for (final ConsumerRecord<String, String> consumerRecord : records) {
-				messages.add(new Message(consumerRecord.key(), consumerRecord.value(), consumerRecord.offset(), consumerRecord.partition(), consumerRecord.timestamp()));
+		try (final KafkaConsumer<Object, Object> consumer = new KafkaConsumer<>(props)) {
+			Map<Integer, Long> partitionOffsets = new HashMap();
+			Map<Integer, TopicPartition> partitions = new HashMap<>();
+			for (PartitionInfo partition : consumer.partitionsFor(filter.getTopic())) {
+				TopicPartition tp = new TopicPartition(filter.getTopic(), partition.partition());
+				partitions.put(partition.partition(), tp);
 			}
-			return new MessagePortion(ImmutableList.of(), messages);
+			consumer.assign(partitions.values());
+
+			filter.setFrom(null);
+			for (TopicPartition tp : partitions.values()) {
+				partitions.put(tp.partition(), tp);
+				partitionOffsets.put(tp.partition(), consumer.position(tp));
+			}
+			
+			if (!pagingParameters.getPartitionOffsets().isEmpty()) {
+				pagingParameters.getPartitionOffsets().stream().forEach(p -> {
+					consumer.seek(partitions.get(p.getPartition()), p.getOffset());
+				});
+			} else {
+				if (filter.getFrom() == null) {
+					consumer.seekToBeginning(partitions.values());
+				} else {
+					Map<TopicPartition, Long> query = new HashMap<>();
+					long out = Date.from(filter.getFrom().atZone(ZoneId.systemDefault()).toInstant()).getTime();
+					for (TopicPartition topicPartition : partitions.values()) {
+						query.put(topicPartition, out);
+					}
+					Map<TopicPartition, OffsetAndTimestamp> result = consumer.offsetsForTimes(query);
+					result.entrySet().stream().forEach(entry -> consumer.seek(entry.getKey(),
+							Optional.ofNullable(entry.getValue()).map(OffsetAndTimestamp::offset).orElse(new Long(0))));
+				}
+			}
+			final List<Message> messages = new ArrayList<>();
+	
+			ConsumerRecords<Object, Object> records = consumer.poll(1000);
+			int pagesSize = pagingParameters.getAmount();
+			while (messages.size() < pagesSize && !records.isEmpty()) {
+				for (final ConsumerRecord<Object, Object> consumerRecord : records) {
+					if (messages.size() == pagesSize) {
+						break;
+					}
+					String stringKey = null;
+					if (consumerRecord.key() != null) {
+						stringKey = consumerRecord.key().toString();
+					}
+					if (!filter.getKey().isEmpty()  && !filter.getKey().equals(stringKey)) {
+						continue;
+					}
+					String stringValue = null;
+					if (consumerRecord.value() != null) {
+						stringValue = consumerRecord.value().toString();
+					}
+					messages.add(new Message(stringKey, stringValue, consumerRecord.offset()));
+					partitionOffsets.put(consumerRecord.partition(), consumerRecord.offset() + 1);					
+				}
+
+				consumer.commitSync();
+				records = consumer.poll(1000);
+			}
+			List<PartitionOffset> po = new ArrayList<>();
+			for (Integer partitionOffset : partitionOffsets.keySet()) {
+				PartitionOffset p = new PartitionOffset();
+				p.setOffset(partitionOffsets.get(partitionOffset));
+				p.setPartition(partitionOffset);
+				po.add(p);
+			}
+			return new MessagePortion(po, messages);
 		}
 	}
 
@@ -79,6 +139,30 @@ public class KafkaMessageService extends AbstractMessageService {
 		}
 		Collections.sort(list);
 		return list;
+	}
+
+	private String getKeyDeserializer(KeyFormat f) {
+		switch (f) {
+		case STRING:
+			return "org.apache.kafka.common.serialization.StringDeserializer";
+		case AVRO:
+			return "io.confluent.kafka.serializers.KafkaAvroDeserializer";
+		default:
+			return "org.apache.kafka.common.serialization.BytesDeserializer";
+		}
+
+	}
+
+	private String getMessageDeserializer(MessageFormat f) {
+		switch (f) {
+		case STRING:
+			return "org.apache.kafka.common.serialization.StringDeserializer";
+		case AVRO:
+			return "io.confluent.kafka.serializers.KafkaAvroDeserializer";
+		default:
+			return "org.apache.kafka.common.serialization.BytesDeserializer";
+		}
+
 	}
 
 }
