@@ -55,20 +55,20 @@ public class KafkaMessageService extends AbstractMessageService {
 		props.put("auto.offset.reset", "earliest");
 
 		try (final KafkaConsumer<Object, Object> consumer = new KafkaConsumer<>(props)) {
-			Map<Integer, Long> partitionOffsets = new HashMap();
-			Map<Integer, TopicPartition> partitions = new HashMap<>();
-			for (PartitionInfo partition : consumer.partitionsFor(filter.getTopic())) {
-				TopicPartition tp = new TopicPartition(filter.getTopic(), partition.partition());
+			final Map<Integer, Long> partitionOffsets = new HashMap();
+			final Map<Integer, TopicPartition> partitions = new HashMap<>();
+			for (final PartitionInfo partition : consumer.partitionsFor(filter.getTopic())) {
+				final TopicPartition tp = new TopicPartition(filter.getTopic(), partition.partition());
 				partitions.put(partition.partition(), tp);
 			}
 			consumer.assign(partitions.values());
 
 			filter.setFrom(null);
-			for (TopicPartition tp : partitions.values()) {
+			for (final TopicPartition tp : partitions.values()) {
 				partitions.put(tp.partition(), tp);
 				partitionOffsets.put(tp.partition(), consumer.position(tp));
 			}
-			
+
 			if (!pagingParameters.getPartitionOffsets().isEmpty()) {
 				pagingParameters.getPartitionOffsets().stream().forEach(p -> {
 					consumer.seek(partitions.get(p.getPartition()), p.getOffset());
@@ -77,46 +77,46 @@ public class KafkaMessageService extends AbstractMessageService {
 				if (filter.getFrom() == null) {
 					consumer.seekToBeginning(partitions.values());
 				} else {
-					Map<TopicPartition, Long> query = new HashMap<>();
-					long out = Date.from(filter.getFrom().atZone(ZoneId.systemDefault()).toInstant()).getTime();
-					for (TopicPartition topicPartition : partitions.values()) {
+					final Map<TopicPartition, Long> query = new HashMap<>();
+					final long out = Date.from(filter.getFrom().atZone(ZoneId.systemDefault()).toInstant()).getTime();
+					for (final TopicPartition topicPartition : partitions.values()) {
 						query.put(topicPartition, out);
 					}
-					Map<TopicPartition, OffsetAndTimestamp> result = consumer.offsetsForTimes(query);
+					final Map<TopicPartition, OffsetAndTimestamp> result = consumer.offsetsForTimes(query);
 					result.entrySet().stream().forEach(entry -> consumer.seek(entry.getKey(),
 							Optional.ofNullable(entry.getValue()).map(OffsetAndTimestamp::offset).orElse(new Long(0))));
 				}
 			}
 			final List<Message> messages = new ArrayList<>();
-	
+
 			ConsumerRecords<Object, Object> records = consumer.poll(1000);
-			int pagesSize = pagingParameters.getAmount();
+			final int pagesSize = pagingParameters.getAmount();
 			while (messages.size() < pagesSize && !records.isEmpty()) {
 				for (final ConsumerRecord<Object, Object> consumerRecord : records) {
 					if (messages.size() == pagesSize) {
 						break;
 					}
-					String stringKey = null;
+					String stringKey = "";
 					if (consumerRecord.key() != null) {
 						stringKey = consumerRecord.key().toString();
 					}
-					if (!filter.getKey().isEmpty()  && !filter.getKey().equals(stringKey)) {
+					if (!filter.getKey().isEmpty() && !filter.getKey().equals(stringKey)) {
 						continue;
 					}
-					String stringValue = null;
+					String stringValue = "";
 					if (consumerRecord.value() != null) {
 						stringValue = consumerRecord.value().toString();
 					}
-					messages.add(new Message(stringKey, stringValue, consumerRecord.offset()));
-					partitionOffsets.put(consumerRecord.partition(), consumerRecord.offset() + 1);					
+					messages.add(new Message(stringKey, stringValue, consumerRecord.offset(), consumerRecord.partition(), consumerRecord.timestamp()));
+					partitionOffsets.put(consumerRecord.partition(), consumerRecord.offset() + 1);
 				}
 
 				consumer.commitSync();
 				records = consumer.poll(1000);
 			}
-			List<PartitionOffset> po = new ArrayList<>();
-			for (Integer partitionOffset : partitionOffsets.keySet()) {
-				PartitionOffset p = new PartitionOffset();
+			final List<PartitionOffset> po = new ArrayList<>();
+			for (final Integer partitionOffset : partitionOffsets.keySet()) {
+				final PartitionOffset p = new PartitionOffset();
 				p.setOffset(partitionOffsets.get(partitionOffset));
 				p.setPartition(partitionOffset);
 				po.add(p);
@@ -141,7 +141,7 @@ public class KafkaMessageService extends AbstractMessageService {
 		return list;
 	}
 
-	private String getKeyDeserializer(KeyFormat f) {
+	private String getKeyDeserializer(final KeyFormat f) {
 		switch (f) {
 		case STRING:
 			return "org.apache.kafka.common.serialization.StringDeserializer";
@@ -153,7 +153,7 @@ public class KafkaMessageService extends AbstractMessageService {
 
 	}
 
-	private String getMessageDeserializer(MessageFormat f) {
+	private String getMessageDeserializer(final MessageFormat f) {
 		switch (f) {
 		case STRING:
 			return "org.apache.kafka.common.serialization.StringDeserializer";
