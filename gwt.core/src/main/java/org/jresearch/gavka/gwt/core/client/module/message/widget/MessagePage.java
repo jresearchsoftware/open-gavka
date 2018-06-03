@@ -1,5 +1,6 @@
 package org.jresearch.gavka.gwt.core.client.module.message.widget;
 
+import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
@@ -29,11 +30,14 @@ import org.jresearch.gavka.rest.api.RequestMessagesParameters;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.primitives.Ints;
+import com.google.gwt.cell.client.DateCell;
 import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.i18n.shared.DateTimeFormat;
+import com.google.gwt.i18n.shared.DateTimeFormat.PredefinedFormat;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -172,12 +176,32 @@ public class MessagePage extends Composite {
 			}
 		};
 
+		// partition
+		final Column<Message, Number> colPartition = new Column<Message, Number>(new NumberCell()) {
+			@Override
+			public Number getValue(final Message object) {
+				return Long.valueOf(object.getPartition());
+			}
+		};
+
+		// timestamp
+		final Column<Message, Date> colTimeStamp = new Column<Message, Date>(new DateCell(DateTimeFormat.getFormat(PredefinedFormat.DATE_TIME_SHORT), com.google.gwt.i18n.client.TimeZone.createTimeZone(0))) {
+			@Override
+			public Date getValue(final Message object) {
+				return new Date(object.getTimestamp());
+			}
+		};
+
 		dataGrid.addColumn(colKey, "Key");
 		dataGrid.setColumnWidth(colKey, 30, Unit.PCT);
 		dataGrid.addColumn(colValue, "Value");
 		dataGrid.setColumnWidth(colValue, 30, Unit.PCT);
 		dataGrid.addColumn(colOffset, "Offset");
 		dataGrid.setColumnWidth(colOffset, 10, Unit.PCT);
+		dataGrid.addColumn(colPartition, "Partition");
+		dataGrid.setColumnWidth(colPartition, 10, Unit.PCT);
+		dataGrid.addColumn(colTimeStamp, "Timestamp");
+		dataGrid.setColumnWidth(colTimeStamp, 20, Unit.PCT);
 
 		new AsyncDataProvider<Message>() {
 			@Override
@@ -185,7 +209,7 @@ public class MessagePage extends Composite {
 				final RequestMessagesParameters parameters = new RequestMessagesParameters();
 				final MessageParameters messageParameters = new MessageParameters();
 				messageParameters.setTopic(getTopic());
-				messageParameters.setFrom(getFrom());
+				messageParameters.setFrom(getFrom().orElse(null));
 				messageParameters.setKey(getKeyValue());
 				messageParameters.setKeyFormat(getKeyFormat());
 				messageParameters.setMessageFormat(getMessageFormat());
@@ -251,19 +275,19 @@ public class MessagePage extends Composite {
 
 	@SuppressWarnings("null")
 	@Nonnull
-	protected GwtLocalDateTimeModel getFrom() {
+	protected Optional<GwtLocalDateTimeModel> getFrom() {
 		final GwtLocalDateModel gwtDate = Optional
 				.ofNullable(date)
 				.map(HasValue::getValue)
 				.map(Dates::toLocalDate)
-				.orElse(Dates.today());
+				.orElse(null);
 		final GwtLocalTimeModel gwtTime = Optional
 				.ofNullable(time)
 				.map(HasValue::getValue)
 				.map(Ints::saturatedCast)
 				.map(GwtLocalTimeModel::new)
-				.orElse(Dates.now());
-		return new GwtLocalDateTimeModel(gwtDate, gwtTime);
+				.orElseGet(GwtLocalTimeModel::new);
+		return Optional.ofNullable(gwtDate == null ? null : new GwtLocalDateTimeModel(gwtDate, gwtTime));
 	}
 
 	public void refresh() {

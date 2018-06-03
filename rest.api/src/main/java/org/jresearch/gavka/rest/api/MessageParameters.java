@@ -1,5 +1,7 @@
 package org.jresearch.gavka.rest.api;
 
+import javax.annotation.Nullable;
+
 import org.jresearch.commons.gwt.shared.model.time.GwtLocalDateTimeModel;
 import org.jresearch.gavka.domain.KeyFormat;
 import org.jresearch.gavka.domain.MessageFormat;
@@ -11,6 +13,7 @@ public class MessageParameters {
 
 	private String topic;
 	private String key;
+	@Nullable
 	private GwtLocalDateTimeModel from;
 	private KeyFormat keyFormat;
 	private MessageFormat messageFormat;
@@ -31,11 +34,12 @@ public class MessageParameters {
 		this.key = key;
 	}
 
+	@Nullable
 	public GwtLocalDateTimeModel getFrom() {
 		return from;
 	}
 
-	public void setFrom(final GwtLocalDateTimeModel from) {
+	public void setFrom(@Nullable final GwtLocalDateTimeModel from) {
 		this.from = from;
 	}
 

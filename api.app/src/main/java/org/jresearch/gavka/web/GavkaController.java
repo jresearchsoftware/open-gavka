@@ -40,7 +40,7 @@ public class GavkaController implements GavkaMessageService {
 	private static MessageFilter toMessageFilter(final MessageParameters parameters) {
 		final MessageFilter result = new MessageFilter();
 		final GwtLocalDateTimeModel gwtFrom = parameters.getFrom();
-		result.setFrom(ServerDates.localDateTime(gwtFrom.getDate(), gwtFrom.getTime()));
+		result.setFrom(gwtFrom == null ? null : ServerDates.localDateTime(gwtFrom.getDate(), gwtFrom.getTime()));
 		result.setKey(parameters.getKey());
 		result.setKeyFormat(parameters.getKeyFormat());
 		result.setMessageFormat(parameters.getMessageFormat());

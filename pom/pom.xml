@@ -27,7 +27,7 @@
 	</modules>
 	<properties>
 		<!-- Used by the project -->
-		<gwtCommons.version>1.0.182</gwtCommons.version>
+		<gwtCommons.version>1.0.189</gwtCommons.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
