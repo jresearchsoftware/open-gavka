@@ -62,12 +62,16 @@ import com.tractionsoftware.gwt.user.client.ui.UTCTimeBox;
 @Singleton
 public class MessagePage extends Composite {
 
+	private static final int AUTOREFRESH_TIME = 10_000;
+
 	// @formatter:off
 	interface Binder extends UiBinder<DockLayoutPanel, MessagePage> {/* nothing */}
 	// @formatter:on
 
 	@UiField(provided = true)
 	DataGrid<Message> messages;
+	@UiField
+	Button searchBtn;
 	@UiField
 	Button nextBtn;
 	@UiField
@@ -85,7 +89,7 @@ public class MessagePage extends Composite {
 	@UiField
 	UTCTimeBox time;
 
-	private final GwtDeferredTask refreshTask = new GwtDeferredTask(this::refresh);
+	private final GwtDeferredTask refreshTask = new GwtDeferredTask(this::refreshOnSearch);
 	private final GavkaMessageRestService srv;
 	@Nonnull
 	private final Bus bus;
@@ -107,46 +111,53 @@ public class MessagePage extends Composite {
 		EnumSet.allOf(MessageFormat.class).stream().map(Enum::name).forEach(messageFormat::addItem);
 	}
 
+	@UiHandler("searchBtn")
+	void onSearchBtn(@SuppressWarnings("unused") final ClickEvent event) {
+		refreshTask.defer(0);
+	}
+
 	@UiHandler("nextBtn")
 	void onNextBtn(@SuppressWarnings("unused") final ClickEvent event) {
+		refreshTask.cancel();
 		pages.peek().setAmount(getCurrentAmount());
 		refresh();
 	}
 
 	@UiHandler("prevBtn")
 	void onPrevBtn(@SuppressWarnings("unused") final ClickEvent event) {
+		refreshTask.cancel();
 		pages.pop();
 		refresh();
 	}
 
 	@UiHandler("topic")
 	void onTopic(@SuppressWarnings("unused") final ChangeEvent event) {
-		refreshTask.defer(750);
+		refreshTask.defer(AUTOREFRESH_TIME);
 	}
 
 	@UiHandler("key")
 	void onKey(@SuppressWarnings("unused") final ChangeEvent event) {
-		refreshTask.defer(750);
+		refreshTask.defer(AUTOREFRESH_TIME);
 	}
 
 	@UiHandler("date")
 	void onDate(@SuppressWarnings("unused") final ValueChangeEvent<Long> event) {
-		refreshTask.defer(750);
+		refreshTask.defer(AUTOREFRESH_TIME);
 	}
 
 	@UiHandler("time")
 	void onTime(@SuppressWarnings("unused") final ValueChangeEvent<Long> event) {
-		refreshTask.defer(750);
+		refreshTask.defer(AUTOREFRESH_TIME);
 	}
 
 	@UiHandler("keyFormat")
 	void onKeyFormat(@SuppressWarnings("unused") final ChangeEvent event) {
-		refreshTask.defer(750);
+		refreshTask.defer(AUTOREFRESH_TIME);
 	}
 
 	@UiHandler("messageFormat")
 	void onMessageFormat(@SuppressWarnings("unused") final ChangeEvent event) {
-		refreshTask.defer(750);
+		refreshTask.defer(AUTOREFRESH_TIME);
 	}
 
 	private DataGrid<Message> createDatagrid() {
@@ -288,6 +299,12 @@ public class MessagePage extends Composite {
 				.map(GwtLocalTimeModel::new)
 				.orElseGet(GwtLocalTimeModel::new);
 		return Optional.ofNullable(gwtDate == null ? null : new GwtLocalDateTimeModel(gwtDate, gwtTime));
+	}
+
+	public void refreshOnSearch() {
+		pages.clear();
+		pages.add(new PagingParameters(currentAmount, ImmutableList.of()));
+		refresh();
 	}
 
 	public void refresh() {

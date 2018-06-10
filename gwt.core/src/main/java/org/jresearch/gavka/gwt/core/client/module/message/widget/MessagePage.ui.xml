@@ -28,6 +28,7 @@
 					<g:ListBox ui:field='keyFormat' width="30%"/>
 					<label>Message format:</label>
 					<g:ListBox ui:field='messageFormat' width="30%"/>
+					<g:Button ui:field="searchBtn" text="Search"/>
 				</g:HTMLPanel>
 			</g:HTMLPanel>
 		</g:north>
