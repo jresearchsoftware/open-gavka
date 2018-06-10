@@ -125,9 +125,14 @@ public class MessagePage extends Composite {
 
 	@UiHandler("prevBtn")
 	void onPrevBtn(@SuppressWarnings("unused") final ClickEvent event) {
-		refreshTask.cancel();
-		pages.pop();
-		refresh();
+		if (pages.size() > 2) {
+			refreshTask.cancel();
+			pages.pop();
+			pages.pop();
+			refresh();
+		} else {
+			prevBtn.setEnabled(false);
+		}
 	}
 
 	@UiHandler("topic")
@@ -234,6 +239,7 @@ public class MessagePage extends Composite {
 							pagingParameters.setAmount(getCurrentAmount());
 							pagingParameters.setPartitionOffsets(result.getPartitionOffsets());
 							pages.push(pagingParameters);
+							prevBtn.setEnabled(pages.size() > 2);
 							final List<Message> msgs = result.getMessages();
 							dataGrid.setRowCount(msgs.size());
 							updateRowData(0, msgs);
