@@ -8,6 +8,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 
 public class GavkaBackendInitializer implements WebApplicationInitializer {
 
+	@SuppressWarnings({ "resource", "nls" })
 	@Override
 	public void onStartup(final ServletContext container) {
 		final AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
@@ -15,8 +16,8 @@ public class GavkaBackendInitializer implements WebApplicationInitializer {
 
 		container.addListener(new ContextLoaderListener(context));
 
-		final ServletRegistration.Dynamic dispatcher = container
-				.addServlet("dispatcher", new DispatcherServlet(context));
+		final ServletRegistration.Dynamic dispatcher = container.addServlet("dispatcher", new DispatcherServlet(context));
+		dispatcher.setAsyncSupported(true);
 
 		dispatcher.setLoadOnStartup(1);
 		dispatcher.addMapping("/rest/*");

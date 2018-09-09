@@ -1,7 +1,7 @@
 package org.jresearch.gavka.srv;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 
 import org.jresearch.gavka.domain.Message;
@@ -30,9 +30,9 @@ public class MockMessageService extends AbstractMessageService {
 	}
 
 	@Override
-	public void exportMessages(ByteArrayOutputStream bos, MessageFilter filter) throws IOException {
+	public void exportMessages(final OutputStream bos, final MessageFilter filter) throws IOException {
 		final List<Message> messages = Messages.getMessages();
-		for (Message message : messages) {
+		for (final Message message : messages) {
 			bos.write(message.toString().getBytes());
 		}
 	}

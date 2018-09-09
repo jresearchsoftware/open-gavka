@@ -1,7 +1,7 @@
 package org.jresearch.gavka.srv;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 
 import org.jresearch.gavka.domain.MessageFilter;
@@ -14,6 +14,6 @@ public interface MessageService {
 
 	List<String> getMessageTopics();
 
-	void exportMessages(ByteArrayOutputStream bos, MessageFilter filter) throws IOException;
+	void exportMessages(OutputStream bos, MessageFilter filter) throws IOException;
 
 }

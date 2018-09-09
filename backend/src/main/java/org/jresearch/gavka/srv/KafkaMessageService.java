@@ -1,7 +1,7 @@
 package org.jresearch.gavka.srv;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -64,7 +64,8 @@ public class KafkaMessageService extends AbstractMessageService {
 				partitions.put(tp.partition(), tp);
 				partitionOffsets.put(tp.partition(), consumer.position(tp));
 			}
-			// if the client sends partitions offsets then position to that offsets
+			// if the client sends partitions offsets then position to that
+			// offsets
 			if (!pagingParameters.getPartitionOffsets().isEmpty()) {
 				pagingParameters.getPartitionOffsets().stream().forEach(p -> {
 					partitionOffsets.put(p.getPartition(), p.getOffset());
@@ -183,7 +184,7 @@ public class KafkaMessageService extends AbstractMessageService {
 	}
 
 	@Override
-	public void exportMessages(ByteArrayOutputStream bos, MessageFilter filter) throws IOException {
+	public void exportMessages(final OutputStream bos, final MessageFilter filter) throws IOException {
 		final Properties props = new Properties();
 		props.put("bootstrap.servers", "localhost:9092");
 		props.put("key.deserializer", getKeyDeserializer(filter.getKeyFormat()));

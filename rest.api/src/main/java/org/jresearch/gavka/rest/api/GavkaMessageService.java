@@ -15,6 +15,9 @@ public interface GavkaMessageService {
 	/** {@link #get(RequestMessagesParameters)} method id */
 	String M_R_GET = "/get"; //$NON-NLS-1$
 
+	/** {@link #export(MessageParameters)} method id */
+	String M_R_EXPORT = "/export"; //$NON-NLS-1$
+
 	/** {@link #topics()} method id */
 	String M_R_TOPICS = "/topics"; //$NON-NLS-1$
 
