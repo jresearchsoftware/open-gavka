@@ -14,19 +14,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework</groupId>
-			<artifactId>spring-beans</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.jresearch.commons.gwt</groupId>
-			<artifactId>org.jresearch.commons.gwt.base.model</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-web</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -65,10 +53,6 @@
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
 			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.jresearch.commons.gwt</groupId>
-			<artifactId>org.jresearch.commons.gwt.base.srv</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.kafka</groupId>
