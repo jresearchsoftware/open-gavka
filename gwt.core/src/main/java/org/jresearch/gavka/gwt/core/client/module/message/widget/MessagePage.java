@@ -47,7 +47,9 @@ import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
+import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.view.client.AsyncDataProvider;
@@ -88,6 +90,12 @@ public class MessagePage extends Composite {
 	UTCDateBox date;
 	@UiField
 	UTCTimeBox time;
+	@UiField
+	Hidden hiddenFrom;
+	@UiField
+	FormPanel exportForm;
+	@UiField
+	Button exportBtn;
 
 	private final GwtDeferredTask refreshTask = new GwtDeferredTask(this::refreshOnSearch);
 	private final GavkaMessageRestService srv;
@@ -109,6 +117,17 @@ public class MessagePage extends Composite {
 		REST.withCallback(new GwtMethodCallback<>(bus, this::addTopics)).call(srv).topics();
 		EnumSet.allOf(KeyFormat.class).stream().map(Enum::name).forEach(keyFormat::addItem);
 		EnumSet.allOf(MessageFormat.class).stream().map(Enum::name).forEach(messageFormat::addItem);
+		exportForm.setMethod(FormPanel.METHOD_POST);
+	}
+
+	@SuppressWarnings("null")
+	@UiHandler("exportBtn")
+	void onExportBtn(@SuppressWarnings("unused") final ClickEvent event) {
+		final Optional<GwtLocalDateTimeModel> fromDate = getFrom();
+		if (fromDate.isPresent()) {
+			hiddenFrom.setValue(Dates.printDateTime(fromDate.get()));
+		}
+		exportForm.submit();
 	}
 
 	@UiHandler("searchBtn")

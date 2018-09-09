@@ -12,25 +12,29 @@
 	<g:DockLayoutPanel unit="EM" height="100%" addStyleNames="{style.dockLayoutPanel}">
 		<!-- Controls. -->
 		<g:north size="10">
-			<g:HTMLPanel width="100%" addStyleNames="{style.header}">
+			<g:FormPanel action="/api/rest/messages/export" ui:field="exportForm">
 				<g:HTMLPanel width="100%" addStyleNames="{style.header}">
-					<label>Topic:</label>
-					<g:ListBox ui:field='topic' width="30%"/>
-					<label>Key:</label>
-					<g:TextBox ui:field='key' width="30%"/>
-					<label>From date:</label>
-					<u:UTCDateBox ui:field='date'/>
-					<label>time:</label>
-					<u:UTCTimeBox ui:field="time"/>
+					<g:HTMLPanel width="100%" addStyleNames="{style.header}">
+						<label>Topic:</label>
+						<g:ListBox ui:field='topic' name='topic' width="30%"/>
+						<label>Key:</label>
+						<g:TextBox ui:field='key' name='key' width="30%"/>
+						<label>From date:</label>
+						<u:UTCDateBox ui:field='date'/>
+						<label>time:</label>
+						<u:UTCTimeBox ui:field="time"/>
+					</g:HTMLPanel>
+					<g:HTMLPanel width="100%" addStyleNames="{style.header}">
+						<label>Key format:</label>
+						<g:ListBox ui:field='keyFormat' name='keyFormat' width="30%"/>
+						<label>Message format:</label>
+						<g:ListBox ui:field='messageFormat' name='messageFormat' width="30%"/>
+						<g:Hidden name="from" ui:field="hiddenFrom"/>
+						<g:Button ui:field="searchBtn" text="Search"/>
+						<g:Button ui:field="exportBtn" text="Export"/>
+					</g:HTMLPanel>
 				</g:HTMLPanel>
-				<g:HTMLPanel width="100%" addStyleNames="{style.header}">
-					<label>Key format:</label>
-					<g:ListBox ui:field='keyFormat' width="30%"/>
-					<label>Message format:</label>
-					<g:ListBox ui:field='messageFormat' width="30%"/>
-					<g:Button ui:field="searchBtn" text="Search"/>
-				</g:HTMLPanel>
-			</g:HTMLPanel>
+			</g:FormPanel>
 		</g:north>
 		<!-- DataGrid. -->
 		<g:center>
