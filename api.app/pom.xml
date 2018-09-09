@@ -46,6 +46,30 @@
 			<groupId>org.jresearch.commons.gwt</groupId>
 			<artifactId>org.jresearch.commons.gwt.base.srv</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-beans</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.jresearch.commons.gwt</groupId>
+			<artifactId>org.jresearch.commons.gwt.base.model</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.jresearch.gavka</groupId>
+			<artifactId>org.jresearch.gavka.rest.api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.jresearch.gavka</groupId>
+			<artifactId>org.jresearch.gavka.domain</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+		</dependency>
 	</dependencies>
 	<build>
 		<finalName>api</finalName>
