@@ -2,6 +2,7 @@ package org.jresearch.gavka.srv;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,6 +32,8 @@ import org.jresearch.gavka.rest.api.PagingParameters;
 import org.jresearch.gavka.rest.api.PartitionOffset;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+
+import com.google.common.base.MoreObjects;
 
 @Profile("default")
 @Component
@@ -185,6 +188,7 @@ public class KafkaMessageService extends AbstractMessageService {
 
 	@Override
 	public void exportMessages(final OutputStream bos, final MessageFilter filter) throws IOException {
+		SimpleDateFormat sf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 		final Properties props = new Properties();
 		props.put("bootstrap.servers", "localhost:9092");
 		props.put("key.deserializer", getKeyDeserializer(filter.getKeyFormat()));
@@ -211,8 +215,8 @@ public class KafkaMessageService extends AbstractMessageService {
 					if (consumerRecord.value() != null) {
 						stringValue = consumerRecord.value().toString();
 					}
-					bos.write((new Message(stringKey, stringValue, consumerRecord.offset(), consumerRecord.partition(),
-							consumerRecord.timestamp())).toString().getBytes());
+					bos.write(getStringForExport(new Message(stringKey, stringValue, consumerRecord.offset(), consumerRecord.partition(),
+							consumerRecord.timestamp()),sf).getBytes());
 				}
 
 				consumer.commitSync();
@@ -220,5 +224,16 @@ public class KafkaMessageService extends AbstractMessageService {
 			}
 
 		}
+	}
+	
+	protected String getStringForExport(Message message, SimpleDateFormat sf) {
+		return MoreObjects.toStringHelper(Message.class)
+				.add("key", message.getKey())
+				.add("value", message.getValue())
+				.add("offset", message.getOffset())
+				.add("partition", message.getPartition())
+				.add("timestamp", sf.format(new Date(message.getTimestamp())))
+				.toString() + "\n";
+		
 	}
 }
