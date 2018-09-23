@@ -15,6 +15,9 @@ import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
+import javax.annotation.PostConstruct;
+import javax.print.attribute.standard.DateTimeAtCompleted;
+
 import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -30,7 +33,9 @@ import org.jresearch.gavka.domain.MessageFormat;
 import org.jresearch.gavka.rest.api.MessagePortion;
 import org.jresearch.gavka.rest.api.PagingParameters;
 import org.jresearch.gavka.rest.api.PartitionOffset;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.MoreObjects;
@@ -40,19 +45,30 @@ import com.google.common.base.MoreObjects;
 public class KafkaMessageService extends AbstractMessageService {
 
 	protected AdminClient kafkaClient;
+	
+    @Value("${bootstrap.servers}")
+ 	private String serverUrl;
 
-	public KafkaMessageService() {
+    @Value("${schema.registry.url}")
+ 	private String schemaRegistryUrl;
+    
+	public KafkaMessageService() {}
+	
+	@PostConstruct
+	protected void initClient() {
 		final Properties props = new Properties();
-		props.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+		props.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, serverUrl);
 
 		kafkaClient = AdminClient.create(props);
+
 	}
 
 	@Override
 	@SuppressWarnings({ "null" })
 	public MessagePortion getMessages(final PagingParameters pagingParameters, final MessageFilter filter) {
 		final Properties props = new Properties();
-		props.put("bootstrap.servers", "localhost:9092");
+		props.put("bootstrap.servers", serverUrl);
+		props.put("schema.registry.url", schemaRegistryUrl);
 		props.put("key.deserializer", getKeyDeserializer(filter.getKeyFormat()));
 		props.put("value.deserializer", getMessageDeserializer(filter.getMessageFormat()));
 		props.put("client.id", "gavka-tool");
@@ -190,13 +206,16 @@ public class KafkaMessageService extends AbstractMessageService {
 	public void exportMessages(final OutputStream bos, final MessageFilter filter) throws IOException {
 		SimpleDateFormat sf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 		final Properties props = new Properties();
-		props.put("bootstrap.servers", "localhost:9092");
+		props.put("bootstrap.servers", serverUrl);
+		props.put("schema.registry.url", schemaRegistryUrl);
 		props.put("key.deserializer", getKeyDeserializer(filter.getKeyFormat()));
 		props.put("value.deserializer", getMessageDeserializer(filter.getMessageFormat()));
 		props.put("client.id", "gavka-tool");
 		props.put("group.id", "gavka-tool-" + UUID.randomUUID());
 		props.put("auto.offset.reset", "earliest");
 
+		long stopTime = System.currentTimeMillis();
+		long currentTime = 0;
 		try (final KafkaConsumer<Object, Object> consumer = new KafkaConsumer<>(props)) {
 			final Map<Integer, TopicPartition> partitions = initConsumer(filter, consumer);
 
@@ -215,11 +234,15 @@ public class KafkaMessageService extends AbstractMessageService {
 					if (consumerRecord.value() != null) {
 						stringValue = consumerRecord.value().toString();
 					}
+					currentTime = consumerRecord.timestamp();
 					bos.write(getStringForExport(new Message(stringKey, stringValue, consumerRecord.offset(), consumerRecord.partition(),
 							consumerRecord.timestamp()),sf).getBytes());
 				}
-
+				bos.flush();
 				consumer.commitSync();
+				if(currentTime >=stopTime) {
+					break;
+				}
 				records = consumer.poll(1000);
 			}
 
