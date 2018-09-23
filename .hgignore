@@ -10,3 +10,4 @@ syntax: glob
 **/webapp/gavka/**
 **/src/main/webapp/WEB-INF/deploy/**
 */war/**
+**/.factorypath
