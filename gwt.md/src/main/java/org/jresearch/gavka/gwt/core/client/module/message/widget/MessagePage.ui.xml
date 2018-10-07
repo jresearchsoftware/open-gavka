@@ -7,7 +7,7 @@
 >
     <m:MaterialRow>
         <m:MaterialColumn grid="s12">
-            <m:MaterialRow addStyleNames="code">
+            <m:MaterialRow>
                 <m:MaterialTitle scrollspy="data_pager" title="Pager" description="We developed a pager embeded component to data table to provide a better pagination into your data set." />
                 <m:MaterialButton text="Go to first page" ui:field="btnGotoFirstPage" marginRight="12"/>
                 <m:MaterialButton text="Go to last page" ui:field="btnGotoLastPage" />

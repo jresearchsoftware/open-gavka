@@ -37,6 +37,7 @@ import com.google.common.base.MoreObjects;
 
 @Profile("default")
 @Component
+@SuppressWarnings("nls")
 public class KafkaMessageService extends AbstractMessageService {
 
 	protected AdminClient kafkaClient;
@@ -116,8 +117,7 @@ public class KafkaMessageService extends AbstractMessageService {
 		}
 	}
 
-	protected Map<Integer, TopicPartition> initConsumer(final MessageFilter filter,
-			final KafkaConsumer<Object, Object> consumer) {
+	protected Map<Integer, TopicPartition> initConsumer(final MessageFilter filter, final KafkaConsumer<Object, Object> consumer) {
 		final Map<Integer, TopicPartition> partitions = new HashMap<>();
 		// get all partitions for the topic
 		for (final PartitionInfo partition : consumer.partitionsFor(filter.getTopic())) {
@@ -188,7 +188,7 @@ public class KafkaMessageService extends AbstractMessageService {
 
 	@Override
 	public void exportMessages(final OutputStream bos, final MessageFilter filter) throws IOException {
-		SimpleDateFormat sf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+		final SimpleDateFormat sf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 		final Properties props = new Properties();
 		props.put("bootstrap.servers", "localhost:9092");
 		props.put("key.deserializer", getKeyDeserializer(filter.getKeyFormat()));
@@ -216,7 +216,7 @@ public class KafkaMessageService extends AbstractMessageService {
 						stringValue = consumerRecord.value().toString();
 					}
 					bos.write(getStringForExport(new Message(stringKey, stringValue, consumerRecord.offset(), consumerRecord.partition(),
-							consumerRecord.timestamp()),sf).getBytes());
+							consumerRecord.timestamp()), sf).getBytes());
 				}
 
 				consumer.commitSync();
@@ -225,8 +225,8 @@ public class KafkaMessageService extends AbstractMessageService {
 
 		}
 	}
-	
-	protected String getStringForExport(Message message, SimpleDateFormat sf) {
+
+	protected String getStringForExport(final Message message, final SimpleDateFormat sf) {
 		return MoreObjects.toStringHelper(Message.class)
 				.add("key", message.getKey())
 				.add("value", message.getValue())
@@ -234,6 +234,6 @@ public class KafkaMessageService extends AbstractMessageService {
 				.add("partition", message.getPartition())
 				.add("timestamp", sf.format(new Date(message.getTimestamp())))
 				.toString() + "\n";
-		
+
 	}
 }
