@@ -20,7 +20,10 @@ Clone the repository then
 
 `mvn package`
 
-Two files api.war and gavka.war will be 
+Two files *api.war* and *gavka.war* will be under _api.app/target_ and _gwt.app/target_ directories. Those files can be deployed to tomcat or other server. Two environment variables must be specified
+
+* bootstrap.servers
+* schema.registry.url
 
 ### How to Run with Docker ###
 
@@ -36,4 +39,5 @@ Then you can connect as http://localhost:4000/gavka
 
 ### Why is this project called Gavka? ###
 
-When we were thinking about the name of the project this dog ![Scheme](images/artie.JPG) suggested: �Gav!� 
+When we were thinking about the name of the project this dog suggested: Gav! ![artie](images/artie.JPG)
+
