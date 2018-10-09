@@ -16,7 +16,6 @@ import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 import javax.annotation.PostConstruct;
-import javax.print.attribute.standard.DateTimeAtCompleted;
 
 import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.admin.AdminClient;
@@ -35,7 +34,6 @@ import org.jresearch.gavka.rest.api.PagingParameters;
 import org.jresearch.gavka.rest.api.PartitionOffset;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.MoreObjects;
