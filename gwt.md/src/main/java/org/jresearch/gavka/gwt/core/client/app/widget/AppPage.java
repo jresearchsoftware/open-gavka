@@ -11,14 +11,11 @@ import org.jresearch.commons.gwt.client.widget.Uis;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
-
-import gwt.material.design.client.ui.MaterialContainer;
 
 public class AppPage extends Composite {
 
@@ -36,13 +33,14 @@ public class AppPage extends Composite {
 		}
 	}
 
-	interface AppPageUiBinder extends UiBinder<Widget, AppPage> {/* nothing */}
+	interface AppPageUiBinder extends UiBinder<Widget, AppPage> {
+		/* nothing */}
 
 	private final Map<String, IAppModule> modules = new HashMap<>();
 	private final Map<String, HTMLPanel> eventMap = new HashMap<>();
 
-	@UiField
-	MaterialContainer moduleContainer;
+//	@UiField
+//	MaterialContainer moduleContainer;
 
 	private final Bus bus;
 
@@ -63,7 +61,7 @@ public class AppPage extends Composite {
 	private void createModulePanel(final IAppModule module) {
 		final HTMLPanel tab = new HTMLPanel(Uis.NOTHING);
 		tab.setStyleName("moduleTab" + module.getModuleId());
-		moduleContainer.add(tab);
+//		moduleContainer.add(tab);
 		eventMap.put(module.getModuleId(), tab);
 		modules.put(module.getModuleId(), module);
 	}
@@ -80,7 +78,8 @@ public class AppPage extends Composite {
 	}
 
 	public HasWidgets.ForIsWidget getChildContainer(final String viewId) {
-		return eventMap.get(viewId);
+		return null;
+//		return eventMap.get(viewId);
 	}
 
 }
