@@ -36,4 +36,4 @@ Then you can connect as http://localhost:4000/gavka
 
 ### Why is this project called Gavka? ###
 
-When we were thinking about the name of the project this dog ![Scheme](images/artie.jpg) suggested: “Gav!” 
+When we were thinking about the name of the project this dog ![Scheme](images/artie.JPG) suggested: ï¿½Gav!ï¿½ 
