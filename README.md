@@ -3,8 +3,8 @@
 This project was created by two friends who were constantly under attack by the people, who tried to find out if their message was actually written to Apache Kafka.
 
 Gavka is a web application for browsing Apache Kafka topics. The tool allows
-  * search messages by key or time
-  * export topic as a text file
+* search messages by key or time
+* export topic as a text file
   
 Gavka consists of the two war files and can be deployed to any J2EE server. It requires a connection to the running Kafka cluster, which can be configured using environment variables. It is also possible to run Gavka with docker.
 
@@ -28,6 +28,8 @@ Two files *api.war* and *gavka.war* will be under _api.app/target_ and _gwt.app/
 ### How to Run with Docker ###
 
 It is assumed that you have an access to running Kafka cluster.
+
+`docker pull jresearch/gavka`
 
 `docker run -d -p 4000:8080 -e bootstrap.servers=kafka_host:kafka_port -e schema.registry.url=http://schema_host:schema_port -p kafka_port:kafka_port -p schema_port:schema_port open-gavka`
 
