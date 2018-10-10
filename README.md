@@ -32,11 +32,11 @@ It is assumed that you have an access to running Kafka cluster.
 
 `docker pull jresearch/gavka`
 
-`docker run -d -p 4000:8080 -e bootstrap.servers=kafka_host:kafka_port -e schema.registry.url=http://schema_host:schema_port -p kafka_port:kafka_port -p schema_port:schema_port open-gavka`
+`docker run -d -p 4000:8080 -e bootstrap.servers=kafka_host:kafka_port -e schema.registry.url=http://schema_host:schema_port -p kafka_port:kafka_port -p schema_port:schema_port gavka`
 
 For example,
 
-`docker run -d -p 4000:8080 -e bootstrap.servers=172.16.1.1:9092 -e schema.registry.url=http://172.16.1.1:8081 -p 9092:9092 -p 8081:8081 open-gavka`
+`docker run -d -p 4000:8080 -e bootstrap.servers=172.16.1.1:9092 -e schema.registry.url=http://172.16.1.1:8081 -p 9092:9092 -p 8081:8081 gavka`
 
 Then you can connect as http://localhost:4000/gavka
 
