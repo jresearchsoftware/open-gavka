@@ -3,6 +3,7 @@
 This project was created by two friends who were constantly under attack by the people, who tried to find out if their message was actually written to Apache Kafka.
 
 Gavka is a web application for browsing Apache Kafka topics. The tool allows
+
 * search messages by key or time
 * export topic as a text file
   
