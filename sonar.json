@@ -1,0 +1,4 @@
+{  
+    "sonarHost": "http://s.chnch.us:9000",
+    "sonarProjectKey": "org.jresearch.gavka:org.jresearch.gavka.pom"
+}
