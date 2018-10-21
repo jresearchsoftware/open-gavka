@@ -20,7 +20,7 @@ public class MockMessageService extends AbstractMessageService {
 
 	@Override
 	public MessagePortion getMessages(final PagingParameters pagingParameters, final MessageFilter filter) {
-		final List<Message> messages = Messages.getMessages();
+		final List<Message> messages = "no".equalsIgnoreCase(filter.getKey()) ? ImmutableList.of() : Messages.getMessages();
 		return new MessagePortion(ImmutableList.of(), messages);
 	}
 

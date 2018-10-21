@@ -48,6 +48,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.ListBox;
@@ -238,6 +239,8 @@ public class MessagePage extends Composite {
 		dataGrid.addColumn(colTimeStamp, "Timestamp");
 		dataGrid.setColumnWidth(colTimeStamp, 20, Unit.PCT);
 
+		dataGrid.setEmptyTableWidget(new HTML("No records"));
+
 		new AsyncDataProvider<Message>() {
 			@Override
 			protected void onRangeChanged(final HasData<Message> display) {
@@ -333,7 +336,7 @@ public class MessagePage extends Composite {
 	}
 
 	public void refresh() {
-		messages.setRowData(0, ImmutableList.<Message> of());
+		messages.setRowData(0, ImmutableList.<Message>of());
 		messages.setVisibleRangeAndClearData(new Range(0, getCurrentAmount()), true);
 	}
 
