@@ -47,13 +47,12 @@ public class Messages {
 					.map(Messages::pad)
 					.map(String::toUpperCase)
 					.joining(" "); //$NON-NLS-1$
-			return new Message(key, value, r.nextLong(), r.nextInt(3), r.nextLong());
+			return new Message(key, value, r.nextLong(), r.nextInt(3), System.currentTimeMillis());
 		} catch (final NoSuchAlgorithmException e) {
 			throw new IllegalStateException(e);
 		}
 	}
 
-	@SuppressWarnings("null")
 	private static String generateTopic() {
 		try {
 			final SecureRandom r = SecureRandom.getInstanceStrong();
@@ -63,6 +62,7 @@ public class Messages {
 		}
 	}
 
+	@SuppressWarnings("null")
 	@Nonnull
 	private static String pad(@Nonnull final String toPad) {
 		return Strings.padStart(toPad, 2, '0');
