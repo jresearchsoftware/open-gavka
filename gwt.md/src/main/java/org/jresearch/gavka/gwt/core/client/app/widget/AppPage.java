@@ -6,7 +6,6 @@ import java.util.Map;
 import org.jresearch.commons.gwt.client.app.IAppModule;
 import org.jresearch.commons.gwt.client.mvc.event.Bus;
 import org.jresearch.commons.gwt.client.mvc.event.module.ModuleEvent;
-import org.jresearch.commons.gwt.client.widget.Uis;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -59,11 +58,11 @@ public class AppPage extends Composite {
 	}
 
 	private void createModulePanel(final IAppModule module) {
-		final HTMLPanel tab = new HTMLPanel(Uis.NOTHING);
-		tab.setStyleName("moduleTab" + module.getModuleId());
+//		final HTMLPanel tab = new HTMLPanel(Uis.NOTHING);
+//		tab.setStyleName("moduleTab" + module.getModuleId());
 //		moduleContainer.add(tab);
-		eventMap.put(module.getModuleId(), tab);
-		modules.put(module.getModuleId(), module);
+//		eventMap.put(module.getModuleId(), tab);
+//		modules.put(module.getModuleId(), module);
 	}
 
 	public boolean switchToModule(final String moduleId) {

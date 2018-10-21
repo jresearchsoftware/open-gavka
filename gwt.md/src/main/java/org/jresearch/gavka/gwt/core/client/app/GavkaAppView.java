@@ -10,7 +10,9 @@ import org.jresearch.commons.gwt.client.mvc.event.Bus;
 import org.jresearch.gavka.gwt.core.client.app.widget.AppPage;
 
 import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.HasWidgets.ForIsWidget;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 
@@ -33,7 +35,7 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 
 	@Override
 	public ForIsWidget getChildContainer(final String viewId) {
-		return page.getChildContainer(viewId);
+		return getRootContainer();
 	}
 
 	@Override
@@ -59,6 +61,7 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 
 	/*
 	 * (non-Javadoc)
+	 *
 	 * @see
 	 * org.jresearch.commons.gwt.client.app.AbstractAppView#showModule(java.lang
 	 * .String)
@@ -71,6 +74,7 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 
 	/*
 	 * (non-Javadoc)
+	 *
 	 * @see
 	 * org.jresearch.commons.gwt.client.app.AbstractAppView#hideModule(java.lang
 	 * .String)
@@ -86,4 +90,10 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 		// do nothing
 	}
 
+	@SuppressWarnings("null")
+	@Override
+	@Nonnull
+	protected HasWidgets.ForIsWidget getRootContainer() {
+		return RootPanel.get();
+	}
 }
