@@ -18,11 +18,12 @@
 						<label>Topic:</label>
 						<g:ListBox ui:field='topic' name='topic' width="30%"/>
 						<label>Key:</label>
-						<g:TextBox ui:field='key' name='key' width="30%"/>
+						<g:TextBox ui:field='key' name='key' width="20%"/>
 						<label>From date:</label>
 						<u:UTCDateBox ui:field='date'/>
 						<label>time:</label>
 						<u:UTCTimeBox ui:field="time"/>
+						<label>(UTC time zone)</label>
 					</g:HTMLPanel>
 					<g:HTMLPanel width="100%" addStyleNames="{style.header}">
 						<label>Key format:</label>
