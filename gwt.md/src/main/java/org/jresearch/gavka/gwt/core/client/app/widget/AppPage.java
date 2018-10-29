@@ -10,11 +10,14 @@ import org.jresearch.commons.gwt.client.mvc.event.module.ModuleEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
+
+import gwt.material.design.client.ui.MaterialPanel;
 
 public class AppPage extends Composite {
 
@@ -38,8 +41,8 @@ public class AppPage extends Composite {
 	private final Map<String, IAppModule> modules = new HashMap<>();
 	private final Map<String, HTMLPanel> eventMap = new HashMap<>();
 
-//	@UiField
-//	MaterialContainer moduleContainer;
+	@UiField
+	MaterialPanel moduleContainer;
 
 	private final Bus bus;
 
@@ -77,8 +80,7 @@ public class AppPage extends Composite {
 	}
 
 	public HasWidgets.ForIsWidget getChildContainer(final String viewId) {
-		return null;
-//		return eventMap.get(viewId);
+		return moduleContainer;
 	}
 
 }

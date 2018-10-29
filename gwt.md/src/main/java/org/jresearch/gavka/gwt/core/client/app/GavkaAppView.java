@@ -35,7 +35,7 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 
 	@Override
 	public ForIsWidget getChildContainer(final String viewId) {
-		return getRootContainer();
+		return page.getChildContainer(viewId);
 	}
 
 	@Override
