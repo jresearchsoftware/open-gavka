@@ -98,6 +98,7 @@ public class MessagePage extends Composite {
 	Button exportBtn;
 
 	private final GwtDeferredTask refreshTask = new GwtDeferredTask(this::refreshOnSearch);
+	@Nonnull
 	private final GavkaMessageRestService srv;
 	@Nonnull
 	private final Bus bus;
@@ -106,7 +107,7 @@ public class MessagePage extends Composite {
 	private final int currentAmount = 100;
 
 	@Inject
-	protected MessagePage(@Nonnull final Binder binder, final GavkaMessageRestService srv, @Nonnull final Bus bus) {
+	protected MessagePage(@Nonnull final Binder binder, @Nonnull final GavkaMessageRestService srv, @Nonnull final Bus bus) {
 		this.srv = srv;
 		this.bus = bus;
 		pages = new Stack<>();
@@ -333,7 +334,7 @@ public class MessagePage extends Composite {
 	}
 
 	public void refresh() {
-		messages.setRowData(0, ImmutableList.<Message> of());
+		messages.setRowData(0, ImmutableList.<Message>of());
 		messages.setVisibleRangeAndClearData(new Range(0, getCurrentAmount()), true);
 	}
 

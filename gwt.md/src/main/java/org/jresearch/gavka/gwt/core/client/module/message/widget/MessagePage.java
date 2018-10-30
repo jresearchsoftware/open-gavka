@@ -1,11 +1,17 @@
 package org.jresearch.gavka.gwt.core.client.module.message.widget;
 
-import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Nonnull;
 
+import org.jresearch.gavka.domain.Message;
+import org.jresearch.gavka.rest.api.MessageParameters;
+
+import com.google.gwt.cell.client.DateCell;
+import com.google.gwt.cell.client.NumberCell;
+import com.google.gwt.i18n.shared.DateTimeFormat;
+import com.google.gwt.i18n.shared.DateTimeFormat.PredefinedFormat;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
@@ -13,10 +19,10 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import gwt.material.design.client.base.MaterialWidget;
-import gwt.material.design.client.data.component.RowComponent;
 import gwt.material.design.client.ui.MaterialContainer;
 import gwt.material.design.client.ui.MaterialLabel;
 import gwt.material.design.client.ui.table.MaterialDataTable;
+import gwt.material.design.client.ui.table.cell.Column;
 import gwt.material.design.client.ui.table.cell.TextColumn;
 import gwt.material.design.jquery.client.api.JQueryElement;
 
@@ -31,64 +37,23 @@ public class MessagePage extends Composite {
 	// @formatter:on
 
 	@UiField
-	MaterialDataTable<Data> table;
+	MaterialDataTable<Message> table;
 
-//	private final MaterialDataPager<Data> pager = new MaterialDataPager<>();
+	// FIXME fake parameters (replace with real form)
+	private final MessageParameters messageParameters = new MessageParameters();
+
+	@Nonnull
+	private final MessageDataSource messageDataSource;
 
 //	@UiField
 //	MaterialCollapsible records;
 
-//	    @UiField
-//	    ProfileOverlay profileOverlay;
-
 	@Inject
-	protected MessagePage(@Nonnull final Binder binder) {
+	protected MessagePage(@Nonnull final Binder binder, @Nonnull final MessageDataSource messageDataSource) {
+		this.messageDataSource = messageDataSource;
 		initWidget(binder.createAndBindUi(this));
-		final List<Data> people = new ArrayList<>();
-		for (int i = 1; i <= 100; i++) {
-			people.add(new Data("Field 1 " + i, "Field 2 " + i));
-		}
 
-		table.setRowData(0, people);
-
-		/*
-		 * Uncomment to make use of listbox page selection instead of integerbox
-		 */
-		/* pager.setPageSelection(new PageListBox()); */
-//		pager.setTable(table);
-//		pager.setDataSource(dataSource);
-//		pager.setLimit(20);
-
-//		table.setVisibleRange(1, 10);
-//		table.add(pager);
-
-		// Now we will add our tables columns.
-		// There are a number of methods that can provide custom column
-		// configurations.
-
-		table.addColumn(new TextColumn<Data>() {
-			@Override
-			public Comparator<? super RowComponent<Data>> sortComparator() {
-				return (o1, o2) -> o1.getData().getField1().compareToIgnoreCase(o2.getData().getField1());
-			}
-
-			@Override
-			public String getValue(final Data object) {
-				return object.getField1();
-			}
-		}, "First");
-
-		table.addColumn(new TextColumn<Data>() {
-			@Override
-			public Comparator<? super RowComponent<Data>> sortComparator() {
-				return (o1, o2) -> o1.getData().getField2().compareToIgnoreCase(o2.getData().getField2());
-			}
-
-			@Override
-			public String getValue(final Data object) {
-				return object.getField2();
-			}
-		}, "Second");
+		initMaterialDataTable();
 
 //		ViewPort.when(Resolution.ALL_MOBILE).then(param1 -> {
 //			table.setHeight("60vh");
@@ -96,7 +61,61 @@ public class MessagePage extends Composite {
 //			table.setHeight("100%");
 //			return false;
 //		});
-//		populateUsers(DataHelper.getAllUsers());
+
+		refresh();
+	}
+
+	private void refresh() {
+		messageDataSource.load(messageParameters, this::updateTableData);
+	}
+
+	private void initMaterialDataTable() {
+		// Key
+		final TextColumn<Message> colKey = new TextColumn<Message>() {
+			@Override
+			public String getValue(final Message object) {
+				return object.getKey();
+			}
+		};
+
+		// Value
+		final TextColumn<Message> colValue = new TextColumn<Message>() {
+			@Override
+			public String getValue(final Message object) {
+				return object.getValue();
+			}
+		};
+
+		// Offset
+		final Column<Message, Number> colOffset = new Column<Message, Number>(new NumberCell()) {
+			@Override
+			public Number getValue(final Message object) {
+				return Long.valueOf(object.getOffset());
+			}
+		};
+
+		// partition
+		final Column<Message, Number> colPartition = new Column<Message, Number>(new NumberCell()) {
+			@Override
+			public Number getValue(final Message object) {
+				return Long.valueOf(object.getPartition());
+			}
+		};
+
+		// timestamp
+		final Column<Message, Date> colTimeStamp = new Column<Message, Date>(new DateCell(DateTimeFormat.getFormat(PredefinedFormat.DATE_TIME_SHORT), com.google.gwt.i18n.client.TimeZone.createTimeZone(0))) {
+			@Override
+			public Date getValue(final Message object) {
+				return new Date(object.getTimestamp());
+			}
+		};
+
+		table.addColumn(colKey, "Key");
+		table.addColumn(colValue, "Value");
+		table.addColumn(colOffset, "Offset");
+		table.addColumn(colPartition, "Partition");
+		table.addColumn(colTimeStamp, "Timestamp");
+
 		table.addRowExpandingHandler(event -> {
 			final JQueryElement section = event.getExpansion().getOverlay();
 			section.css("display", "none");
@@ -129,15 +148,11 @@ public class MessagePage extends Composite {
 //				}
 //			}.schedule(2000);
 		});
+
 	}
 
-//	/**
-//	 * Populate the starred and frequent collapsibles
-//	 *
-//	 * @param allUsers
-//	 */
-//	private void populateUsers(final List<UserDTO> allUsers) {
-//		records.clear();
-//		allUsers.stream().map(CustomerCollapsible::new).forEach(records::add);
-//	}
+	private void updateTableData(final List<Message> msgs) {
+		table.setRowData(0, msgs);
+	}
+
 }
