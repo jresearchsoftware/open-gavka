@@ -48,6 +48,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.ListBox;
@@ -220,8 +221,16 @@ public class MessagePage extends Composite {
 			}
 		};
 
-		// timestamp
-		final Column<Message, Date> colTimeStamp = new Column<Message, Date>(new DateCell(DateTimeFormat.getFormat(PredefinedFormat.DATE_TIME_SHORT), com.google.gwt.i18n.client.TimeZone.createTimeZone(0))) {
+		// timestamp (UTC)
+		final Column<Message, Date> colTimeStampUtc = new Column<Message, Date>(new DateCell(DateTimeFormat.getFormat(PredefinedFormat.DATE_TIME_SHORT), com.google.gwt.i18n.client.TimeZone.createTimeZone(0))) {
+			@Override
+			public Date getValue(final Message object) {
+				return new Date(object.getTimestamp());
+			}
+		};
+
+		// timestamp (Browser)
+		final Column<Message, Date> colTimeStampLocal = new Column<Message, Date>(new DateCell(DateTimeFormat.getFormat(PredefinedFormat.DATE_TIME_SHORT))) {
 			@Override
 			public Date getValue(final Message object) {
 				return new Date(object.getTimestamp());
@@ -236,8 +245,12 @@ public class MessagePage extends Composite {
 		dataGrid.setColumnWidth(colOffset, 10, Unit.PCT);
 		dataGrid.addColumn(colPartition, "Partition");
 		dataGrid.setColumnWidth(colPartition, 10, Unit.PCT);
-		dataGrid.addColumn(colTimeStamp, "Timestamp");
-		dataGrid.setColumnWidth(colTimeStamp, 20, Unit.PCT);
+		dataGrid.addColumn(colTimeStampLocal, "Timestamp (Browser)");
+		dataGrid.setColumnWidth(colTimeStampLocal, 20, Unit.PCT);
+		dataGrid.addColumn(colTimeStampUtc, "Timestamp (UTC)");
+		dataGrid.setColumnWidth(colTimeStampUtc, 20, Unit.PCT);
+
+		dataGrid.setEmptyTableWidget(new HTML("No records"));
 
 		new AsyncDataProvider<Message>() {
 			@Override
