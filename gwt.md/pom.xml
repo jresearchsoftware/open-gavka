@@ -18,13 +18,9 @@
 			<version>1.16.18</version>
 		</dependency>
 		<dependency>
-			<groupId>com.github.gwtmaterialdesign</groupId>
-			<artifactId>gwt-material-table</artifactId>
-			<version>2.1</version>
-		</dependency>
-		<dependency>
-			<groupId>com.github.gwtmaterialdesign</groupId>
-			<artifactId>gwt-material</artifactId>
+			<groupId>org.jresearch.dominokit</groupId>
+			<artifactId>domino-ui</artifactId>
+			<version>1.0.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.tractionsoftware</groupId>
@@ -35,10 +31,6 @@
 					<artifactId>gwt-servlet</artifactId>
 				</exclusion>
 			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.jresearch.commons.gwt</groupId>
-			<artifactId>org.jresearch.commons.gwt.base.model</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
@@ -69,8 +61,14 @@
 			<artifactId>gwt-user</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.jresearch.commons.gwt</groupId>
-			<artifactId>org.jresearch.commons.gwt.base</artifactId>
+			<groupId>org.jresearch.commons.gwt.base</groupId>
+			<artifactId>org.jresearch.commons.gwt.base.gwt</artifactId>
+			<version>1.0.197-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jresearch.commons.gwt.base</groupId>
+			<artifactId>org.jresearch.commons.gwt.base.shared</artifactId>
+			<version>1.0.197-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>io.github.gwtplus.gin</groupId>
@@ -113,7 +111,7 @@
 				<groupId>net.ltgt.gwt.maven</groupId>
 				<artifactId>gwt-maven-plugin</artifactId>
 				<configuration>
-					<moduleName>org.jresearch.gavka.gwt.core.module</moduleName>
+					<moduleName>org.jresearch.gavka.gwt.core.md</moduleName>
 					<moduleShortName>gavka</moduleShortName>
 					<optimize>9</optimize>
 					<compilerArgs>

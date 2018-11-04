@@ -3,6 +3,7 @@ package org.jresearch.gavka.gwt.core.client.app;
 import java.util.List;
 
 import javax.annotation.Nonnull;
+import javax.inject.Inject;
 
 import org.jresearch.commons.gwt.client.app.AbstractAppView;
 import org.jresearch.commons.gwt.client.app.IAppModule;
@@ -12,7 +13,6 @@ import org.jresearch.gavka.gwt.core.client.app.widget.AppPage;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.user.client.ui.HasWidgets.ForIsWidget;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.inject.Inject;
 
 public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 
@@ -59,6 +59,7 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see
 	 * org.jresearch.commons.gwt.client.app.AbstractAppView#showModule(java.lang
 	 * .String)
@@ -71,6 +72,7 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see
 	 * org.jresearch.commons.gwt.client.app.AbstractAppView#hideModule(java.lang
 	 * .String)

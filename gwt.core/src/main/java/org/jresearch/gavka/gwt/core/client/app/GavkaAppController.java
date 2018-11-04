@@ -3,6 +3,7 @@ package org.jresearch.gavka.gwt.core.client.app;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
+import javax.inject.Inject;
 
 import org.jresearch.commons.gwt.client.app.AbstractAppController;
 import org.jresearch.commons.gwt.client.app.IAppModule;
@@ -13,7 +14,6 @@ import org.jresearch.commons.gwt.client.service.AppRestService;
 import org.jresearch.commons.gwt.client.service.LocalizationRestService;
 
 import com.google.gwt.inject.client.AsyncProvider;
-import com.google.inject.Inject;
 
 public class GavkaAppController extends AbstractAppController<GavkaAppView> {
 

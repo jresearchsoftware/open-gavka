@@ -1,14 +1,14 @@
 package org.jresearch.gavka.gwt.core.client.module.message;
 
 import javax.annotation.Nonnull;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.jresearch.commons.gwt.client.mvc.AbstractModuleController;
 import org.jresearch.commons.gwt.client.mvc.event.Bus;
 import org.jresearch.gavka.gwt.core.client.app.GavkaAppController;
 
 import com.google.gwt.inject.client.AsyncProvider;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
 @Singleton
 public class MessageController extends AbstractModuleController<MessageView> {

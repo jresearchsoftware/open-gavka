@@ -3,10 +3,13 @@
 <module>
 	<inherits name="com.google.gwt.user.User"/>
 	<inherits name='com.google.gwt.user.theme.standard.Standard'/>
+	<inherits name="org.dominokit.domino.ui.DominoUI"/>
 	<inherits name="org.fusesource.restygwt.RestyGWT"/>
 	<inherits name="com.github.nmorel.gwtjackson.GwtJackson" />
-    <inherits name="org.jresearch.commons.gwt.jrsBase"/>
     <inherits name="org.jresearch.gavka.domain.module"/>
+    <inherits name="org.jresearch.commons.gwt.module"/>
+    <inherits name="org.jresearch.commons.gwt.shared"/>
+    <inherits name="org.jresearch.gavka.rest.api.module"/>
 	<!-- Time Field -->
 	<inherits name='com.tractionsoftware.gwt.user.UTCDateTime'/>
 	<set-configuration-property name="CssResource.conversionMode" value="strict"/>

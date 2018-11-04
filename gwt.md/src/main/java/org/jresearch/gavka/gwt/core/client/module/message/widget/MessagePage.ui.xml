@@ -1,7 +1,0 @@
-<!-- --><!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
-<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:m="urn:import:gwt.material.design.client.ui">
-	<!-- Container -->
-	<m:MaterialContainer>
-		<m:table.MaterialDataTable ui:field="table" shadow="1" rowHeight="60" height="calc(100vh - 131px)" useStickyHeader="true" useCategories="false" useRowExpansion="true" selectionType="SINGLE" />
-	</m:MaterialContainer>
-</ui:UiBinder>

@@ -1,9 +1,9 @@
 package org.jresearch.gavka.gwt.core.client.module.message;
 
-import org.jresearch.commons.gwt.client.app.GeneralModule;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
+import org.jresearch.commons.gwt.client.app.GeneralModule;
 
 @Singleton
 public class MessageModule extends GeneralModule {
