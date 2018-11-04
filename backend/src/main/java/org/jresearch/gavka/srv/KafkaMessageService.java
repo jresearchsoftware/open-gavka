@@ -47,7 +47,7 @@ public class KafkaMessageService extends AbstractMessageService {
     @Value("${bootstrap.servers}")
  	private String serverUrl;
 
-    @Value("${schema.registry.url}")
+    @Value("${schema.registry.url:#{null}}")
  	private String schemaRegistryUrl;
     
 	public KafkaMessageService() {}
@@ -66,7 +66,9 @@ public class KafkaMessageService extends AbstractMessageService {
 	public MessagePortion getMessages(final PagingParameters pagingParameters, final MessageFilter filter) {
 		final Properties props = new Properties();
 		props.put("bootstrap.servers", serverUrl);
-		props.put("schema.registry.url", schemaRegistryUrl);
+		if(schemaRegistryUrl!=null) {
+			props.put("schema.registry.url", schemaRegistryUrl);
+		}
 		props.put("key.deserializer", getKeyDeserializer(filter.getKeyFormat()));
 		props.put("value.deserializer", getMessageDeserializer(filter.getMessageFormat()));
 		props.put("client.id", "gavka-tool");
@@ -150,7 +152,7 @@ public class KafkaMessageService extends AbstractMessageService {
 		} else {
 			// position to time offsets
 			final Map<TopicPartition, Long> query = new HashMap<>();
-			final long out = Date.from(filter.getFrom().atZone(ZoneId.systemDefault()).toInstant()).getTime();
+			final long out = Date.from(filter.getFrom().atZone(ZoneId.of("UTC")).toInstant()).getTime();
 			for (final TopicPartition topicPartition : partitions.values()) {
 				query.put(topicPartition, out);
 			}
