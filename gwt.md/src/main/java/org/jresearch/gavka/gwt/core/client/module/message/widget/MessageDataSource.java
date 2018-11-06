@@ -29,57 +29,84 @@ public class MessageDataSource {
 	private final int currentAmount = 100;
 	@Nonnull
 	private final Stack<PagingParameters> pages;
+	private boolean reload = false;
+	private boolean loading = false;
+	private MessageParameters currentPrameters = new MessageParameters();
 
 	@Inject
 	public MessageDataSource(@Nonnull final GavkaMessageRestService srv, @Nonnull final Bus bus) {
 		this.srv = srv;
 		this.bus = bus;
 		pages = new Stack<>();
-		reset();
+		initPages();
 	}
 
 	public void load(final MessageParameters messageParameters, final MessageDataLoadCallback callback) {
-		final RequestMessagesParameters parameters = new RequestMessagesParameters();
-		parameters.setMessageParameters(messageParameters);
-		parameters.setPagingParameters(pages.peek());
-		REST.withCallback(new AbstractMethodCallback<MessagePortion>(bus) {
-			@Override
-			public void onSuccess(final Method method, final MessagePortion result) {
-				if (result != null) {
-					final PagingParameters pagingParameters = new PagingParameters();
-					pagingParameters.setAmount(currentAmount);
-					pagingParameters.setPartitionOffsets(result.getPartitionOffsets());
-					pages.push(pagingParameters);
-					callback.onLoad(result.getMessages());
-				} else {
-					callback.onLoad(ImmutableList.of());
+		if (!loading) {
+			reload = false;
+			loading = true;
+			if (!messageParameters.equals(currentPrameters)) {
+				initPages();
+				currentPrameters = messageParameters;
+			}
+			final RequestMessagesParameters parameters = new RequestMessagesParameters();
+			parameters.setMessageParameters(messageParameters);
+			parameters.setPagingParameters(pages.peek());
+			REST.withCallback(new AbstractMethodCallback<MessagePortion>(bus) {
+				@Override
+				public void onSuccess(final Method method, final MessagePortion result) {
+					loading = false;
+					if (result != null) {
+						final PagingParameters pagingParameters = new PagingParameters();
+						pagingParameters.setAmount(currentAmount);
+						pagingParameters.setPartitionOffsets(result.getPartitionOffsets());
+						pages.push(pagingParameters);
+						callback.onLoad(result.getMessages());
+					} else {
+						callback.onLoad(ImmutableList.of());
+					}
 				}
-			}
 
-			@Override
-			public void onFailure(final Method method, final Throwable caught) {
-				callback.onLoad(ImmutableList.of());
-				super.onFailure(method, caught);
-			}
-		}).call(srv).get(parameters);
+				@Override
+				public void onFailure(final Method method, final Throwable caught) {
+					loading = false;
+					callback.onLoad(ImmutableList.of());
+					super.onFailure(method, caught);
+				}
+			}).call(srv).get(parameters);
+		}
 	}
 
 	public boolean isPreviousePartExist() {
 		return pages.size() > 2;
 	}
 
-	public void reset() {
+	private void initPages() {
 		pages.clear();
 		pages.add(new PagingParameters(currentAmount, ImmutableList.of()));
 	}
 
+	public void reset() {
+		if (pages.size() != 1) {
+			reload = true;
+			initPages();
+		}
+	}
+
 	public void next() {
+		reload = true;
 		pages.peek().setAmount(currentAmount);
 	}
 
 	public void prev() {
+		reload = true;
 		pages.pop();
 		pages.pop();
+	}
+
+	/** Check the parameters and return <code>true</code> if data need to reload */
+	public boolean isReloadNeed(@Nonnull final MessageParameters parameters) {
+		return reload || !parameters.equals(currentPrameters);
 	}
 
 }
