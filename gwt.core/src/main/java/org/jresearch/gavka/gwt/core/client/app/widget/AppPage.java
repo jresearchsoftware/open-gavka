@@ -3,6 +3,8 @@ package org.jresearch.gavka.gwt.core.client.app.widget;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.jresearch.commons.gwt.client.app.IAppModule;
 import org.jresearch.commons.gwt.client.mvc.event.Bus;
 import org.jresearch.commons.gwt.client.mvc.event.module.ModuleEvent;
@@ -20,7 +22,6 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.inject.Inject;
 
 public class AppPage extends Composite {
 
@@ -38,7 +39,8 @@ public class AppPage extends Composite {
 		}
 	}
 
-	interface AppPageUiBinder extends UiBinder<Widget, AppPage> {/* nothing */}
+	interface AppPageUiBinder extends UiBinder<Widget, AppPage> {
+		/* nothing */}
 
 	private final Map<String, IAppModule> modules = new HashMap<>();
 	private final Map<String, HTMLPanel> eventMap = new HashMap<>();

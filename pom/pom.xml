@@ -20,6 +20,7 @@
 	<modules>
 		<module>../api.app</module>
 		<module>../gwt.app</module>
+		<module>../md.app</module>
 		<module>../gwt.core</module>
 		<module>../backend</module>
 		<module>../domain</module>
@@ -28,6 +29,7 @@
 	<properties>
 		<!-- Used by the project -->
 		<gwtCommons.version>1.0.189</gwtCommons.version>
+		<gwtBase.version>1.0.197</gwtBase.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
@@ -53,8 +55,21 @@
 				<scope>import</scope>
 			</dependency>
 			<dependency>
+				<groupId>org.jresearch.commons.gwt.base</groupId>
+				<artifactId>org.jresearch.commons.gwt.base.bom</artifactId>
+				<version>${gwtBase.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
 				<groupId>org.jresearch.gavka</groupId>
 				<artifactId>org.jresearch.gavka.gwt.core</artifactId>
+				<type>war</type>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jresearch.gavka</groupId>
+				<artifactId>org.jresearch.gavka.gwt.md</artifactId>
 				<type>war</type>
 				<version>${project.version}</version>
 			</dependency>

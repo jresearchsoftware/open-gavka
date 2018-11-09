@@ -24,9 +24,10 @@
 			<groupId>org.jresearch.gavka</groupId>
 			<artifactId>org.jresearch.gavka.domain</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.jresearch.commons.gwt</groupId>
-			<artifactId>org.jresearch.commons.gwt.base.model</artifactId>
+		 <dependency>
+			<groupId>org.jresearch.commons.gwt.base</groupId>
+			<artifactId>org.jresearch.commons.gwt.base.shared</artifactId>
+			<version>1.0.197-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.gwt</groupId>
@@ -43,8 +44,7 @@
 				<groupId>net.ltgt.gwt.maven</groupId>
 				<artifactId>gwt-maven-plugin</artifactId>
 				<configuration>
-					<moduleName>org.jresearch.gavka.rest.api</moduleName>
-					<moduleShortName>module</moduleShortName>
+					<moduleName>org.jresearch.gavka.rest.api.module</moduleName>
 				</configuration>
 			</plugin>
 		</plugins>

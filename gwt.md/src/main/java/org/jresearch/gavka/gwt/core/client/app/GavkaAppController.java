@@ -34,4 +34,5 @@ public class GavkaAppController extends AbstractAppController<GavkaAppView> {
 			bus.fire(new ModuleEvent(activeModuleId));
 		}
 	}
+
 }

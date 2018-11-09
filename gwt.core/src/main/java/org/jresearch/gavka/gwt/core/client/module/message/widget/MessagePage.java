@@ -7,6 +7,8 @@ import java.util.Optional;
 import java.util.Stack;
 
 import javax.annotation.Nonnull;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.fusesource.restygwt.client.Method;
 import org.fusesource.restygwt.client.REST;
@@ -56,8 +58,6 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.Range;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import com.tractionsoftware.gwt.user.client.ui.UTCDateBox;
 import com.tractionsoftware.gwt.user.client.ui.UTCTimeBox;
 
@@ -99,6 +99,7 @@ public class MessagePage extends Composite {
 	Button exportBtn;
 
 	private final GwtDeferredTask refreshTask = new GwtDeferredTask(this::refreshOnSearch);
+	@Nonnull
 	private final GavkaMessageRestService srv;
 	@Nonnull
 	private final Bus bus;
@@ -107,7 +108,7 @@ public class MessagePage extends Composite {
 	private final int currentAmount = 100;
 
 	@Inject
-	protected MessagePage(@Nonnull final Binder binder, final GavkaMessageRestService srv, @Nonnull final Bus bus) {
+	protected MessagePage(@Nonnull final Binder binder, @Nonnull final GavkaMessageRestService srv, @Nonnull final Bus bus) {
 		this.srv = srv;
 		this.bus = bus;
 		pages = new Stack<>();
