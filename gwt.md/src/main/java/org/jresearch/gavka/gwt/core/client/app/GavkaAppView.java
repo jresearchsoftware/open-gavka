@@ -101,7 +101,9 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 
 	@Override
 	protected void updateAppTitle(final SafeHtml viewTitle) {
-		layout.setTitle(viewTitle.asString());
+		if (viewTitle != null) {
+			layout.setTitle(viewTitle.asString());
+		}
 	}
 
 	@Override

@@ -1,7 +1,9 @@
 package org.jresearch.gavka.gwt.core.client.module.message.widget;
 
 import static org.jboss.gwt.elemento.core.Elements.*;
+import static org.jboss.gwt.elemento.core.InputType.*;
 
+import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
@@ -14,8 +16,10 @@ import org.dominokit.domino.ui.datatable.events.SearchClearedEvent;
 import org.dominokit.domino.ui.datatable.events.TableEvent;
 import org.dominokit.domino.ui.datatable.plugins.DataTablePlugin;
 import org.dominokit.domino.ui.datepicker.DateBox;
+import org.dominokit.domino.ui.datepicker.DatePicker.DateSelectionHandler;
 import org.dominokit.domino.ui.forms.FormElement;
 import org.dominokit.domino.ui.forms.Select;
+import org.dominokit.domino.ui.forms.Select.SelectionHandler;
 import org.dominokit.domino.ui.forms.SelectOption;
 import org.dominokit.domino.ui.forms.TextBox;
 import org.dominokit.domino.ui.forms.ValueBox;
@@ -29,10 +33,15 @@ import org.dominokit.domino.ui.style.Style;
 import org.dominokit.domino.ui.timepicker.ClockStyle;
 import org.dominokit.domino.ui.timepicker.TimeBox;
 import org.dominokit.domino.ui.timepicker.TimeBox.PickerStyle;
+import org.dominokit.domino.ui.timepicker.TimePicker;
+import org.dominokit.domino.ui.timepicker.TimePicker.TimeSelectionHandler;
+import org.dominokit.domino.ui.utils.HasChangeHandlers.ChangeHandler;
 import org.fusesource.restygwt.client.REST;
+import org.gwtproject.i18n.shared.DateTimeFormatInfo;
 import org.gwtproject.timer.client.Timer;
 import org.jboss.gwt.elemento.core.EventType;
 import org.jboss.gwt.elemento.core.builder.HtmlContentBuilder;
+import org.jboss.gwt.elemento.core.builder.InputBuilder;
 import org.jresearch.commons.gwt.client.mvc.GwtMethodCallback;
 import org.jresearch.commons.gwt.client.mvc.event.Bus;
 import org.jresearch.commons.gwt.client.tool.Dates;
@@ -47,12 +56,13 @@ import org.jresearch.gavka.gwt.core.client.module.message.srv.GavkaMessageRestSe
 import org.jresearch.gavka.rest.api.MessageParameters;
 
 import com.google.gwt.dom.client.Style.Cursor;
-import com.google.gwt.user.client.TakesValue;
 import com.google.inject.Inject;
 
 import elemental2.dom.Event;
 import elemental2.dom.EventListener;
 import elemental2.dom.HTMLDivElement;
+import elemental2.dom.HTMLFormElement;
+import elemental2.dom.HTMLInputElement;
 
 public class FilterBarPlugin implements DataTablePlugin<Message> {
 
@@ -78,9 +88,26 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 	private boolean autoSearch = true;
 	private final Timer autoSearchTimer;
 	private final EventListener autoSearchEventListener = this::autoSearch;
+	private final DateSelectionHandler dateHandler = this::autoSearch;
+	private final TimeSelectionHandler timeHandler = this::autoSearch;
+	private final ChangeHandler<String> stringHandler = this::autoSearch;
+	private final SelectionHandler<String> stringSelHandler = this::autoSearch;
+	private final SelectionHandler<KeyFormat> keySelHandler = this::autoSearch;
+	private final SelectionHandler<MessageFormat> msgSelHandler = this::autoSearch;
+
 	@Nonnull
 	private Button searchBtn;
 
+	private HTMLInputElement fromBox;
+
+	@Nonnull
+	private HtmlContentBuilder<HTMLFormElement> exportForm;
+//	private boolean notStarted = true;
+//	private double start;
+//	@Nonnull
+//	private ProgressBar bar;
+
+	@SuppressWarnings("null")
 	@Inject
 	public FilterBarPlugin(@Nonnull final GavkaMessageRestService srv, @Nonnull final Bus bus) {
 		REST.withCallback(new GwtMethodCallback<>(bus, this::addTopics)).call(srv).topics();
@@ -105,9 +132,11 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 
 		topicBox = Select.<String>create("Topic")
 				.setRightAddon(clearIconTopic)
+				.setName("topic")
 				.styler(FilterBarPlugin::zerroBottomMargin);
 		keyBox = TextBox.create("Key")
 				.setRightAddon(clearIconKey)
+				.setName("key")
 				.styler(FilterBarPlugin::zerroBottomMargin);
 		dateBox = DateBox.create("Date (UTC)")
 				.setRightAddon(clearIconDate)
@@ -133,9 +162,11 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 
 		keyFormatBox = Select.<KeyFormat>create("Key format")
 				.setRightAddon(clearIconKeyFormat)
+				.setName("keyFormat")
 				.styler(FilterBarPlugin::zerroBottomMargin);
 		messageFormatBox = Select.<MessageFormat>create("Message format")
 				.setRightAddon(clearIconMassageFormat)
+				.setName("messageFormat")
 				.styler(FilterBarPlugin::zerroBottomMargin);
 
 		EnumSet.allOf(KeyFormat.class).stream().map(e -> SelectOption.create(e, e.name())).forEach(keyFormatBox::appendChild);
@@ -155,16 +186,37 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 		final Row_12 row2 = Row.create()
 				.addColumn(Column.span3().appendChild(keyFormatBox))
 				.addColumn(Column.span3().appendChild(messageFormatBox))
+//				.addColumn(Column.span3().appendChild(Progress.create()
+//						.appendChild(bar = ProgressBar.create(autoSearchDelay))
+//						.styler(FilterBarPlugin::progressStyle)))
 				.addColumn(Column.span1().offset(10).appendChild((searchBtn = Button.create("Search")).disable().addClickListener(this::doSearch)))
 				.addColumn(Column.span1().offset(11).appendChild(clearFiltersIcon))
 				.styler(FilterBarPlugin::zerroBottomMargin);
 
-		div.add(row1).add(row2);
+		// export form
+		div.add((exportForm = createForm()).add(fromBox).add(row1).add(row2));
 
 		setAutoSearch(true);
 	}
 
+	private HtmlContentBuilder<HTMLFormElement> createForm() {
+		final HtmlContentBuilder<HTMLFormElement> form = form();
+		final HTMLFormElement formEl = form.asElement();
+		formEl.action = "/api/rest/messages/export";
+		formEl.method = "POST";
+		final InputBuilder<HTMLInputElement> from = input(hidden);
+		fromBox = from.asElement();
+		fromBox.name = "from";
+		return form.add(from);
+	}
+
+//	private static void progressStyle(final Style style) {
+//		style.setMarginTop(20 + Unit.PX.getType());
+//		style.setHeight(2 + Unit.PX.getType());
+//	}
+
 	private void doSearch(final Event evt) {
+		evt.preventDefault();
 		doSearch();
 	}
 
@@ -205,10 +257,35 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 		doSearch();
 	}
 
-	private void autoSearch(final Event evt) {
+	private void autoSearch(final Date date, final DateTimeFormatInfo dateTimeFormatInfo) {
+		autoSearch(null);
+	}
+
+	private void autoSearch(final Date time, final DateTimeFormatInfo dateTimeFormatInfo, final TimePicker picker) {
+		autoSearch(null);
+	}
+
+	private void autoSearch(final Object evt) {
+//		notStarted = true;
+//		DomGlobal.requestAnimationFrame(this::refreshAutoSearch);
 		autoSearchTimer.cancel();
 		autoSearchTimer.schedule(autoSearchDelay);
 	}
+
+	// private void refreshAutoSearch(final double t) {
+//		if (notStarted) {
+//			notStarted = false;
+//			start = t;
+//		}
+//		final double diff = t - start;
+//		if (diff < autoSearchDelay) {
+//			DomGlobal.requestAnimationFrame(this::refreshAutoSearch);
+//		} else {
+//			notStarted = true;
+//		}
+//		bar.setValue(diff);
+//
+//	}
 
 	public boolean isAutoSearch() {
 		return autoSearch;
@@ -219,19 +296,27 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 
 		if (autoSearch) {
 			keyBox.addEventListener(EventType.input.getName(), autoSearchEventListener);
-			dateBox.addEventListener(EventType.input.getName(), autoSearchEventListener);
-			timeBox.addEventListener(EventType.input.getName(), autoSearchEventListener);
+			keyBox.addChangeHandler(stringHandler);
+			dateBox.getDatePicker().addDateSelectionHandler(dateHandler);
+			timeBox.getTimePicker().addTimeSelectionHandler(timeHandler);
 			messageFormatBox.addEventListener(EventType.input.getName(), autoSearchEventListener);
+			messageFormatBox.addSelectionHandler(msgSelHandler);
 			keyFormatBox.addEventListener(EventType.input.getName(), autoSearchEventListener);
+			keyFormatBox.addSelectionHandler(keySelHandler);
 			topicBox.addEventListener(EventType.input.getName(), autoSearchEventListener);
+			topicBox.addSelectionHandler(stringSelHandler);
 		} else {
 			autoSearchTimer.cancel();
 			keyBox.removeEventListener(EventType.input.getName(), autoSearchEventListener);
-			dateBox.removeEventListener(EventType.input.getName(), autoSearchEventListener);
-			timeBox.removeEventListener(EventType.input.getName(), autoSearchEventListener);
+			keyBox.removeChangeHandler(stringHandler);
+			dateBox.getDatePicker().removeDateSelectionHandler(dateHandler);
+			timeBox.getTimePicker().removeTimeSelectionHandler(timeHandler);
 			messageFormatBox.removeEventListener(EventType.input.getName(), autoSearchEventListener);
+			messageFormatBox.removeSelectionHandler(msgSelHandler);
 			keyFormatBox.removeEventListener(EventType.input.getName(), autoSearchEventListener);
+			keyFormatBox.removeSelectionHandler(keySelHandler);
 			topicBox.removeEventListener(EventType.input.getName(), autoSearchEventListener);
+			topicBox.removeSelectionHandler(stringSelHandler);
 		}
 
 		return this;
@@ -288,34 +373,38 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 	@SuppressWarnings("null")
 	@Nonnull
 	private Optional<GwtLocalDateTimeModel> getFrom() {
-		final GwtLocalDateModel gwtDate = Optional.of(dateBox)
-				.map(TakesValue::getValue)
-				.map(Dates::toLocalDate)
-				.orElse(null);
-		final GwtLocalTimeModel gwtTime = Optional.of(timeBox)
-				.map(TakesValue::getValue)
-				.map(Dates::toLocalTime)
-				.orElseGet(GwtLocalTimeModel::new);
-		return Optional.ofNullable(gwtDate == null ? null : new GwtLocalDateTimeModel(gwtDate, gwtTime));
+		final Date dateVal = dateBox.getValue();
+		if (dateVal == null) {
+			return Optional.empty();
+		}
+		final GwtLocalDateModel gwtDate = Dates.toLocalDate(dateVal);
+		final Date timeVal = timeBox.getValue();
+		final GwtLocalTimeModel gwtTime = timeVal != null ? Dates.toLocalTime(timeVal) : new GwtLocalTimeModel();
+		return Optional.of(new GwtLocalDateTimeModel(gwtDate, gwtTime));
 	}
 
 	private String getKeyValue() {
-		return Optional.of(keyBox)
-				.map(TakesValue::getValue)
-				.orElse(Uis.NOTHING);
+		final String value = keyBox.getValue();
+		return value == null ? Uis.NOTHING : value;
 	}
 
 	private MessageFormat getMessageFormat() {
-		return Optional.of(messageFormatBox)
-				.map(Select::getValue)
-				.orElse(MessageFormat.values()[0]);
+		final MessageFormat value = messageFormatBox.getValue();
+		return value == null ? MessageFormat.values()[0] : value;
 	}
 
 	private KeyFormat getKeyFormat() {
-		return Optional
-				.of(keyFormatBox)
-				.map(Select::getValue)
-				.orElse(KeyFormat.values()[0]);
+		final KeyFormat value = keyFormatBox.getValue();
+		return value == null ? KeyFormat.values()[0] : value;
+	}
+
+	public void export() {
+		getFrom().map(Dates::printDateTime).ifPresent(this::setFrom);
+		exportForm.asElement().submit();
+	}
+
+	private void setFrom(final String from) {
+		fromBox.value = from;
 	}
 
 }

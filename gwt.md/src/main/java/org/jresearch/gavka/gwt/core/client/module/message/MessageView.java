@@ -108,7 +108,8 @@ public class MessageView extends AbstractView<MessageController> implements Tabl
 								.appendChild(Button.create("Next")
 										.addClickListener(this::onNextBtn)))
 						.appendChild(Column.span1().offset(31)
-								.appendChild(Button.create("Export"))))
+								.appendChild(Button.create("Export")
+										.addClickListener(this::onExportBtn))))
 				.appendChild(table.styler(s -> s.setMarginBottom(1 + Unit.EM.getType())))
 				.appendChild(Row.of32Colmns()
 						.appendChild(Column.span1()
@@ -119,8 +120,13 @@ public class MessageView extends AbstractView<MessageController> implements Tabl
 								.appendChild(Button.create("Next")
 										.addClickListener(this::onNextBtn)))
 						.appendChild(Column.span1().offset(31)
-								.appendChild(Button.create("Export"))));
+								.appendChild(Button.create("Export")
+										.addClickListener(this::onExportBtn))));
 		table.addTableEventListner(SearchEvent.SEARCH_EVENT, this);
+	}
+
+	private void onExportBtn(@SuppressWarnings("unused") final Event evt) {
+		filter.export();
 	}
 
 	private void onNextBtn(@SuppressWarnings("unused") final Event evt) {
@@ -168,8 +174,7 @@ public class MessageView extends AbstractView<MessageController> implements Tabl
 	private static TableConfig<Message> createBasicTableConfig() {
 		final TableConfig<Message> tableConfig = new TableConfig<>();
 		tableConfig
-				.setFixed(true)
-				.setFixedBodyHeight("calc(100vh - 460px)")
+//				.setFixedBodyHeight("calc(100vh - 460px)")
 				.addColumn(ColumnConfig.<Message>create(KEY.name(), "Key")
 						.setWidth(30 + Unit.PCT.getType())
 						.setCellRenderer(cell -> renderText(cell, Message::getKey)))
