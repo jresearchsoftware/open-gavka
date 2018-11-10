@@ -26,7 +26,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.jresearch.dominokit</groupId>
-			<artifactId>domino-ui</artifactId><version>1.0.6-SNAPSHOT</version>
+			<artifactId>domino-ui</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.tractionsoftware</groupId>
@@ -89,7 +89,7 @@
 		<dependency>
 			<groupId>org.jresearch.gwtproject.i18n</groupId>
 			<artifactId>gwt-cldr</artifactId>
-			
+
 		</dependency>
 	</dependencies>
 	<build>

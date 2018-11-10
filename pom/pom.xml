@@ -31,8 +31,8 @@
 		<!-- Used by the project -->
 		<gwtCommons.version>1.0.189</gwtCommons.version>
 		<gwtBase.version>1.0.197</gwtBase.version>
-		<domino.version>1.0.6-SNAPSHOT</domino.version>
-		<gwtCldr.version>1.0.4-SNAPSHOT</gwtCldr.version>
+		<domino.version>1.0.7-SNAPSHOT</domino.version>
+		<gwtCldr.version>1.0.5-SNAPSHOT</gwtCldr.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
