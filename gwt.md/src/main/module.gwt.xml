@@ -10,8 +10,7 @@
     <inherits name="org.jresearch.commons.gwt.module"/>
     <inherits name="org.jresearch.commons.gwt.shared"/>
     <inherits name="org.jresearch.gavka.rest.api.module"/>
-	<!-- Time Field -->
-	<inherits name='com.tractionsoftware.gwt.user.UTCDateTime'/>
+	<inherits name='org.gwtproject.i18n.DateTimeFormat'/>
 	<set-configuration-property name="CssResource.conversionMode" value="strict"/>
 	<set-property name="restygwt.encodeDecode.useGwtJackson" value="true" />
 	<entry-point class="org.jresearch.gavka.gwt.core.client.GavkaAppEntryPoint"/>
