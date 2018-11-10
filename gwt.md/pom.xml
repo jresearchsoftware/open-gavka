@@ -13,6 +13,14 @@
 	<packaging>gwt-app</packaging>
 	<dependencies>
 		<dependency>
+			<groupId>com.google.gwt</groupId>
+			<artifactId>gwt-user</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.google.gwt</groupId>
+			<artifactId>gwt-dev</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 		</dependency>
@@ -55,10 +63,6 @@
 			<artifactId>javax.ws.rs-api</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.google.gwt</groupId>
-			<artifactId>gwt-user</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>org.jresearch.commons.gwt.base</groupId>
 			<artifactId>org.jresearch.commons.gwt.base.gwt</artifactId>
 		</dependency>
@@ -81,14 +85,6 @@
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava-gwt</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.google.gwt</groupId>
-			<artifactId>gwt-user</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.google.gwt</groupId>
-			<artifactId>gwt-dev</artifactId>
 		</dependency>
 	</dependencies>
 	<build>
