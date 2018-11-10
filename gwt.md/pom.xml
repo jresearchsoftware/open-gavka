@@ -86,6 +86,11 @@
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava-gwt</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.jresearch.gwtproject.i18n</groupId>
+			<artifactId>gwt-cldr</artifactId>
+			
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
