@@ -21,22 +21,28 @@
 			<artifactId>gwt-dev</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>com.google.elemental2</groupId>
+			<artifactId>elemental2-dom</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>javax.inject</groupId>
+			<artifactId>javax.inject</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.gwt.elemento</groupId>
+			<artifactId>elemento-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.jresearch.gwtproject.timer</groupId>
+			<artifactId>gwt-timer</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.jresearch.dominokit</groupId>
 			<artifactId>domino-ui</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.tractionsoftware</groupId>
-			<artifactId>gwt-traction</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>com.google.gwt</groupId>
-					<artifactId>gwt-servlet</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
@@ -89,7 +95,6 @@
 		<dependency>
 			<groupId>org.jresearch.gwtproject.i18n</groupId>
 			<artifactId>gwt-cldr</artifactId>
-
 		</dependency>
 	</dependencies>
 	<build>

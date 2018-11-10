@@ -33,9 +33,15 @@
 		<gwtBase.version>1.0.197</gwtBase.version>
 		<domino.version>1.0.7-SNAPSHOT</domino.version>
 		<gwtCldr.version>1.0.5-SNAPSHOT</gwtCldr.version>
+		<gwtTimer.version>1.4.2-SNAPSHOT</gwtTimer.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
+			<dependency>
+				<groupId>org.jresearch.gwtproject.timer</groupId>
+				<artifactId>gwt-timer</artifactId>
+				<version>${gwtTimer.version}</version>
+			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-framework-bom</artifactId>
