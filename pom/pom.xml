@@ -21,6 +21,7 @@
 		<module>../api.app</module>
 		<module>../gwt.app</module>
 		<module>../md.app</module>
+		<module>../gwt.md</module>
 		<module>../gwt.core</module>
 		<module>../backend</module>
 		<module>../domain</module>
@@ -30,6 +31,7 @@
 		<!-- Used by the project -->
 		<gwtCommons.version>1.0.189</gwtCommons.version>
 		<gwtBase.version>1.0.197</gwtBase.version>
+		<domino.version>1.0.6-SNAPSHOT</domino.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
@@ -60,6 +62,11 @@
 				<version>${gwtBase.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.jresearch.dominokit</groupId>
+				<artifactId>domino-ui</artifactId>
+				<version>${domino.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jresearch.gavka</groupId>
