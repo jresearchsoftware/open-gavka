@@ -18,6 +18,7 @@
 		<tag>HEAD</tag>
 	</scm>
 	<modules>
+		<module>../api.boot</module>
 		<module>../api.app</module>
 		<module>../gwt.app</module>
 		<module>../md.app</module>
@@ -31,7 +32,7 @@
 		<!-- Used by the project -->
 		<gwtCommons.version>1.0.189</gwtCommons.version>
 		<gwtBase.version>1.0.197</gwtBase.version>
-		<domino.version>1.0.7-SNAPSHOT</domino.version>
+		<domino.version>1.0.9-SNAPSHOT</domino.version>
 		<gwtCldr.version>1.0.5-SNAPSHOT</gwtCldr.version>
 		<gwtTimer.version>1.4.2-SNAPSHOT</gwtTimer.version>
 	</properties>
@@ -41,20 +42,6 @@
 				<groupId>org.jresearch.gwtproject.timer</groupId>
 				<artifactId>gwt-timer</artifactId>
 				<version>${gwtTimer.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-framework-bom</artifactId>
-				<version>${spring.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-			<dependency>
-				<groupId>com.google.gwt</groupId>
-				<artifactId>gwt</artifactId>
-				<version>${gwt.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.jresearch.commons.gwt</groupId>
@@ -109,12 +96,4 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>flatten-maven-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
 </project>

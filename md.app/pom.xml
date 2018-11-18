@@ -8,7 +8,7 @@
 		<relativePath>../pom/pom.xml</relativePath>
 	</parent>
 	<artifactId>org.jresearch.gavka.md.app</artifactId>
-	<name>JRS kafka UI: Apache Kafka admin application - GWT application to test the GWT core part</name>
+	<name>JRS kafka UI: Apache Kafka admin application - MD application</name>
 	<packaging>war</packaging>
 	<url>https://bitbucket.org/foal/open-gavka</url>
 	<dependencies>
