@@ -22,6 +22,7 @@
 		<module>../api.app</module>
 		<module>../gwt.app</module>
 		<module>../md.app</module>
+		<module>../md.docker</module>
 		<module>../gwt.md</module>
 		<module>../gwt.core</module>
 		<module>../backend</module>

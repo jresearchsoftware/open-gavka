@@ -10,7 +10,6 @@
 	<artifactId>org.jresearch.gavka.api.boot</artifactId>
 	<name>JRS kafka UI: Apache Kafka admin application - boot application</name>
 	<url>https://bitbucket.org/foal/open-gavka</url>
-	<!-- <packaging>jar</packaging> -->
 	<properties>
 		<maven.build.timestamp.format>yyyyMMdd-HHmmssSSS</maven.build.timestamp.format>
 	</properties>
@@ -41,20 +40,10 @@
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 		</dependency>
-		<!-- <dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>jcl-over-slf4j</artifactId>
-			<scope>runtime</scope>
-		</dependency> -->
 		<dependency>
 			<groupId>org.jresearch.gavka</groupId>
 			<artifactId>org.jresearch.gavka.backend</artifactId>
 		</dependency>
-		<!-- <dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
-			<scope>runtime</scope>
-		</dependency> -->
 		<dependency>
 			<groupId>org.jresearch.commons.gwt</groupId>
 			<artifactId>org.jresearch.commons.gwt.base.srv</artifactId>
@@ -113,15 +102,14 @@
 				<version>0.10.0</version>
 				<configuration>
 					<to>
-						<!-- <image>localhost:8082/local/gavkaApi:la</image> -->
-						<!-- <image>localhost:8082/repository/local:gavkaApi</image> -->
-						<auth>
+						<!-- <auth>
 							<password>local</password>
 							<username>local</username>
-						</auth>
-						<image>kot.jresearch.org/gavka-api:${maven.build.timestamp}</image>
+						</auth> -->
+						<!-- <image>kot.jresearch.org/gavka-api:${maven.build.timestamp}</image> -->
+						<image>gavka/gavka-api:${maven.build.timestamp}</image>
 						<tags>
-							<tag>latest</tag>
+							<tag>dev</tag>
 						</tags>
 					</to>
 					<container>

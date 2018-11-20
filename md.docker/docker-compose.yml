@@ -1,0 +1,11 @@
+version: "2.0"
+
+services:
+    api: 
+        image: gavka/gavka-api:dev
+    client:
+        depends_on: 
+            - api
+        image: gavka/gavka-ui-md:dev
+        ports:
+            - 80:80
