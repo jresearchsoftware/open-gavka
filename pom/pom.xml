@@ -18,12 +18,10 @@
 		<tag>HEAD</tag>
 	</scm>
 	<modules>
-		<module>../api.boot</module>
+		<module>../api.docker</module>
 		<module>../api.app</module>
 		<module>../gwt.app</module>
-		<module>../md.app</module>
-		<module>../md.docker</module>
-		<module>../gwt.md</module>
+		<module>../gwt.docker</module>
 		<module>../gwt.core</module>
 		<module>../backend</module>
 		<module>../domain</module>
@@ -31,9 +29,8 @@
 	</modules>
 	<properties>
 		<!-- Used by the project -->
-		<gwtCommons.version>1.0.189</gwtCommons.version>
 		<gwtBase.version>1.0.197</gwtBase.version>
-		<domino.version>1.0.9-SNAPSHOT</domino.version>
+		<domino.version>1.0.10-SNAPSHOT</domino.version>
 		<gwtCldr.version>1.0.5-SNAPSHOT</gwtCldr.version>
 		<gwtTimer.version>1.4.2-SNAPSHOT</gwtTimer.version>
 	</properties>
@@ -43,13 +40,6 @@
 				<groupId>org.jresearch.gwtproject.timer</groupId>
 				<artifactId>gwt-timer</artifactId>
 				<version>${gwtTimer.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.jresearch.commons.gwt</groupId>
-				<artifactId>org.jresearch.commons.gwt.bom</artifactId>
-				<version>${gwtCommons.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.jresearch.commons.gwt.base</groupId>

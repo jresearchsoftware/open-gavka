@@ -5,35 +5,57 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
+import org.dominokit.domino.ui.layout.Layout;
+import org.dominokit.domino.ui.tree.Tree;
+import org.dominokit.domino.ui.tree.TreeItem;
 import org.jresearch.commons.gwt.client.app.AbstractAppView;
 import org.jresearch.commons.gwt.client.app.IAppModule;
 import org.jresearch.commons.gwt.client.mvc.event.Bus;
-import org.jresearch.gavka.gwt.core.client.app.widget.AppPage;
+import org.jresearch.commons.gwt.client.mvc.event.module.ModuleEvent;
 
 import com.google.gwt.safehtml.shared.SafeHtml;
-import com.google.gwt.user.client.ui.HasWidgets.ForIsWidget;
-import com.google.gwt.user.client.ui.Widget;
+
+import elemental2.dom.Event;
+import elemental2.dom.EventListener;
+import elemental2.dom.HTMLElement;
 
 public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 
+	private final class NavClickHandler implements EventListener {
+
+		private final IAppModule module;
+
+		private NavClickHandler(final IAppModule module) {
+			this.module = module;
+		}
+
+		@Override
+		public void handleEvent(final Event evt) {
+			bus.fire(new ModuleEvent(module.getModuleId()));
+		}
+	}
+
 	@Nonnull
-	private final AppPage page;
+	private final Layout layout;
+	private final Tree moduleTree;
 
 	@Inject
-	public GavkaAppView(@Nonnull final GavkaAppController controller, @Nonnull final AppPage page, @Nonnull final Bus bus) {
+	public GavkaAppView(@Nonnull final GavkaAppController controller, @Nonnull final Bus bus) {
 		super(controller, bus);
-		this.page = page;
+		layout = Layout.create("Gavka");
+		layout.getLeftPanel().appendChild(moduleTree = Tree.create("Modules"));
 	}
 
 	@Override
 	@Nonnull
-	public Widget getContent() {
-		return page;
+	public HTMLElement getContent() {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public ForIsWidget getChildContainer(final String viewId) {
-		return page.getChildContainer(viewId);
+	public boolean updateChildContent(final String viewId, final HTMLElement content) {
+		layout.setContent(content);
+		return true;
 	}
 
 	@Override
@@ -43,23 +65,17 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 
 	@Override
 	public boolean switchToModule(final String moduleId) {
-		return page.switchToModule(moduleId);
+		return true;
 	}
 
 	@Override
 	public void initModules(final List<IAppModule> modules) {
-		if (modules.size() == 1) {
-			page.addSingleModule(modules.get(0));
-		} else {
-			for (final IAppModule module : modules) {
-				page.addModule(module);
-			}
-		}
+		modules.forEach(this::addModule);
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.jresearch.commons.gwt.client.app.AbstractAppView#showModule(java.lang
 	 * .String)
@@ -72,7 +88,7 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.jresearch.commons.gwt.client.app.AbstractAppView#hideModule(java.lang
 	 * .String)
@@ -85,7 +101,18 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 
 	@Override
 	protected void updateAppTitle(final SafeHtml viewTitle) {
-		// do nothing
+		if (viewTitle != null) {
+			layout.setTitle(viewTitle.asString());
+		}
+	}
+
+	@Override
+	public void showContent() {
+		layout.show();
+	}
+
+	public void addModule(final IAppModule module) {
+		moduleTree.appendChild(TreeItem.create(module.getName()).addClickListener(new NavClickHandler(module)));
 	}
 
 }

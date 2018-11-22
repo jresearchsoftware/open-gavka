@@ -21,22 +21,36 @@
 			<artifactId>gwt-dev</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.tractionsoftware</groupId>
-			<artifactId>gwt-traction</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>com.google.gwt</groupId>
-					<artifactId>gwt-servlet</artifactId>
-				</exclusion>
-			</exclusions>
+			<groupId>com.google.elemental2</groupId>
+			<artifactId>elemental2-dom</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.jresearch.commons.gwt</groupId>
-			<artifactId>org.jresearch.commons.gwt.base.model</artifactId>
+			<groupId>javax.inject</groupId>
+			<artifactId>javax.inject</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.gwt.elemento</groupId>
+			<artifactId>elemento-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.jresearch.gwtproject.timer</groupId>
+			<artifactId>gwt-timer</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.jresearch.dominokit</groupId>
+			<artifactId>domino-ui</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.google.inject</groupId>
+			<artifactId>guice</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.google.code.findbugs</groupId>
@@ -55,12 +69,12 @@
 			<artifactId>javax.ws.rs-api</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>javax.inject</groupId>
-			<artifactId>javax.inject</artifactId>
+			<groupId>org.jresearch.commons.gwt.base</groupId>
+			<artifactId>org.jresearch.commons.gwt.base.gwt</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.jresearch.commons.gwt</groupId>
-			<artifactId>org.jresearch.commons.gwt.base</artifactId>
+			<groupId>org.jresearch.commons.gwt.base</groupId>
+			<artifactId>org.jresearch.commons.gwt.base.shared</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>io.github.gwtplus.gin</groupId>
@@ -77,6 +91,10 @@
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava-gwt</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.jresearch.gwtproject.i18n</groupId>
+			<artifactId>gwt-cldr</artifactId>
 		</dependency>
 	</dependencies>
 	<build>
@@ -95,7 +113,7 @@
 				<groupId>net.ltgt.gwt.maven</groupId>
 				<artifactId>gwt-maven-plugin</artifactId>
 				<configuration>
-					<moduleName>org.jresearch.gavka.gwt.core.module</moduleName>
+					<moduleName>org.jresearch.gavka.gwt.core.md</moduleName>
 					<moduleShortName>gavka</moduleShortName>
 					<optimize>9</optimize>
 					<compilerArgs>
