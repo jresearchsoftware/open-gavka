@@ -101,6 +101,9 @@
 				<artifactId>jib-maven-plugin</artifactId>
 				<version>0.10.0</version>
 				<configuration>
+					<from>
+						<image>openjdk:8-jdk-alpine</image>
+					</from>
 					<to>
 						<!-- <auth>
 							<password>local</password>
@@ -113,8 +116,12 @@
 						</tags>
 					</to>
 					<container>
+						<jvmFlags>
+							<jvmFlag>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005</jvmFlag>
+						</jvmFlags>
 						<ports>
 							<port>8080</port>
+							<port>5005</port>
 						</ports>
 						<environment>
 							<spring.profiles.active>nokafka</spring.profiles.active>
