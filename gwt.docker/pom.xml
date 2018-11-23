@@ -9,6 +9,9 @@
 	</parent>
 	<artifactId>org.jresearch.gavka.gwt.docker</artifactId>
 	<name>JRS kafka UI: Apache Kafka admin application - MD docker image</name>
+	<properties>
+		<maven.build.timestamp.format>yyyyMMdd-HHmmssSSS</maven.build.timestamp.format>
+	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>org.jresearch.gavka</groupId>
@@ -29,28 +32,56 @@
 							<goal>unpack-dependencies</goal>
 						</goals>
 						<configuration>
-							<outputDirectory>${project.build.directory}/war</outputDirectory>
+							<outputDirectory>${project.build.directory}/war/var/www</outputDirectory>
 						</configuration>
 					</execution>
 				</executions>
 			</plugin>
 			<plugin>
-				<groupId>com.spotify</groupId>
-				<artifactId>dockerfile-maven-plugin</artifactId>
-				<version>1.4.9</version>
+				<artifactId>maven-resources-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>default</id>
+						<id>copy-resources</id>
+						<phase>validate</phase>
 						<goals>
-							<goal>build</goal>
-							<goal>push</goal>
+							<goal>copy-resources</goal>
 						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/war</outputDirectory>
+							<resources>
+								<resource>
+									<directory>src/main/jib</directory>
+									<filtering>true</filtering>
+								</resource>
+							</resources>
+						</configuration>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>com.google.cloud.tools</groupId>
+				<artifactId>jib-maven-plugin</artifactId>
+				<version>0.10.0</version>
 				<configuration>
-					<repository>gavka/gavka-ui-md</repository>
-					<tag>${project.version}</tag>
-					<tag>dev</tag>
+					<extraDirectory>${project.build.directory}/war</extraDirectory>
+					<from>
+						<image>nginx</image>
+					</from>
+					<to>
+						<image>gavka/gavka-ui:${maven.build.timestamp}</image>
+						<tags>
+							<tag>dev</tag>
+						</tags>
+					</to>
+					<container>
+						<!-- <entrypoint>/usr/sbin/nginx -g daemon off;</entrypoint> -->
+						<entrypoint>
+							<entrypoint>nginx</entrypoint>
+							<entrypoint>-g</entrypoint>
+							<entrypoint>daemon off;</entrypoint>
+						</entrypoint>
+						<useCurrentTimestamp>true</useCurrentTimestamp>
+					</container>
 				</configuration>
 			</plugin>
 		</plugins>

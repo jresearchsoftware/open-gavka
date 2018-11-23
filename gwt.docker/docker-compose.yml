@@ -8,4 +8,4 @@ services:
             - api
         image: gavka/gavka-ui-md:dev
         ports:
-            - 80:80
+            - 90:80
