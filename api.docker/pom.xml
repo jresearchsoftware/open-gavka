@@ -10,9 +10,6 @@
 	<artifactId>org.jresearch.gavka.api.docker</artifactId>
 	<name>JRS kafka UI: Apache Kafka admin application - boot application in docker</name>
 	<url>https://bitbucket.org/foal/open-gavka</url>
-	<properties>
-		<maven.build.timestamp.format>yyyyMMdd-HHmmssSSS</maven.build.timestamp.format>
-	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -82,7 +79,7 @@
 		</dependency>
 	</dependencies>
 	<build>
-		<!-- <finalName>boot</finalName> -->
+		<finalName>gavka/gavka-api</finalName>
 		<plugins>
 			<plugin>
 				<artifactId>maven-dependency-plugin</artifactId>
@@ -99,22 +96,10 @@
 			<plugin>
 				<groupId>com.google.cloud.tools</groupId>
 				<artifactId>jib-maven-plugin</artifactId>
-				<version>0.10.0</version>
 				<configuration>
 					<from>
 						<image>openjdk:8-jdk-alpine</image>
 					</from>
-					<to>
-						<!-- <auth>
-							<password>local</password>
-							<username>local</username>
-						</auth> -->
-						<!-- <image>kot.jresearch.org/gavka-api:${maven.build.timestamp}</image> -->
-						<image>gavka/gavka-api:${maven.build.timestamp}</image>
-						<tags>
-							<tag>dev</tag>
-						</tags>
-					</to>
 					<container>
 						<jvmFlags>
 							<jvmFlag>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005</jvmFlag>
@@ -123,37 +108,12 @@
 							<port>8080</port>
 							<port>5005</port>
 						</ports>
-						<environment>
+						<!-- <environment>
 							<spring.profiles.active>nokafka</spring.profiles.active>
-						</environment>
+						</environment> -->
 					</container>
 				</configuration>
 			</plugin>
-			<!-- <plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-				<version>2.1.0.RELEASE</version>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>repackage</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin> -->
-			<!-- <plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-war-plugin</artifactId>
-				<configuration>
-					<overlays>
-						<overlay>
-							<groupId>org.jresearch.gavka</groupId>
-							<artifactId>org.jresearch.gavka.gwt.md</artifactId>
-						</overlay>
-					</overlays>
-				</configuration>
-			</plugin> -->
 		</plugins>
 	</build>
 </project>

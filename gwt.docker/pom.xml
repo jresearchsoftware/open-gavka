@@ -9,9 +9,6 @@
 	</parent>
 	<artifactId>org.jresearch.gavka.gwt.docker</artifactId>
 	<name>JRS kafka UI: Apache Kafka admin application - MD docker image</name>
-	<properties>
-		<maven.build.timestamp.format>yyyyMMdd-HHmmssSSS</maven.build.timestamp.format>
-	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>org.jresearch.gavka</groupId>
@@ -21,6 +18,7 @@
 		</dependency>
 	</dependencies>
 	<build>
+		<finalName>gavka/gavka-ui</finalName>
 		<plugins>
 			<plugin>
 				<artifactId>maven-dependency-plugin</artifactId>
@@ -61,20 +59,12 @@
 			<plugin>
 				<groupId>com.google.cloud.tools</groupId>
 				<artifactId>jib-maven-plugin</artifactId>
-				<version>0.10.0</version>
 				<configuration>
 					<extraDirectory>${project.build.directory}/war</extraDirectory>
 					<from>
 						<image>nginx</image>
 					</from>
-					<to>
-						<image>gavka/gavka-ui:${maven.build.timestamp}</image>
-						<tags>
-							<tag>dev</tag>
-						</tags>
-					</to>
 					<container>
-						<!-- <entrypoint>/usr/sbin/nginx -g daemon off;</entrypoint> -->
 						<entrypoint>
 							<entrypoint>nginx</entrypoint>
 							<entrypoint>-g</entrypoint>

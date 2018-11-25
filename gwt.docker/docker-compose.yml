@@ -3,9 +3,11 @@ version: "2.0"
 services:
     api: 
         image: gavka/gavka-api:dev
+        environment:
+          - spring.profiles.active=nokafka
     client:
         depends_on: 
             - api
-        image: gavka/gavka-ui-md:dev
+        image: gavka/gavka-ui:dev
         ports:
             - 90:80
