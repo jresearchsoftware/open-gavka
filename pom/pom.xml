@@ -10,11 +10,11 @@
 	<version>1.0.14-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>JRS kafka UI: Apache Kafka admin application - project POM</name>
-	<url>https://bitbucket.org/foal/open-gavka</url>
+	<url>https://bitbucket.org/JRS/open-gavka</url>
 	<scm>
-		<connection>scm:hg:https://foal@bitbucket.org/foal/open-gavka</connection>
-		<developerConnection>scm:hg:ssh://hg@bitbucket.org/foal/open-gavka</developerConnection>
-		<url>https://bitbucket.org/foal/open-gavka</url>
+		<connection>scm:hg:https://foal@bitbucket.org/JRS/open-gavka</connection>
+		<developerConnection>scm:hg:ssh://hg@bitbucket.org/JRS/open-gavka</developerConnection>
+		<url>https://bitbucket.org/JRS/open-gavka</url>
 		<tag>HEAD</tag>
 	</scm>
 	<modules>

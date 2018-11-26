@@ -9,7 +9,7 @@
 	</parent>
 	<artifactId>org.jresearch.gavka.api.docker</artifactId>
 	<name>JRS kafka UI: Apache Kafka admin application - boot application in docker</name>
-	<url>https://bitbucket.org/foal/open-gavka</url>
+	<url>https://bitbucket.org/JRS/open-gavka</url>
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

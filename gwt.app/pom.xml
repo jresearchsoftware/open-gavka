@@ -10,7 +10,7 @@
 	<artifactId>org.jresearch.gavka.gwt.app</artifactId>
 	<name>JRS kafka UI: Apache Kafka admin application - GWT application to test the GWT core part</name>
 	<packaging>war</packaging>
-	<url>https://bitbucket.org/foal/open-gavka</url>
+	<url>https://bitbucket.org/JRS/open-gavka</url>
 	<dependencies>
 		<dependency>
 			<groupId>javax.servlet</groupId>

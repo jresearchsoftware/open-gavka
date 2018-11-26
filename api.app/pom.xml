@@ -10,7 +10,7 @@
 	<artifactId>org.jresearch.gavka.api.app</artifactId>
 	<name>JRS kafka UI: Apache Kafka admin application - REST API application</name>
 	<packaging>war</packaging>
-	<url>https://bitbucket.org/foal/open-gavka</url>
+	<url>https://bitbucket.org/JRS/open-gavka</url>
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework</groupId>

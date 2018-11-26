@@ -9,7 +9,7 @@
 	</parent>
 	<artifactId>org.jresearch.gavka.backend</artifactId>
 	<name>JRS kafla UI: Apache Kafka admin application - backend part</name>
-	<url>https://bitbucket.org/foal/open-gavka</url>
+	<url>https://bitbucket.org/JRS/open-gavka</url>
 	<dependencies>
 		<dependency>
 			<groupId>org.projectlombok</groupId>

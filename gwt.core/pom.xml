@@ -9,7 +9,7 @@
 	</parent>
 	<artifactId>org.jresearch.gavka.gwt.core</artifactId>
 	<name>JRS kafka UI: Apache Kafka admin application - GWT based UI part</name>
-	<url>https://bitbucket.org/foal/open-gavka</url>
+	<url>https://bitbucket.org/JRS/open-gavka</url>
 	<packaging>gwt-app</packaging>
 	<dependencies>
 		<dependency>
