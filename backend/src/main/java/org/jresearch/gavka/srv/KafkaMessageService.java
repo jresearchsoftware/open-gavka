@@ -44,15 +44,16 @@ import com.google.common.base.MoreObjects;
 public class KafkaMessageService extends AbstractMessageService {
 
 	protected AdminClient kafkaClient;
-	
-    @Value("${bootstrap.servers}")
- 	private String serverUrl;
 
-    @Value("${schema.registry.url:#{null}}")
- 	private String schemaRegistryUrl;
-    
-	public KafkaMessageService() {}
-	
+	@Value("${bootstrap.servers}")
+	private String serverUrl;
+
+	@Value("${schema.registry.url:#{null}}")
+	private String schemaRegistryUrl;
+
+	public KafkaMessageService() {
+	}
+
 	@PostConstruct
 	protected void initClient() {
 		final Properties props = new Properties();
@@ -67,7 +68,7 @@ public class KafkaMessageService extends AbstractMessageService {
 	public MessagePortion getMessages(final PagingParameters pagingParameters, final MessageFilter filter) {
 		final Properties props = new Properties();
 		props.put("bootstrap.servers", serverUrl);
-		if(schemaRegistryUrl!=null) {
+		if (schemaRegistryUrl != null) {
 			props.put("schema.registry.url", schemaRegistryUrl);
 		}
 		props.put("key.deserializer", getKeyDeserializer(filter.getKeyFormat()));
@@ -133,7 +134,8 @@ public class KafkaMessageService extends AbstractMessageService {
 		}
 	}
 
-	protected Map<Integer, TopicPartition> initConsumer(final MessageFilter filter, final KafkaConsumer<Object, Object> consumer) {
+	protected Map<Integer, TopicPartition> initConsumer(final MessageFilter filter,
+			final KafkaConsumer<Object, Object> consumer) {
 		final Map<Integer, TopicPartition> partitions = new HashMap<>();
 		// get all partitions for the topic
 		for (final PartitionInfo partition : consumer.partitionsFor(filter.getTopic())) {
@@ -157,8 +159,13 @@ public class KafkaMessageService extends AbstractMessageService {
 				query.put(topicPartition, out);
 			}
 			final Map<TopicPartition, OffsetAndTimestamp> result = consumer.offsetsForTimes(query);
-			result.entrySet().stream().forEach(entry -> consumer.seek(entry.getKey(),
-					Optional.ofNullable(entry.getValue()).map(OffsetAndTimestamp::offset).orElse(new Long(0))));
+			result.entrySet().stream().forEach(entry -> {
+				if (entry.getValue() != null) {
+					consumer.seek(entry.getKey(), entry.getValue().offset());
+				}else {
+					consumer.seekToEnd(Collections.singleton(entry.getKey()));
+				}
+			});
 		}
 	}
 
@@ -207,7 +214,9 @@ public class KafkaMessageService extends AbstractMessageService {
 		final SimpleDateFormat sf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 		final Properties props = new Properties();
 		props.put("bootstrap.servers", serverUrl);
-		props.put("schema.registry.url", schemaRegistryUrl);
+		if (schemaRegistryUrl != null) {
+			props.put("schema.registry.url", schemaRegistryUrl);
+		}
 		props.put("key.deserializer", getKeyDeserializer(filter.getKeyFormat()));
 		props.put("value.deserializer", getMessageDeserializer(filter.getMessageFormat()));
 		props.put("client.id", "gavka-tool");
@@ -235,12 +244,12 @@ public class KafkaMessageService extends AbstractMessageService {
 						stringValue = consumerRecord.value().toString();
 					}
 					currentTime = consumerRecord.timestamp();
-					bos.write(getStringForExport(new Message(stringKey, stringValue, consumerRecord.offset(), consumerRecord.partition(),
-							consumerRecord.timestamp()), sf).getBytes());
+					bos.write(getStringForExport(new Message(stringKey, stringValue, consumerRecord.offset(),
+							consumerRecord.partition(), consumerRecord.timestamp()), sf).getBytes());
 				}
 				bos.flush();
 				consumer.commitSync();
-				if(currentTime >=stopTime) {
+				if (currentTime >= stopTime) {
 					break;
 				}
 				records = consumer.poll(1000);
@@ -250,13 +259,9 @@ public class KafkaMessageService extends AbstractMessageService {
 	}
 
 	protected String getStringForExport(final Message message, final SimpleDateFormat sf) {
-		return MoreObjects.toStringHelper(Message.class)
-				.add("key", message.getKey())
-				.add("value", message.getValue())
-				.add("offset", message.getOffset())
-				.add("partition", message.getPartition())
-				.add("timestamp", sf.format(new Date(message.getTimestamp())))
-				.toString() + "\n";
+		return MoreObjects.toStringHelper(Message.class).add("key", message.getKey()).add("value", message.getValue())
+				.add("offset", message.getOffset()).add("partition", message.getPartition())
+				.add("timestamp", sf.format(new Date(message.getTimestamp()))).toString() + "\n";
 
 	}
 }
