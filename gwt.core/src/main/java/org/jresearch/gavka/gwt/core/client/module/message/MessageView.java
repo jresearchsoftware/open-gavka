@@ -48,13 +48,14 @@ import elemental2.dom.DomGlobal;
 import elemental2.dom.Event;
 import elemental2.dom.HTMLElement;
 import elemental2.dom.Node;
+import elemental2.dom.Text;
 
 @Singleton
 public class MessageView extends AbstractView<MessageController> implements TableEventListener {
 
 	enum ColumnName {
 		KEY,
-		VALUE,
+		MESSAGE,
 		OFFSET,
 		PARTITION,
 		TIMESTAMP_LOCAL,
@@ -178,16 +179,16 @@ public class MessageView extends AbstractView<MessageController> implements Tabl
 				.addColumn(ColumnConfig.<Message>create(KEY.name(), "Key")
 						.setWidth(30 + Unit.PCT.getType())
 						.setCellRenderer(cell -> renderText(cell, Message::getKey)))
-//				.addColumn(ColumnConfig.<Message>create(VALUE.name(), "Value")
-//						.setCellRenderer(cell -> renderText(cell, Message::getValue)))
-				.addColumn(ColumnConfig.<Message>create(OFFSET.name(), "Offset")
-						.setCellRenderer(cell -> renderNumber(cell, Message::getOffset)))
-				.addColumn(ColumnConfig.<Message>create(PARTITION.name(), "Partition")
-						.setCellRenderer(cell -> renderNumber(cell, Message::getPartition)))
+				.addColumn(ColumnConfig.<Message>create(MESSAGE.name(), "Message")
+						.setCellRenderer(cell -> renderText(cell, Message::getValue)))
 				.addColumn(ColumnConfig.<Message>create(TIMESTAMP_LOCAL.name(), "Timestamp (Browser)")
 						.setCellRenderer(cell -> renderLocalDate(cell, Message::getTimestamp)))
 				.addColumn(ColumnConfig.<Message>create(TIMESTAMP_UTC.name(), "Timestamp (UTC)")
-						.setCellRenderer(cell -> renderUtcDate(cell, Message::getTimestamp)));
+						.setCellRenderer(cell -> renderUtcDate(cell, Message::getTimestamp)))
+				.addColumn(ColumnConfig.<Message>create(PARTITION.name(), "Partition")
+						.setCellRenderer(cell -> renderNumber(cell, Message::getPartition)))
+				.addColumn(ColumnConfig.<Message>create(OFFSET.name(), "Offset")
+						.setCellRenderer(cell -> renderNumber(cell, Message::getOffset)));
 		return tableConfig;
 	}
 
@@ -208,12 +209,25 @@ public class MessageView extends AbstractView<MessageController> implements Tabl
 		return record(cellInfo).map(valueAccessor).map(TextNode::of).orElseGet(TextNode::empty);
 	}
 
+	private static <R> Node renderTextEllipsis(final CellInfo<R> cellInfo, final Function<R, String> valueAccessor) {
+		final Text node = record(cellInfo).map(valueAccessor).map(TextNode::of).orElseGet(TextNode::empty);
+		return node;
+	}
+
 	private static <R> Node renderNumber(final CellInfo<R> cellInfo, final Function<R, Number> valueAccessor) {
 		return record(cellInfo).map(valueAccessor).map(NUMBER_FORMAT::format).map(TextNode::of).orElseGet(TextNode::empty);
 	}
 
 	private static <R> Optional<R> record(final CellInfo<R> cellInfo) {
 		return Optional.of(cellInfo).map(CellInfo::getTableRow).map(TableRow::getRecord);
+	}
+
+	private static String getMessageEclipse(final Message message) {
+		final String value = message.getValue();
+		if (value.length() < 50) {
+			return value;
+		}
+		return value;
 	}
 
 	@Override

@@ -194,7 +194,7 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 				.styler(FilterBarPlugin::zerroBottomMargin);
 
 		// export form
-		div.add((exportForm = createForm()).add(fromBox).add(row1).add(row2));
+		div.add((exportForm = createForm()).add(row1).add(row2));
 
 		setAutoSearch(true);
 	}
