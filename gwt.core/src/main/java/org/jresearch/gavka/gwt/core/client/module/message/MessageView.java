@@ -44,11 +44,11 @@ import com.google.gwt.i18n.client.TimeZone;
 import com.google.gwt.i18n.shared.DateTimeFormat;
 import com.google.gwt.i18n.shared.DateTimeFormat.PredefinedFormat;
 
+import elemental2.dom.CSSProperties;
 import elemental2.dom.DomGlobal;
 import elemental2.dom.Event;
 import elemental2.dom.HTMLElement;
 import elemental2.dom.Node;
-import elemental2.dom.Text;
 
 @Singleton
 public class MessageView extends AbstractView<MessageController> implements TableEventListener {
@@ -174,12 +174,20 @@ public class MessageView extends AbstractView<MessageController> implements Tabl
 
 	private static TableConfig<Message> createBasicTableConfig() {
 		final TableConfig<Message> tableConfig = new TableConfig<>();
+		final ColumnConfig<Message> messageColumnConfig = ColumnConfig.<Message>create(MESSAGE.name(), "Message");
+		messageColumnConfig.styleCell(e -> {
+			e.style.width = CSSProperties.WidthUnionType.of("60%");
+			e.style.maxWidth = CSSProperties.MaxWidthUnionType.of("300px");
+			e.style.overflow = "hidden";
+			e.style.whiteSpace = "nowrap";
+			e.style.textOverflow = "ellipsis";
+		});
 		tableConfig
 //				.setFixedBodyHeight("calc(100vh - 460px)")
 				.addColumn(ColumnConfig.<Message>create(KEY.name(), "Key")
 						.setWidth(30 + Unit.PCT.getType())
 						.setCellRenderer(cell -> renderText(cell, Message::getKey)))
-				.addColumn(ColumnConfig.<Message>create(MESSAGE.name(), "Message")
+				.addColumn(messageColumnConfig
 						.setCellRenderer(cell -> renderText(cell, Message::getValue)))
 				.addColumn(ColumnConfig.<Message>create(TIMESTAMP_LOCAL.name(), "Timestamp (Browser)")
 						.setCellRenderer(cell -> renderLocalDate(cell, Message::getTimestamp)))
@@ -209,25 +217,12 @@ public class MessageView extends AbstractView<MessageController> implements Tabl
 		return record(cellInfo).map(valueAccessor).map(TextNode::of).orElseGet(TextNode::empty);
 	}
 
-	private static <R> Node renderTextEllipsis(final CellInfo<R> cellInfo, final Function<R, String> valueAccessor) {
-		final Text node = record(cellInfo).map(valueAccessor).map(TextNode::of).orElseGet(TextNode::empty);
-		return node;
-	}
-
 	private static <R> Node renderNumber(final CellInfo<R> cellInfo, final Function<R, Number> valueAccessor) {
 		return record(cellInfo).map(valueAccessor).map(NUMBER_FORMAT::format).map(TextNode::of).orElseGet(TextNode::empty);
 	}
 
 	private static <R> Optional<R> record(final CellInfo<R> cellInfo) {
 		return Optional.of(cellInfo).map(CellInfo::getTableRow).map(TableRow::getRecord);
-	}
-
-	private static String getMessageEclipse(final Message message) {
-		final String value = message.getValue();
-		if (value.length() < 50) {
-			return value;
-		}
-		return value;
 	}
 
 	@Override
