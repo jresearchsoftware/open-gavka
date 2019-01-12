@@ -28,17 +28,47 @@ Two files *api.war* and *gavka.war* will be under _api.app/target_ and _gwt.app/
 
 ### How to Run with Docker ###
 
-It is assumed that you have an access to running Kafka cluster.
+If you have an access to running Kafka cluster add the connection parameters to the docker-compose.yml
 
-`docker pull jresearch/gavka`
+```
+  version: "2.0"
 
-`docker run -d -p 4000:8080 -e bootstrap.servers=kafka_host:kafka_port -e schema.registry.url=http://schema_host:schema_port -p kafka_port:kafka_port -p schema_port:schema_port gavka`
+  services:
+      api: 
+          image: gavka/gavka-api:dev
+          environment:  
+            - bootstrap.servers=172.16.1.1:9092
+            - schema.registry.url=http://172.16.1.1:8081
+      client:
+          depends_on: 
+              - api
+          image: gavka/gavka-ui:dev
+          ports:
+              - 90:80
+```   
+Then you can run it as 
+`docker-compose up`
 
-For example,
+Now you can connect as http://localhost:90
 
-`docker run -d -p 4000:8080 -e bootstrap.servers=172.16.1.1:9092 -e schema.registry.url=http://172.16.1.1:8081 -p 9092:9092 -p 8081:8081 gavka`
+If you do not have running Kafka and just want to run it with the mock services use the following docker-compose.yml :
 
-Then you can connect as http://localhost:4000/gavka
+```
+  version: "2.0"
+
+  services:
+      api: 
+          image: gavka/gavka-api:dev
+          environment:  
+            - spring.profiles.active=nokafka
+      client:
+          depends_on: 
+              - api
+          image: gavka/gavka-ui:dev
+          ports:
+              - 90:80
+```   
+
 
 ### Why is this project called Gavka? ###
 
