@@ -9,6 +9,8 @@ Gavka is a web application for browsing Apache Kafka topics. The tool allows
   
 Gavka consists of the two war files and can be deployed to any J2EE server. It requires a connection to the running Kafka cluster, which can be configured using environment variables. It is also possible to run Gavka with docker.
 
+![screenshot](images/screenshot.JPG)
+
 ### How to Use ###
 
 If you are successfully connected to Kafka Cluster then you can see your topics in the drop down.  Select the topic, select the serialisers and click Search button. You can also filter the messages by timestamp (enter in UTC).
