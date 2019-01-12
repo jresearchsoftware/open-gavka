@@ -9,7 +9,7 @@ Gavka is a web application for browsing Apache Kafka topics. The tool allows
   
 Gavka consists of the two war files and can be deployed to any J2EE server. It requires a connection to the running Kafka cluster, which can be configured using environment variables. It is also possible to run Gavka with docker.
 
-![screenshot](images/screenshot.JPG)
+![screenshot](images/screenshot.jpg)
 
 ### How to Use ###
 
