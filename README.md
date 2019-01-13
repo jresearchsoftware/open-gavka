@@ -15,6 +15,12 @@ Gavka consists of the two war files and can be deployed to any J2EE server. It r
 
 If you are successfully connected to Kafka Cluster then you can see your topics in the drop down.  Select the topic, select the serialisers and click Search button. You can also filter the messages by timestamp (enter in UTC).
 
+### How to get sources ###
+
+Main repository (hg): https://bitbucket.org/JRS/open-gavka
+
+Mirror on GitHub (git): https://github.com/jresearchsoftware/open-gavka
+
 ### How to Build ###
 
 Clone the repository then
@@ -32,7 +38,7 @@ Two files *api.war* and *gavka.war* will be under _api.app/target_ and _gwt.app/
 
 If you have an access to running Kafka cluster add the connection parameters to the docker-compose.yml
 
-```
+```yml
   version: "2.0"
 
   services:
@@ -55,7 +61,7 @@ Now you can connect as http://localhost:90
 
 If you do not have running Kafka and just want to run it with the mock services use the following docker-compose.yml :
 
-```
+```yml
   version: "2.0"
 
   services:
