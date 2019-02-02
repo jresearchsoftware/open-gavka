@@ -7,24 +7,10 @@
 		<version>1.0.21-SNAPSHOT</version>
 		<relativePath>../pom/pom.xml</relativePath>
 	</parent>
-	<artifactId>org.jresearch.gavka.api.docker</artifactId>
-	<name>JRS kafka UI: Apache Kafka admin application - boot application in docker</name>
+	<artifactId>org.jresearch.gavka.api.core</artifactId>
+	<name>JRS kafka UI: Apache Kafka admin application - REST API core part</name>
 	<url>https://bitbucket.org/JRS/open-gavka</url>
 	<dependencies>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>org.hibernate.validator</groupId>
-					<artifactId>hibernate-validator</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.jresearch.gavka</groupId>
-			<artifactId>org.jresearch.gavka.api.core</artifactId>
-		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
@@ -42,8 +28,18 @@
 			<artifactId>javax.servlet-api</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.jresearch.gavka</groupId>
 			<artifactId>org.jresearch.gavka.backend</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.jresearch.commons.gwt.base</groupId>
@@ -73,51 +69,8 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-autoconfigure</artifactId>
-		</dependency>
 	</dependencies>
 	<build>
-		<finalName>gavka/gavka-api</finalName>
-		<plugins>
-			<plugin>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<!-- To correct work of Spring BOOT -->
-				<configuration>
-					<ignoredUsedUndeclaredDependencies>
-						<ignoredUsedUndeclaredDependency>org.apache.tomcat.embed:tomcat-embed-core</ignoredUsedUndeclaredDependency>
-					</ignoredUsedUndeclaredDependencies>
-					<ignoredUnusedDeclaredDependencies>
-						<ignoredUnusedDeclaredDependency>org.springframework.boot:spring-boot-starter-web</ignoredUnusedDeclaredDependency>
-					</ignoredUnusedDeclaredDependencies>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>com.google.cloud.tools</groupId>
-				<artifactId>jib-maven-plugin</artifactId>
-				<configuration>
-					<from>
-						<image>openjdk:8-jdk-alpine</image>
-					</from>
-					<container>
-						<jvmFlags>
-							<jvmFlag>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005</jvmFlag>
-						</jvmFlags>
-						<ports>
-							<port>8080</port>
-							<port>5005</port>
-						</ports>
-						<!-- <environment>
-							<spring.profiles.active>nokafka</spring.profiles.active>
-						</environment> -->
-					</container>
-				</configuration>
-			</plugin>
-		</plugins>
+		<finalName>api</finalName>
 	</build>
 </project>

@@ -27,6 +27,9 @@ public interface GavkaMessageService {
 	/** {@link #messageFormats()} method id */
 	String M_R_MESSAGE_FORMATS = "/messageFormats"; //$NON-NLS-1$
 
+	/** {@link #connections()} method id */
+	String M_R_CONNECTIONS = "/connections"; //$NON-NLS-1$
+
 	MessagePortion get(RequestMessagesParameters parameters);
 
 	List<String> topics();
@@ -35,4 +38,5 @@ public interface GavkaMessageService {
 
 	List<MessageFormat> messageFormats();
 
+	List<String> connections();
 }
