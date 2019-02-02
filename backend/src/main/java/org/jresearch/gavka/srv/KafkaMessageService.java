@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
@@ -76,6 +77,8 @@ public class KafkaMessageService extends AbstractMessageService {
 		props.put("client.id", "gavka-tool");
 		props.put("group.id", "gavka-tool-" + UUID.randomUUID());
 		props.put("auto.offset.reset", "earliest");
+		props.put("enable.auto.commit", "false");
+		props.put("max.poll.records", pagingParameters.getAmount());
 
 		try (final KafkaConsumer<Object, Object> consumer = new KafkaConsumer<>(props)) {
 			final Map<Integer, Long> partitionOffsets = new HashMap<>();
@@ -93,7 +96,7 @@ public class KafkaMessageService extends AbstractMessageService {
 					consumer.seek(partitions.get(p.getPartition()), p.getOffset());
 				});
 			} else {
-				positionConsumer(partitions, filter, consumer);
+				positionConsumer(partitions, filter, consumer, partitionOffsets);
 			}
 			final List<Message> messages = new ArrayList<>();
 
@@ -117,11 +120,12 @@ public class KafkaMessageService extends AbstractMessageService {
 					}
 					messages.add(new Message(stringKey, stringValue, consumerRecord.offset(),
 							consumerRecord.partition(), consumerRecord.timestamp()));
-					partitionOffsets.put(consumerRecord.partition(), consumerRecord.offset() + 1);
-				}
-
+					//partitionOffsets.put(consumerRecord.partition(), consumerRecord.offset() + 1);
+				}	
 				consumer.commitSync();
-				records = consumer.poll(1000);
+				for (final TopicPartition tp : partitions.values()) {
+					partitionOffsets.put(tp.partition(), consumer.position(tp));
+				}
 			}
 			final List<PartitionOffset> po = new ArrayList<>();
 			for (final Integer partitionOffset : partitionOffsets.keySet()) {
@@ -147,7 +151,7 @@ public class KafkaMessageService extends AbstractMessageService {
 	}
 
 	protected void positionConsumer(final Map<Integer, TopicPartition> partitions, final MessageFilter filter,
-			final KafkaConsumer<Object, Object> consumer) {
+			final KafkaConsumer<Object, Object> consumer,Map<Integer, Long> partitionOffsets) {
 		if (filter.getFrom() == null) {
 			// no start time, position to the beginning
 			consumer.seekToBeginning(partitions.values());
@@ -161,9 +165,14 @@ public class KafkaMessageService extends AbstractMessageService {
 			final Map<TopicPartition, OffsetAndTimestamp> result = consumer.offsetsForTimes(query);
 			result.entrySet().stream().forEach(entry -> {
 				if (entry.getValue() != null) {
-					consumer.seek(entry.getKey(), entry.getValue().offset());
+					Long offset = entry.getValue().offset();
+					TopicPartition partition = entry.getKey();
+					consumer.seek(partition, offset);
+					partitionOffsets.put(partition.partition(), offset);
 				}else {
-					consumer.seekToEnd(Collections.singleton(entry.getKey()));
+					TopicPartition partition = entry.getKey();
+					consumer.seekToEnd(Collections.singleton(partition));
+					partitionOffsets.put(partition.partition(), consumer.position(partition));
 				}
 			});
 		}
@@ -228,7 +237,7 @@ public class KafkaMessageService extends AbstractMessageService {
 		try (final KafkaConsumer<Object, Object> consumer = new KafkaConsumer<>(props)) {
 			final Map<Integer, TopicPartition> partitions = initConsumer(filter, consumer);
 
-			positionConsumer(partitions, filter, consumer);
+			positionConsumer(partitions, filter, consumer, new HashMap<>());
 			ConsumerRecords<Object, Object> records = consumer.poll(1000);
 			while (!records.isEmpty()) {
 				for (final ConsumerRecord<Object, Object> consumerRecord : records) {
