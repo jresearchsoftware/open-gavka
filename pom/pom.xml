@@ -19,7 +19,6 @@
 	</scm>
 	<modules>
 		<module>../api.docker</module>
-		<module>../api.core</module>
 		<module>../api.app</module>
 		<module>../gwt.app</module>
 		<module>../gwt.docker</module>
@@ -84,11 +83,6 @@
 			<dependency>
 				<groupId>org.jresearch.gavka</groupId>
 				<artifactId>org.jresearch.gavka.rest.api</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.jresearch.gavka</groupId>
-				<artifactId>org.jresearch.gavka.api.core</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 		</dependencies>

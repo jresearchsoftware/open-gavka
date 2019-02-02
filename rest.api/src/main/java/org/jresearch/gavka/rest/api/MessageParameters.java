@@ -11,7 +11,6 @@ import com.google.common.base.Objects;
 
 public class MessageParameters {
 
-	private String connection;
 	private String topic;
 	private String key;
 	@Nullable
@@ -60,19 +59,10 @@ public class MessageParameters {
 		this.messageFormat = messageFormat;
 	}
 
-	public String getConnection() {
-		return connection;
-	}
-
-	public void setConnection(String connection) {
-		this.connection = connection;
-	}
-
-	@SuppressWarnings({ "nls", "null" })
+	@SuppressWarnings("nls")
 	@Override
 	public String toString() {
 		return MoreObjects.toStringHelper(this)
-				.add("connection", connection)
 				.add("topic", topic)
 				.add("key", key)
 				.add("from", from)
@@ -83,16 +73,14 @@ public class MessageParameters {
 
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(getConnection(), getTopic(), getKey(), getFrom(), getKeyFormat(), getMessageFormat());
+		return Objects.hashCode(getTopic(), getKey(), getFrom(), getKeyFormat(), getMessageFormat());
 	}
 
-	@SuppressWarnings("null")
 	@Override
 	public boolean equals(final Object object) {
 		if (object instanceof MessageParameters) {
 			final MessageParameters that = (MessageParameters) object;
 			return Objects.equal(this.getTopic(), that.getTopic())
-					&& Objects.equal(this.getConnection(), that.getConnection())
 					&& Objects.equal(this.getKey(), that.getKey())
 					&& Objects.equal(this.getFrom(), that.getFrom())
 					&& Objects.equal(this.getKeyFormat(), that.getKeyFormat())

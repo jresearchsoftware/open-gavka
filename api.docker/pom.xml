@@ -22,10 +22,6 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>org.jresearch.gavka</groupId>
-			<artifactId>org.jresearch.gavka.api.core</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
 		</dependency>
