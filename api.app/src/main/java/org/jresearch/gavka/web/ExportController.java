@@ -36,7 +36,7 @@ public class ExportController {
 				.ok()
 				.contentType(MediaType.APPLICATION_OCTET_STREAM)
 				.header(HttpHeaders.CONTENT_DISPOSITION, disposition.toString())
-				.body((out) -> messageService.exportMessages(out, filter));
+				.body(out -> messageService.exportMessages(out, filter));
 	}
 
 	private static MessageFilter toMessageFilter(final Optional<String> topic, final Optional<String> key, final Optional<LocalDateTime> from, final Optional<KeyFormat> keyFormat, final Optional<MessageFormat> messageFormat) {
