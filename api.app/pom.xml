@@ -42,10 +42,6 @@
 			<artifactId>logback-classic</artifactId>
 			<scope>runtime</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.jresearch.commons.gwt.base</groupId>
-			<artifactId>org.jresearch.commons.gwt.base.srv</artifactId>
-		</dependency>
 	</dependencies>
 	<build>
 		<finalName>api</finalName>
