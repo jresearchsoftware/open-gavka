@@ -116,6 +116,7 @@ public class KafkaMessageService extends AbstractMessageService {
 						stringValue = consumerRecord.value().toString();
 					}
 					messages.add(new Message(stringKey, stringValue, consumerRecord.offset(),consumerRecord.partition(), consumerRecord.timestamp()));
+					partitionOffsets.put(consumerRecord.partition(), consumerRecord.offset() + 1);
 				}	
 				records = consumer.poll(1000);
 			}
