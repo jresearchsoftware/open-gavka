@@ -34,4 +34,10 @@ public interface GavkaMessageRestService extends GavkaMessageService, DirectRest
 	@Path(SRV_ROOT + SRV_PATH + M_R_MESSAGE_FORMATS)
 	@Override
 	List<MessageFormat> messageFormats();
+
+	@GET
+	@Path(SRV_ROOT + SRV_PATH + M_R_CONNECTIONS)
+	@Override
+	List<String> connections();
+
 }
