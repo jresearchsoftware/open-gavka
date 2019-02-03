@@ -30,48 +30,12 @@
 			<artifactId>spring-context</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-web</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-webmvc</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.jresearch.gavka</groupId>
-			<artifactId>org.jresearch.gavka.backend</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>org.jresearch.commons.gwt.base</groupId>
 			<artifactId>org.jresearch.commons.gwt.base.srv</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-beans</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.jresearch.commons.gwt.base</groupId>
-			<artifactId>org.jresearch.commons.gwt.base.shared</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.jresearch.gavka</groupId>
-			<artifactId>org.jresearch.gavka.rest.api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.jresearch.gavka</groupId>
-			<artifactId>org.jresearch.gavka.domain</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-core</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
