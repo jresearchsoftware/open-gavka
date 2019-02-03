@@ -7,7 +7,7 @@
 	</parent>
 	<groupId>org.jresearch.gavka</groupId>
 	<artifactId>org.jresearch.gavka.pom</artifactId>
-	<version>1.0.21-SNAPSHOT</version>
+	<version>1.0.22-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>JRS kafka UI: Apache Kafka admin application - project POM</name>
 	<url>https://bitbucket.org/JRS/open-gavka</url>
@@ -19,6 +19,7 @@
 	</scm>
 	<modules>
 		<module>../api.docker</module>
+		<module>../api.core</module>
 		<module>../api.app</module>
 		<module>../gwt.app</module>
 		<module>../gwt.docker</module>
@@ -83,6 +84,11 @@
 			<dependency>
 				<groupId>org.jresearch.gavka</groupId>
 				<artifactId>org.jresearch.gavka.rest.api</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jresearch.gavka</groupId>
+				<artifactId>org.jresearch.gavka.api.core</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 		</dependencies>

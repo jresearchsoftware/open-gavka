@@ -4,14 +4,18 @@
 	<parent>
 		<groupId>org.jresearch.gavka</groupId>
 		<artifactId>org.jresearch.gavka.pom</artifactId>
-		<version>1.0.21-SNAPSHOT</version>
+		<version>1.0.22-SNAPSHOT</version>
 		<relativePath>../pom/pom.xml</relativePath>
 	</parent>
 	<artifactId>org.jresearch.gavka.api.app</artifactId>
-	<name>JRS kafka UI: Apache Kafka admin application - REST API application</name>
+	<name>JRS kafka UI: Apache Kafka admin application - REST API application (WAR package)</name>
 	<packaging>war</packaging>
 	<url>https://bitbucket.org/JRS/open-gavka</url>
 	<dependencies>
+		<dependency>
+			<groupId>org.jresearch.gavka</groupId>
+			<artifactId>org.jresearch.gavka.api.core</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>

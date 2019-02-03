@@ -98,7 +98,11 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 	@Nonnull
 	private Button searchBtn;
 
-	private HTMLInputElement fromBox;
+	private HTMLInputElement hiddenFrom;
+	private HTMLInputElement hiddenTopic;
+//	private HTMLInputElement hiddenKey;
+	private HTMLInputElement hiddenKeyFormat;
+	private HTMLInputElement hiddenMessageFormat;
 
 	@Nonnull
 	private HtmlContentBuilder<HTMLFormElement> exportForm;
@@ -205,9 +209,21 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 		formEl.action = "/api/rest/messages/export";
 		formEl.method = "POST";
 		final InputBuilder<HTMLInputElement> from = input(hidden);
-		fromBox = from.asElement();
-		fromBox.name = "from";
-		return form.add(from);
+		hiddenFrom = from.asElement();
+		hiddenFrom.name = "from";
+//		final InputBuilder<HTMLInputElement> key = input(hidden);
+//		hiddenKey = key.asElement();
+//		hiddenKey.name = "key";
+		final InputBuilder<HTMLInputElement> topic = input(hidden);
+		hiddenTopic = topic.asElement();
+		hiddenTopic.name = "topic";
+		final InputBuilder<HTMLInputElement> keyFormat = input(hidden);
+		hiddenKeyFormat = keyFormat.asElement();
+		hiddenKeyFormat.name = "keyFormat";
+		final InputBuilder<HTMLInputElement> messageFormat = input(hidden);
+		hiddenMessageFormat = messageFormat.asElement();
+		hiddenMessageFormat.name = "messageFormat";
+		return form.add(from).add(topic).add(messageFormat).add(keyFormat);
 	}
 
 //	private static void progressStyle(final Style style) {
@@ -400,11 +416,15 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 
 	public void export() {
 		getFrom().map(Dates::printDateTime).ifPresent(this::setFrom);
+//		hiddenKey.value = getKeyValue();
+		hiddenTopic.value = getTopic();
+		hiddenKeyFormat.value = getKeyFormat().name();
+		hiddenMessageFormat.value = getMessageFormat().name();
 		exportForm.asElement().submit();
 	}
 
 	private void setFrom(final String from) {
-		fromBox.value = from;
+		hiddenFrom.value = from;
 	}
 
 }

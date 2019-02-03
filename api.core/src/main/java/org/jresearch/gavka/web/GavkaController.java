@@ -67,4 +67,10 @@ public class GavkaController implements GavkaMessageService {
 		return ImmutableList.copyOf(MessageFormat.values());
 	}
 
+	@Override
+	@GetMapping(M_R_CONNECTIONS)
+	public List<String> connections() {
+		return ImmutableList.of("Default");
+	}
+
 }
