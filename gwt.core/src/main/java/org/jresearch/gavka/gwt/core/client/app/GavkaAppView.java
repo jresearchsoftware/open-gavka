@@ -1,6 +1,8 @@
 package org.jresearch.gavka.gwt.core.client.app;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
@@ -23,21 +25,22 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 
 	private final class NavClickHandler implements EventListener {
 
-		private final IAppModule module;
+		private final String moduleId;
 
-		private NavClickHandler(final IAppModule module) {
-			this.module = module;
+		private NavClickHandler(final String moduleId) {
+			this.moduleId = moduleId;
 		}
 
 		@Override
 		public void handleEvent(final Event evt) {
-			bus.fire(new ModuleEvent(module.getModuleId()));
+			bus.fire(new ModuleEvent(moduleId));
 		}
 	}
 
 	@Nonnull
 	private final Layout layout;
 	private final Tree moduleTree;
+	private Map<String, TreeItem> moduleNodes = new HashMap<>();
 
 	@Inject
 	public GavkaAppView(@Nonnull final GavkaAppController controller, @Nonnull final Bus bus) {
@@ -112,7 +115,14 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 	}
 
 	public void addModule(final IAppModule module) {
-		moduleTree.appendChild(TreeItem.create(module.getName()).addClickListener(new NavClickHandler(module)));
+		TreeItem moduleNode = TreeItem.create(module.getName());
+		moduleNodes.put(module.getModuleId(), moduleNode);
+		moduleTree.appendChild(moduleNode.addClickListener(new NavClickHandler(module.getModuleId())));
+	}
+
+	public void addSubmodule(String modeleId, String title) {
+		TreeItem moduleNode = moduleNodes.get(modeleId);
+		moduleNode.appendChild(TreeItem.create(title).addClickListener(new NavClickHandler(modeleId)));
 	}
 
 }

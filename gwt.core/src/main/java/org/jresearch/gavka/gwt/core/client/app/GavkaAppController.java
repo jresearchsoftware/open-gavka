@@ -35,4 +35,8 @@ public class GavkaAppController extends AbstractAppController<GavkaAppView> {
 		}
 	}
 
+	public void addSubmodule(String modeleId, String title) {
+		executeCommand(v -> v.addSubmodule(modeleId, title));
+	}
+
 }

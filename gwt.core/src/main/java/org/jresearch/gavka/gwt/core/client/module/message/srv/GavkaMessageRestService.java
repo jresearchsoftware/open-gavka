@@ -9,6 +9,7 @@ import javax.ws.rs.Path;
 import org.fusesource.restygwt.client.DirectRestService;
 import org.jresearch.gavka.domain.KeyFormat;
 import org.jresearch.gavka.domain.MessageFormat;
+import org.jresearch.gavka.rest.api.ConnectionLabel;
 import org.jresearch.gavka.rest.api.GavkaMessageService;
 import org.jresearch.gavka.rest.api.MessagePortion;
 import org.jresearch.gavka.rest.api.RequestMessagesParameters;
@@ -38,6 +39,6 @@ public interface GavkaMessageRestService extends GavkaMessageService, DirectRest
 	@GET
 	@Path(SRV_ROOT + SRV_PATH + M_R_CONNECTIONS)
 	@Override
-	List<String> connections();
+	List<ConnectionLabel> connections();
 
 }

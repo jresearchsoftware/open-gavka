@@ -38,5 +38,5 @@ public interface GavkaMessageService {
 
 	List<MessageFormat> messageFormats();
 
-	List<String> connections();
+	List<ConnectionLabel> connections();
 }
