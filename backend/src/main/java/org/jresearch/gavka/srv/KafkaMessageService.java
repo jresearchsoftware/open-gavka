@@ -10,9 +10,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
@@ -77,8 +75,6 @@ public class KafkaMessageService extends AbstractMessageService {
 		props.put("client.id", "gavka-tool");
 		props.put("group.id", "gavka-tool-" + UUID.randomUUID());
 		props.put("auto.offset.reset", "earliest");
-		props.put("enable.auto.commit", "false");
-		props.put("max.poll.records", pagingParameters.getAmount());
 
 		try (final KafkaConsumer<Object, Object> consumer = new KafkaConsumer<>(props)) {
 			final Map<Integer, Long> partitionOffsets = new HashMap<>();
@@ -112,20 +108,16 @@ public class KafkaMessageService extends AbstractMessageService {
 						stringKey = consumerRecord.key().toString();
 					}
 					if (!filter.getKey().isEmpty() && !filter.getKey().equals(stringKey)) {
+						partitionOffsets.put(consumerRecord.partition(), consumerRecord.offset() + 1);
 						continue;
 					}
 					String stringValue = "";
 					if (consumerRecord.value() != null) {
 						stringValue = consumerRecord.value().toString();
 					}
-					messages.add(new Message(stringKey, stringValue, consumerRecord.offset(),
-							consumerRecord.partition(), consumerRecord.timestamp()));
-					//partitionOffsets.put(consumerRecord.partition(), consumerRecord.offset() + 1);
+					messages.add(new Message(stringKey, stringValue, consumerRecord.offset(),consumerRecord.partition(), consumerRecord.timestamp()));
 				}	
-				consumer.commitSync();
-				for (final TopicPartition tp : partitions.values()) {
-					partitionOffsets.put(tp.partition(), consumer.position(tp));
-				}
+				records = consumer.poll(1000);
 			}
 			final List<PartitionOffset> po = new ArrayList<>();
 			for (final Integer partitionOffset : partitionOffsets.keySet()) {
