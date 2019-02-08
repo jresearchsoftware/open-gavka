@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.jresearch.gavka</groupId>
 		<artifactId>org.jresearch.gavka.pom</artifactId>
-		<version>1.0.22-SNAPSHOT</version>
+		<version>1.0.23-SNAPSHOT</version>
 		<relativePath>../pom/pom.xml</relativePath>
 	</parent>
 	<artifactId>org.jresearch.gavka.api.app</artifactId>
@@ -38,41 +38,9 @@
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.jresearch.gavka</groupId>
-			<artifactId>org.jresearch.gavka.backend</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
 			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.jresearch.commons.gwt.base</groupId>
-			<artifactId>org.jresearch.commons.gwt.base.srv</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-beans</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.jresearch.commons.gwt.base</groupId>
-			<artifactId>org.jresearch.commons.gwt.base.shared</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.jresearch.gavka</groupId>
-			<artifactId>org.jresearch.gavka.rest.api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.jresearch.gavka</groupId>
-			<artifactId>org.jresearch.gavka.domain</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-core</artifactId>
 		</dependency>
 	</dependencies>
 	<build>
