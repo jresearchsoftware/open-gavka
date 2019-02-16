@@ -3,7 +3,7 @@ package org.jresearch.gavka.gwt.core.client.module.connection.editor;
 import org.dominokit.domino.ui.icons.Icons;
 import org.dominokit.domino.ui.icons.MdiIcon;
 
-public enum MdiIconEnum {
+public enum MdIconEnum {
 	access_point_mdi(Icons.MDI_ICONS.access_point_mdi()),
 	access_point_network_mdi(Icons.MDI_ICONS.access_point_network_mdi()),
 	account_mdi(Icons.MDI_ICONS.account_mdi()),
@@ -2961,7 +2961,7 @@ public enum MdiIconEnum {
 
 	private MdiIcon icon;
 
-	private MdiIconEnum(MdiIcon icon) {
+	private MdIconEnum(MdiIcon icon) {
 		this.icon = icon;
 	}
 

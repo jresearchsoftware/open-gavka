@@ -9,7 +9,7 @@ import javax.inject.Inject;
 
 import org.dominokit.domino.ui.button.Button;
 import org.dominokit.domino.ui.forms.FieldsGrouping;
-import org.dominokit.domino.ui.forms.SuggestBox;
+import org.dominokit.domino.ui.forms.Select;
 import org.dominokit.domino.ui.forms.TextBox;
 import org.dominokit.domino.ui.grid.Row;
 import org.dominokit.domino.ui.icons.Icons;
@@ -36,8 +36,8 @@ public class EditConnectionDialog implements Editor<Connection> {
 
 	TextBox id;
 	TextBox label;
-	SuggestBox icon;
-	TextBox color;
+	Select<String> icon;
+	Select<String> color;
 
 	private Consumer<Connection> onCreateHandler = c -> {
 	};
@@ -48,15 +48,14 @@ public class EditConnectionDialog implements Editor<Connection> {
 	private HtmlContentBuilder<HTMLDivElement> colorMark = div().style("width: 2rem; height: 2rem;");
 
 	@Inject
-	public EditConnectionDialog(IconSuggestBoxStore iconStore) {
+	public EditConnectionDialog() {
 
 		id = TextBox.create("Id")
-				.setRequired(true)
-				.setAutoValidation(true)
 				.groupBy(fieldsGrouping)
 				.setPlaceholder("Connection id")
 				.floating()
-				.setLeftAddon(Icons.ALL.label());
+				.setReadOnly(true)
+				.setLeftAddon(Icons.ALL.barcode_scan_mdi());
 
 		label = TextBox.create("Label")
 				.setRequired(true)
@@ -64,24 +63,20 @@ public class EditConnectionDialog implements Editor<Connection> {
 				.groupBy(fieldsGrouping)
 				.setPlaceholder("Connection label")
 				.floating()
-				.setLeftAddon(Icons.ALL.description());
+				.setLeftAddon(Icons.ALL.label_mdi());
 
-		icon = SuggestBox.create("Icon", iconStore)
+		icon = MdIconSelect.create("Icon")
 				.setRequired(true)
 				.setAutoValidation(true)
 				.groupBy(fieldsGrouping)
-				.setPlaceholder("Connection icon")
-				.floating()
-				.setLeftAddon(Icons.ALL.description())
+				.setLeftAddon(Icons.ALL.paw_mdi())
 				.addChangeHandler(this::onIcon);
 
-		color = TextBox.create("Color")
+		color = MdColorSelect.create("Color")
 				.setRequired(true)
 				.setAutoValidation(true)
 				.groupBy(fieldsGrouping)
-				.setPlaceholder("Connection color")
-				.floating()
-				.setLeftAddon(Icons.ALL.description())
+				.setLeftAddon(Icons.ALL.palette_mdi())
 				.setRightAddon(colorMark)
 				.addChangeHandler(this::onColor);
 
@@ -113,16 +108,17 @@ public class EditConnectionDialog implements Editor<Connection> {
 			colorMark.asElement().style.backgroundColor = Color.of(value).getHex();
 			color.clearInvalid();
 		} catch (IllegalArgumentException e) {
-			color.invalidate("Color doesn't exist");
+			icon.invalidate("Color doesn't exist");
 		}
 	}
 
 	private void onIcon(String value) {
 		try {
+			icon.removeRightAddon();
 			icon.setRightAddon(Icons.of(value));
 			icon.clearInvalid();
 		} catch (IllegalArgumentException e) {
-			icon.invalidate("Color doesn't exist");
+			icon.invalidate("Icon doesn't exist");
 		}
 	}
 
