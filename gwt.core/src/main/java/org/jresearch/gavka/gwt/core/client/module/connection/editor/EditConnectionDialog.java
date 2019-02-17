@@ -114,7 +114,6 @@ public class EditConnectionDialog implements Editor<Connection> {
 
 	private void onIcon(String value) {
 		try {
-			icon.removeRightAddon();
 			icon.setRightAddon(Icons.of(value));
 			icon.clearInvalid();
 		} catch (IllegalArgumentException e) {
