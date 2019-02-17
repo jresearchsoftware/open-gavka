@@ -31,18 +31,20 @@ public class ConnectionController extends AbstractModuleController<ConnectionVie
 		this.srv = srv;
 	}
 
-	@Override
-	public void onViewCreate() {
-		super.onViewCreate();
-		REST.withCallback(new GwtMethodCallback<>(bus, this::addSubmodules)).call(srv).get();
-	}
-
-	public void addSubmodules(final List<Connection> connections) {
+	public void onLoad(final List<Connection> connections) {
 		connections.forEach(this::addSubmodule);
+		ConnectionView view = getView();
+		if (view != null) {
+			view.updateConnections(connections);
+		}
 	}
 
 	public void addSubmodule(Connection connection) {
 		gavkaAppController.addSubmodule(ID, connection.getLabel());
+	}
+
+	public void refreshConnections() {
+		REST.withCallback(new GwtMethodCallback<>(bus, this::onLoad)).call(srv).get();
 	}
 
 }

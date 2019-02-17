@@ -32,7 +32,7 @@ public class KafkaConnectionService implements ConnectionService {
 	}
 
 	@Override
-	public boolean add(Connection connection) {
+	public boolean update(Connection connection) {
 		return connections.add(connection);
 	}
 

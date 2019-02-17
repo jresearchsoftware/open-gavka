@@ -1,5 +1,6 @@
 package org.jresearch.gavka.gwt.core.client.module.connection;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -34,6 +35,7 @@ import elemental2.dom.HTMLElement;
 @Singleton
 public class ConnectionView extends AbstractView<ConnectionController> {
 
+	@SuppressWarnings("null")
 	@Nonnull
 	private final HTMLDivElement element = Elements.div().asElement();
 	@Nonnull
@@ -41,15 +43,21 @@ public class ConnectionView extends AbstractView<ConnectionController> {
 	@Nonnull
 	private final Button addButton;
 	@Nonnull
-	private EditConnectionDialog conectionEditor;
+	private final EditConnectionDialog conectionEditor;
+	@Nonnull
+	private final Bus bus;
+	@Nonnull
+	private final List<Row_12> connectionRows = new ArrayList<>();
 
+	@SuppressWarnings("null")
 	@Inject
 	public ConnectionView(@Nonnull final ConnectionController controller, @Nonnull final GavkaConnectionRestService gavkaConnectionRestService, @Nonnull Bus bus, @Nonnull EditConnectionDialog conectionEditor) {
 		super(controller);
 		this.gavkaConnectionRestService = gavkaConnectionRestService;
+		this.bus = bus;
 		this.conectionEditor = conectionEditor;
+		conectionEditor.onSave(this::save);
 		element.appendChild(BlockHeader.create("Connections", "List of configured connections. To add new use the plus icon in the bottom right conner.").asElement());
-		REST.withCallback(new GwtMethodCallback<>(bus, this::addConnections)).call(gavkaConnectionRestService).get();
 		addButton = Button.create(Icons.ALL.add())
 				.setBackground(Color.THEME)
 				.setContent("ADD CONNECTION")
@@ -61,11 +69,20 @@ public class ConnectionView extends AbstractView<ConnectionController> {
 				.addClickListener(this::add)
 				.hide();
 		DomGlobal.document.body.appendChild(addButton.asElement());
+		controller.refreshConnections();
 	}
 
 	private void add(Event evt) {
 		edit(new Connection());
 
+	}
+
+	private void save(Connection connection) {
+		REST.withCallback(new GwtMethodCallback<>(bus, this::load)).call(gavkaConnectionRestService).save(connection);
+	}
+
+	private void load(@SuppressWarnings("unused") Boolean added) {
+		controller.refreshConnections();
 	}
 
 	private void edit(Connection connection) {
@@ -85,7 +102,10 @@ public class ConnectionView extends AbstractView<ConnectionController> {
 		super.onHide();
 	}
 
-	private void addConnections(List<Connection> connections) {
+	@SuppressWarnings("boxing")
+	public void updateConnections(List<Connection> connections) {
+		connectionRows.forEach(Row_12::remove);
+		connectionRows.clear();
 		final AtomicInteger counter = new AtomicInteger(0);
 		connections
 				.stream()
@@ -99,6 +119,7 @@ public class ConnectionView extends AbstractView<ConnectionController> {
 	private Row_12 toRow(List<Connection> connections) {
 		Row_12 result = Row.create();
 		connections.stream().map(this::toColumn).forEach(result::addColumn);
+		connectionRows.add(result);
 		return result;
 	}
 
@@ -109,7 +130,7 @@ public class ConnectionView extends AbstractView<ConnectionController> {
 	}
 
 	private InfoBox toInfoBox(Connection connection) {
-		return InfoBox.create(getIcon(connection), connection.getLabel(), connection.getId())
+		return InfoBox.create(getIcon(connection), connection.getId(), connection.getLabel())
 				.setBackground(getColor(connection))
 				.setHoverEffect(InfoBox.HoverEffect.ZOOM)
 				.addClickListener(e -> edit(connection));
