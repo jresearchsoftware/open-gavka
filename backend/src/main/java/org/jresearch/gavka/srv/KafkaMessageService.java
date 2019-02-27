@@ -161,7 +161,7 @@ public class KafkaMessageService extends AbstractMessageService {
 					Long offset = entry.getValue().offset();
 					TopicPartition partition = entry.getKey();
 					consumer.seek(partition, offset);
-					partitionOffsets.put(partition.partition(), offset);
+					partitionOffsets.put(partition.partition(), offset + 1);
 				}else {
 					TopicPartition partition = entry.getKey();
 					consumer.seekToEnd(Collections.singleton(partition));
