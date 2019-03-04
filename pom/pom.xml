@@ -31,7 +31,7 @@
 	<properties>
 		<!-- Used by the project -->
 		<gwtBase.version>1.0.198-SNAPSHOT</gwtBase.version>
-		<domino.version>1.0.35-SNAPSHOT</domino.version>
+		<domino.version>1.0.36-SNAPSHOT</domino.version>
 		<gwtCldr.version>1.0.6-SNAPSHOT</gwtCldr.version>
 		<gwtTimer.version>1.4.2-SNAPSHOT</gwtTimer.version>
 	</properties>
