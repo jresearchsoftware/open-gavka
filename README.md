@@ -36,20 +36,22 @@ Two files *api.war* and *gavka.war* will be under _api.app/target_ and _gwt.app/
 
 ### How to Run with Docker ###
 
+**Plase, pay attention to the API container name, to correct work of the client the DNS inside the Docker should be able to resomve gavka-api host.**
+
 If you have an access to running Kafka cluster add the connection parameters to the docker-compose.yml
 
 ```yml
   version: "2.0"
 
   services:
-      api: 
+      gavka-api: 
           image: gavka/gavka-api:dev
           environment:  
             - bootstrap.servers=172.16.1.1:9092
             - schema.registry.url=http://172.16.1.1:8081
-      client:
+      gavka-client:
           depends_on: 
-              - api
+              - gavka-api
           image: gavka/gavka-ui:dev
           ports:
               - 90:80
@@ -65,13 +67,13 @@ If you do not have running Kafka and just want to run it with the mock services 
   version: "2.0"
 
   services:
-      api: 
+      gavka-api: 
           image: gavka/gavka-api:dev
           environment:  
             - spring.profiles.active=nokafka
-      client:
+      gavka-client:
           depends_on: 
-              - api
+              - gavka-api
           image: gavka/gavka-ui:dev
           ports:
               - 90:80
