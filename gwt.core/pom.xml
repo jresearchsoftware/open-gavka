@@ -96,9 +96,29 @@
 			<groupId>org.jresearch.gwtproject.i18n</groupId>
 			<artifactId>gwt-cldr</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.jresearch.commons.gwt.mdIcon</groupId>
+			<artifactId>org.jresearch.commons.gwt.mdIcon.processor</artifactId>
+			<version>1.0.1-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<failOnError>false</failOnError>
+					<annotationProcessorPaths>
+						<path>
+							<groupId>org.jresearch.commons.gwt.mdIcon</groupId>
+							<artifactId>org.jresearch.commons.gwt.mdIcon.processor</artifactId>
+							<version>1.0.1-SNAPSHOT</version>
+						</path>
+					</annotationProcessorPaths>
+				</configuration>
+			</plugin>
 			<plugin>
 				<artifactId>maven-dependency-plugin</artifactId>
 				<!-- To correct work of GWT -->
@@ -122,15 +142,14 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<failOnError>false</failOnError>
-				</configuration>
-			</plugin>
-			<plugin>
 				<artifactId>maven-resources-plugin</artifactId>
 				<configuration>
 					<resources>
+						<resource>
+							<include>meta.json</include>
+							<directory>src/main/resources</directory>
+							<filtering>false</filtering>
+						</resource>
 						<resource>
 							<directory>src/main/web</directory>
 							<filtering>true</filtering>
