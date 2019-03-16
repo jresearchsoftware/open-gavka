@@ -1,7 +1,7 @@
 version: "2.0"
 
 services:
-    api: 
+    gavka-api: 
         image: gavka/gavka-api:dev
         environment:  
 # uncomment if you do not have kafka and want to use mock          
@@ -9,9 +9,9 @@ services:
 # if you have working kafka, put here connection parameters to kafka   
           - bootstrap.servers=172.16.1.1:9092
           - schema.registry.url=http://172.16.1.1:8081
-    client:
+    gavka-client:
         depends_on: 
-            - api
+            - gavka-api
         image: gavka/gavka-ui:dev
         ports:
             - 90:80
