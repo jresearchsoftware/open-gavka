@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.jresearch.gavka</groupId>
 		<artifactId>org.jresearch.gavka.pom</artifactId>
-		<version>1.0.24-SNAPSHOT</version>
+		<version>1.0.25-SNAPSHOT</version>
 		<relativePath>../pom/pom.xml</relativePath>
 	</parent>
 	<artifactId>org.jresearch.gavka.backend</artifactId>
@@ -79,6 +79,10 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-beans</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
 		</dependency>
 	</dependencies>
 </project>

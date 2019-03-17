@@ -7,7 +7,7 @@
 	</parent>
 	<groupId>org.jresearch.gavka</groupId>
 	<artifactId>org.jresearch.gavka.pom</artifactId>
-	<version>1.0.24-SNAPSHOT</version>
+	<version>1.0.25-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>JRS kafka UI: Apache Kafka admin application - project POM</name>
 	<url>https://bitbucket.org/JRS/open-gavka</url>
@@ -31,7 +31,7 @@
 	<properties>
 		<!-- Used by the project -->
 		<gwtBase.version>1.0.198-SNAPSHOT</gwtBase.version>
-		<domino.version>1.0.34-SNAPSHOT</domino.version>
+		<domino.version>1.0.40-SNAPSHOT</domino.version>
 		<gwtCldr.version>1.0.6-SNAPSHOT</gwtCldr.version>
 		<gwtTimer.version>1.4.2-SNAPSHOT</gwtTimer.version>
 	</properties>
