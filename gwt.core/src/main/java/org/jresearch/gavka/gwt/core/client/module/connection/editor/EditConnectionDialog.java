@@ -38,6 +38,10 @@ public class EditConnectionDialog implements Editor<Connection> {
 	TextBox label;
 	Select<String> icon;
 	Select<String> color;
+	@Ignore
+	TextBox bootstrapServersString;
+	StringsEditorWrapper bootstrapServers;
+	TextBox schemaRegistryUrl;
 
 	private Consumer<Connection> onCreateHandler = c -> {
 	};
@@ -80,6 +84,23 @@ public class EditConnectionDialog implements Editor<Connection> {
 				.setRightAddon(colorMark)
 				.addChangeHandler(this::onColor);
 
+		bootstrapServersString = TextBox.create("Bootstrap servers")
+				.setRequired(true)
+				.setAutoValidation(true)
+				.groupBy(fieldsGrouping)
+				.setPlaceholder("hostnames or IP's separated by comma")
+				.floating()
+				.setLeftAddon(Icons.ALL.bootstrap_mdi());
+		bootstrapServers = new StringsEditorWrapper(bootstrapServersString);
+
+		schemaRegistryUrl = TextBox.create("Schema registry URL")
+				.setRequired(false)
+				.setAutoValidation(true)
+				.groupBy(fieldsGrouping)
+				.setPlaceholder("hostname or IP of a schema registry")
+				.floating()
+				.setLeftAddon(Icons.ALL.registered_trademark_mdi());
+
 		modalDialog = ModalDialog.create()
 				.setAutoClose(false)
 				.appendChild(Row.create()
@@ -90,6 +111,10 @@ public class EditConnectionDialog implements Editor<Connection> {
 						.fullSpan(column -> column.appendChild(icon)))
 				.appendChild(Row.create()
 						.fullSpan(column -> column.appendChild(color)))
+				.appendChild(Row.create()
+						.fullSpan(column -> column.appendChild(bootstrapServersString)))
+				.appendChild(Row.create()
+						.fullSpan(column -> column.appendChild(schemaRegistryUrl)))
 				.appendFooterChild(Button.create(Icons.ALL.clear())
 						.linkify()
 						.setContent("CANCEL")

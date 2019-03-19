@@ -6,7 +6,7 @@ public class Connection {
 
 	private String id;
 	private String label;
-	private String icon = "device_hub";
+	private String icon = "mdi-hubspot";
 	private String color = "TEAL LIGHTEN 5";
 	private List<String> bootstrapServers;
 	private String schemaRegistryUrl;
