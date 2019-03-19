@@ -42,14 +42,14 @@ If you have an access to running Kafka cluster add the connection parameters to 
   version: "2.0"
 
   services:
-      api: 
+      gavka-api: 
           image: gavka/gavka-api:dev
           environment:  
             - bootstrap.servers=172.16.1.1:9092
             - schema.registry.url=http://172.16.1.1:8081
-      client:
+      gavka-client:
           depends_on: 
-              - api
+              - gavka-api
           image: gavka/gavka-ui:dev
           ports:
               - 90:80
@@ -65,13 +65,13 @@ If you do not have running Kafka and just want to run it with the mock services 
   version: "2.0"
 
   services:
-      api: 
+      gavka-api: 
           image: gavka/gavka-api:dev
           environment:  
             - spring.profiles.active=nokafka
-      client:
+      gavka-client:
           depends_on: 
-              - api
+              - gavka-api
           image: gavka/gavka-ui:dev
           ports:
               - 90:80
