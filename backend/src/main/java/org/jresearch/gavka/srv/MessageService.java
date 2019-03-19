@@ -10,10 +10,10 @@ import org.jresearch.gavka.rest.api.PagingParameters;
 
 public interface MessageService {
 
-	MessagePortion getMessages(PagingParameters pagingParameters, MessageFilter messageFilter);
+	MessagePortion getMessages(String connectionId, PagingParameters pagingParameters, MessageFilter messageFilter);
 
-	List<String> getMessageTopics();
+	List<String> getMessageTopics(String connectionId);
 
-	void exportMessages(OutputStream bos, MessageFilter filter) throws IOException;
+	void exportMessages(String connectionId, OutputStream bos, MessageFilter filter) throws IOException;
 
 }

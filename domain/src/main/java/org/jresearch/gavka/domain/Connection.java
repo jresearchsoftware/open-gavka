@@ -1,11 +1,15 @@
 package org.jresearch.gavka.domain;
 
+import java.util.List;
+
 public class Connection {
 
 	private String id;
 	private String label;
 	private String icon = "device_hub";
 	private String color = "TEAL LIGHTEN 5";
+	private List<String> bootstrapServers;
+	private String schemaRegistryUrl;
 
 	public String getId() {
 		return id;
@@ -37,6 +41,22 @@ public class Connection {
 
 	public void setColor(String color) {
 		this.color = color;
+	}
+
+	public List<String> getBootstrapServers() {
+		return bootstrapServers;
+	}
+
+	public void setBootstrapServers(List<String> bootstrapServers) {
+		this.bootstrapServers = bootstrapServers;
+	}
+
+	public String getSchemaRegistryUrl() {
+		return schemaRegistryUrl;
+	}
+
+	public void setSchemaRegistryUrl(String schemaRegistryUrl) {
+		this.schemaRegistryUrl = schemaRegistryUrl;
 	}
 
 }

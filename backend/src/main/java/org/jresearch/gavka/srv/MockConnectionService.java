@@ -17,7 +17,7 @@ import one.util.streamex.StreamEx;
 
 @Profile("nokafka")
 @Component
-public class MockConnectionService implements ConnectionService {
+public class MockConnectionService extends AbstractConnectionService {
 
 	@Nonnull
 	private List<Connection> connections = new ArrayList<>();

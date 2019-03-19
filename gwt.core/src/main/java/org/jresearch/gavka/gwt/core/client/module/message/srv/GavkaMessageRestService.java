@@ -24,17 +24,17 @@ public interface GavkaMessageRestService extends GavkaMessageService, DirectRest
 	@GET
 	@Path(SRV_ROOT + SRV_PATH + M_R_TOPICS)
 	@Override
-	List<String> topics();
+	List<String> topics(String connectionId);
 
 	@GET
 	@Path(SRV_ROOT + SRV_PATH + M_R_KEY_FORMATS)
 	@Override
-	List<KeyFormat> keyFormats();
+	List<KeyFormat> keyFormats(String connectionId);
 
 	@GET
 	@Path(SRV_ROOT + SRV_PATH + M_R_MESSAGE_FORMATS)
 	@Override
-	List<MessageFormat> messageFormats();
+	List<MessageFormat> messageFormats(String connectionId);
 
 	@GET
 	@Path(SRV_ROOT + SRV_PATH + M_R_CONNECTIONS)
