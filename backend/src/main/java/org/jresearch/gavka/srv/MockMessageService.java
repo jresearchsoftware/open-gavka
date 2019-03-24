@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.jresearch.gavka.domain.Message;
 import org.jresearch.gavka.domain.MessageFilter;
+import org.jresearch.gavka.domain.TopicInfo;
 import org.jresearch.gavka.rest.api.MessagePortion;
 import org.jresearch.gavka.rest.api.PagingParameters;
 import org.jresearch.gavka.tool.Messages;
@@ -35,6 +36,12 @@ public class MockMessageService extends AbstractMessageService {
 		for (final Message message : messages) {
 			bos.write(message.toString().getBytes());
 		}
+	}
+
+	@Override
+	public TopicInfo getTopic(String topicName) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

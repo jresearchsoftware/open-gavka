@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import java.util.List;
 
 import org.jresearch.gavka.domain.MessageFilter;
+import org.jresearch.gavka.domain.TopicInfo;
 import org.jresearch.gavka.rest.api.MessagePortion;
 import org.jresearch.gavka.rest.api.PagingParameters;
 
@@ -16,4 +17,5 @@ public interface MessageService {
 
 	void exportMessages(String connectionId, OutputStream bos, MessageFilter filter) throws IOException;
 
+	TopicInfo getTopic(String topicName);
 }
