@@ -33,10 +33,6 @@
 			<artifactId>elemento-core</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.jresearch.gwtproject.timer</groupId>
-			<artifactId>gwt-timer</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 		</dependency>
@@ -47,10 +43,6 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.google.inject</groupId>
-			<artifactId>guice</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.google.code.findbugs</groupId>
@@ -93,13 +85,9 @@
 			<artifactId>guava-gwt</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.jresearch.gwtproject.i18n</groupId>
-			<artifactId>gwt-cldr</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>org.jresearch.commons.gwt.mdIcon</groupId>
 			<artifactId>org.jresearch.commons.gwt.mdIcon.processor</artifactId>
-			<version>1.0.1-SNAPSHOT</version>
+			<version>1.0.2</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
@@ -114,7 +102,7 @@
 						<path>
 							<groupId>org.jresearch.commons.gwt.mdIcon</groupId>
 							<artifactId>org.jresearch.commons.gwt.mdIcon.processor</artifactId>
-							<version>1.0.1-SNAPSHOT</version>
+							<version>1.0.2</version>
 						</path>
 					</annotationProcessorPaths>
 				</configuration>
