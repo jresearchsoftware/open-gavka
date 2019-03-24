@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.jresearch.gavka</groupId>
+		<artifactId>org.jresearch.gavka.pom</artifactId>
+		<version>1.0.25-SNAPSHOT</version>
+		<relativePath>../pom/pom.xml</relativePath>
+	</parent>
+	<artifactId>org.jresearch.gavka.admin.gwt.app</artifactId>
+	<name>JRS kafka UI: Apache Kafka admin application - GWT application to test the GWT admin part</name>
+	<packaging>war</packaging>
+	<url>https://bitbucket.org/JRS/open-gavka</url>
+	<dependencies>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jresearch.gavka</groupId>
+			<artifactId>org.jresearch.gavka.admin.gwt.core</artifactId>
+			<type>war</type>
+			<scope>runtime</scope>
+		</dependency>
+	</dependencies>
+	<build>
+		<finalName>gavkin</finalName>
+	</build>
+</project>
