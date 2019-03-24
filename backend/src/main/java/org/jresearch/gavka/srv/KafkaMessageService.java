@@ -61,9 +61,6 @@ public class KafkaMessageService extends AbstractMessageService {
 	@Value("${schema.registry.url:#{null}}")
 	private String schemaRegistryUrl;
 
-	public KafkaMessageService() {
-	}
-
 	@PostConstruct
 	protected void initClient() {
 		final Properties props = new Properties();
@@ -74,9 +71,9 @@ public class KafkaMessageService extends AbstractMessageService {
 
 	@Override
 	@SuppressWarnings({ "null" })
-	public MessagePortion getMessages(final PagingParameters pagingParameters, final MessageFilter filter) {
+	public MessagePortion getMessages(final String connectionId, final PagingParameters pagingParameters, final MessageFilter filter) {
 		final Properties props = getProperties();
-	
+
 		props.put("key.deserializer", getKeyDeserializer(filter.getKeyFormat()));
 		props.put("value.deserializer", getMessageDeserializer(filter.getMessageFormat()));
 		props.put("auto.offset.reset", "earliest");
@@ -145,8 +142,7 @@ public class KafkaMessageService extends AbstractMessageService {
 		}
 	}
 
-	protected Map<Integer, TopicPartition> initConsumer(final MessageFilter filter,
-			final KafkaConsumer<Object, Object> consumer) {
+	protected Map<Integer, TopicPartition> initConsumer(final MessageFilter filter, final KafkaConsumer<Object, Object> consumer) {
 		final Map<Integer, TopicPartition> partitions = new HashMap<>();
 		// get all partitions for the topic
 		for (final PartitionInfo partition : consumer.partitionsFor(filter.getTopic())) {
@@ -157,8 +153,7 @@ public class KafkaMessageService extends AbstractMessageService {
 		return partitions;
 	}
 
-	protected void positionConsumer(final Map<Integer, TopicPartition> partitions, final MessageFilter filter,
-			final KafkaConsumer<Object, Object> consumer, Map<Integer, Long> partitionOffsets) {
+	private static void positionConsumer(final Map<Integer, TopicPartition> partitions, final MessageFilter filter, final KafkaConsumer<Object, Object> consumer, Map<Integer, Long> partitionOffsets) {
 		if (filter.getFrom() == null) {
 			// no start time, position to the beginning
 			consumer.seekToBeginning(partitions.values());
@@ -186,20 +181,18 @@ public class KafkaMessageService extends AbstractMessageService {
 	}
 
 	@Override
-	public List<String> getMessageTopics() {
+	public List<String> getMessageTopics(final String connectionId) {
 		List<String> list = new ArrayList<>();
 		try {
 			list = new ArrayList<>(kafkaClient.listTopics().names().get());
-		} catch (final InterruptedException e) {
-			log.error("Error getting topics", e);
-		} catch (final ExecutionException e) {
+		} catch (final InterruptedException | ExecutionException e) {
 			log.error("Error getting topics", e);
 		}
 		Collections.sort(list);
 		return list;
 	}
 
-	private String getKeyDeserializer(final KeyFormat f) {
+	private static String getKeyDeserializer(final KeyFormat f) {
 		switch (f) {
 		case STRING:
 			return "org.apache.kafka.common.serialization.StringDeserializer";
@@ -211,7 +204,7 @@ public class KafkaMessageService extends AbstractMessageService {
 
 	}
 
-	private String getMessageDeserializer(final MessageFormat f) {
+	private static String getMessageDeserializer(final MessageFormat f) {
 		switch (f) {
 		case STRING:
 			return "org.apache.kafka.common.serialization.StringDeserializer";
@@ -235,7 +228,7 @@ public class KafkaMessageService extends AbstractMessageService {
 	}
 
 	@Override
-	public void exportMessages(final OutputStream bos, final MessageFilter filter) throws IOException {
+	public void exportMessages(final String connectionId, final OutputStream bos, final MessageFilter filter) throws IOException {
 		final SimpleDateFormat sf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 		Properties props = getProperties();
 		props.put("key.deserializer", getKeyDeserializer(filter.getKeyFormat()));
@@ -288,8 +281,7 @@ public class KafkaMessageService extends AbstractMessageService {
 		Map<TopicPartition, Long> endOffsets = consumer.endOffsets(partitions);
 		for (TopicPartition topicPartition : partitions) {
 			int pNumber = topicPartition.partition();
-			PartitionOffsetInfo po = new PartitionOffsetInfo(pNumber, beginingOffsets.get(pNumber),
-					endOffsets.get(pNumber));
+			PartitionOffsetInfo po = new PartitionOffsetInfo(pNumber, beginingOffsets.get(pNumber), endOffsets.get(pNumber));
 			ti.addPartition(pNumber, po);
 		}
 		consumer.close();
@@ -311,10 +303,10 @@ public class KafkaMessageService extends AbstractMessageService {
 									PartitionInfoForConsumerGroup pi = new PartitionInfoForConsumerGroup();
 									pi.setCurrentOffset(v.offset());
 									PartitionOffsetInfo po = ti.getPartitions().get(k.partition());
-									if(po == null) {
+									if (po == null) {
 										pi.setLag(v.offset());
-									}else {
-										pi.setLag(po.getEndOffset()-v.offset());
+									} else {
+										pi.setLag(po.getEndOffset() - v.offset());
 									}
 									gr.addPartitionInfo(k.partition(), pi);
 								}
@@ -326,12 +318,12 @@ public class KafkaMessageService extends AbstractMessageService {
 			ti.setConsumerGroups(cgf);
 
 		} catch (Exception e) {
-			log.error("Exception getting consumer groups",e);
+			log.error("Exception getting consumer groups", e);
 		}
 		return ti;
 	}
 
-	protected String getStringForExport(final Message message, final SimpleDateFormat sf) {
+	protected static String getStringForExport(final Message message, final SimpleDateFormat sf) {
 		return MoreObjects.toStringHelper(Message.class).add("key", message.getKey()).add("value", message.getValue())
 				.add("offset", message.getOffset()).add("partition", message.getPartition())
 				.add("timestamp", sf.format(new Date(message.getTimestamp()))).toString() + "\n";

@@ -20,18 +20,18 @@ import com.google.common.collect.ImmutableList;
 public class MockMessageService extends AbstractMessageService {
 
 	@Override
-	public MessagePortion getMessages(final PagingParameters pagingParameters, final MessageFilter filter) {
+	public MessagePortion getMessages(String connectionId, final PagingParameters pagingParameters, final MessageFilter filter) {
 		final List<Message> messages = "no".equalsIgnoreCase(filter.getKey()) ? ImmutableList.of() : Messages.getMessages();
 		return new MessagePortion(ImmutableList.of(), messages);
 	}
 
 	@Override
-	public List<String> getMessageTopics() {
+	public List<String> getMessageTopics(String connectionId) {
 		return Messages.getTopics();
 	}
 
 	@Override
-	public void exportMessages(final OutputStream bos, final MessageFilter filter) throws IOException {
+	public void exportMessages(String connectionId, final OutputStream bos, final MessageFilter filter) throws IOException {
 		final List<Message> messages = Messages.getMessages();
 		for (final Message message : messages) {
 			bos.write(message.toString().getBytes());

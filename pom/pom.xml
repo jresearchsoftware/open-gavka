@@ -24,6 +24,9 @@
 		<module>../gwt.app</module>
 		<module>../gwt.docker</module>
 		<module>../gwt.core</module>
+		<module>../admin.gwt.app</module>
+		<module>../admin.gwt.docker</module>
+		<module>../admin.gwt.core</module>
 		<module>../backend</module>
 		<module>../domain</module>
 		<module>../rest.api</module>
@@ -61,13 +64,13 @@
 			</dependency>
 			<dependency>
 				<groupId>org.jresearch.gavka</groupId>
-				<artifactId>org.jresearch.gavka.gwt.core</artifactId>
+				<artifactId>org.jresearch.gavka.admin.gwt.core</artifactId>
 				<type>war</type>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jresearch.gavka</groupId>
-				<artifactId>org.jresearch.gavka.gwt.md</artifactId>
+				<artifactId>org.jresearch.gavka.gwt.core</artifactId>
 				<type>war</type>
 				<version>${project.version}</version>
 			</dependency>

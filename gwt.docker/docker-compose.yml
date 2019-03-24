@@ -9,9 +9,16 @@ services:
 # if you have working kafka, put here connection parameters to kafka   
           - bootstrap.servers=172.16.1.1:9092
           - schema.registry.url=http://172.16.1.1:8081
+    gavka-admin:
+        depends_on: 
+            - gavka-api
+        image: gavka/gavkin-ui:dev
+        ports:
+            - 90:80
     gavka-client:
         depends_on: 
             - gavka-api
+            - gavkin-ui
         image: gavka/gavka-ui:dev
         ports:
             - 90:80

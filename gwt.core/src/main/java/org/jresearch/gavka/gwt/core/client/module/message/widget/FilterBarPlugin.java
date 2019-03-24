@@ -100,21 +100,18 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 
 	private HTMLInputElement hiddenFrom;
 	private HTMLInputElement hiddenTopic;
-//	private HTMLInputElement hiddenKey;
 	private HTMLInputElement hiddenKeyFormat;
 	private HTMLInputElement hiddenMessageFormat;
+	private HTMLInputElement hiddenConnectionId;
 
 	@Nonnull
 	private HtmlContentBuilder<HTMLFormElement> exportForm;
-//	private boolean notStarted = true;
-//	private double start;
-//	@Nonnull
-//	private ProgressBar bar;
 
 	@SuppressWarnings("null")
 	@Inject
 	public FilterBarPlugin(@Nonnull final GavkaMessageRestService srv, @Nonnull final Bus bus) {
-		REST.withCallback(new GwtMethodCallback<>(bus, this::addTopics)).call(srv).topics();
+		// TODO connections!!!!
+		REST.withCallback(new GwtMethodCallback<>(bus, this::addTopics)).call(srv).topics("fake");
 
 		autoSearchTimer = new Timer() {
 			@Override
@@ -190,9 +187,6 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 		final Row_12 row2 = Row.create()
 				.addColumn(Column.span3().appendChild(keyFormatBox))
 				.addColumn(Column.span3().appendChild(messageFormatBox))
-//				.addColumn(Column.span3().appendChild(Progress.create()
-//						.appendChild(bar = ProgressBar.create(autoSearchDelay))
-//						.styler(FilterBarPlugin::progressStyle)))
 				.addColumn(Column.span1().offset(10).appendChild((searchBtn = Button.create("Search")).disable().addClickListener(this::doSearch)))
 				.addColumn(Column.span1().offset(11).appendChild(clearFiltersIcon))
 				.styler(FilterBarPlugin::zerroBottomMargin);
@@ -204,6 +198,7 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 	}
 
 	private HtmlContentBuilder<HTMLFormElement> createForm() {
+		// TODO connections!!!!
 		final HtmlContentBuilder<HTMLFormElement> form = form();
 		final HTMLFormElement formEl = form.asElement();
 		formEl.action = "/api/rest/messages/export";
@@ -211,9 +206,6 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 		final InputBuilder<HTMLInputElement> from = input(hidden);
 		hiddenFrom = from.asElement();
 		hiddenFrom.name = "from";
-//		final InputBuilder<HTMLInputElement> key = input(hidden);
-//		hiddenKey = key.asElement();
-//		hiddenKey.name = "key";
 		final InputBuilder<HTMLInputElement> topic = input(hidden);
 		hiddenTopic = topic.asElement();
 		hiddenTopic.name = "topic";
@@ -223,13 +215,11 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 		final InputBuilder<HTMLInputElement> messageFormat = input(hidden);
 		hiddenMessageFormat = messageFormat.asElement();
 		hiddenMessageFormat.name = "messageFormat";
-		return form.add(from).add(topic).add(messageFormat).add(keyFormat);
+		final InputBuilder<HTMLInputElement> connectionId = input(hidden);
+		hiddenConnectionId = connectionId.asElement();
+		hiddenConnectionId.name = "connectionId";
+		return form.add(from).add(topic).add(messageFormat).add(keyFormat).add(connectionId);
 	}
-
-//	private static void progressStyle(final Style style) {
-//		style.setMarginTop(20 + Unit.PX.getType());
-//		style.setHeight(2 + Unit.PX.getType());
-//	}
 
 	private void doSearch(final Event evt) {
 		evt.preventDefault();
@@ -248,8 +238,8 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 		doSearch();
 	}
 
-	private static void zerroBottomMargin(final Style style) {
-		style.setMarginBottom("0");
+	private static void zerroBottomMargin(final Style<?, ?> style) {
+		style.setMarginBottom("0"); //$NON-NLS-1$
 	}
 
 	@Override
@@ -273,35 +263,21 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 		doSearch();
 	}
 
+	@SuppressWarnings("unused")
 	private void autoSearch(final Date date, final DateTimeFormatInfo dateTimeFormatInfo) {
 		autoSearch(null);
 	}
 
+	@SuppressWarnings("unused")
 	private void autoSearch(final Date time, final DateTimeFormatInfo dateTimeFormatInfo, final TimePicker picker) {
 		autoSearch(null);
 	}
 
+	@SuppressWarnings("unused")
 	private void autoSearch(final Object evt) {
-//		notStarted = true;
-//		DomGlobal.requestAnimationFrame(this::refreshAutoSearch);
 		autoSearchTimer.cancel();
 		autoSearchTimer.schedule(autoSearchDelay);
 	}
-
-	// private void refreshAutoSearch(final double t) {
-//		if (notStarted) {
-//			notStarted = false;
-//			start = t;
-//		}
-//		final double diff = t - start;
-//		if (diff < autoSearchDelay) {
-//			DomGlobal.requestAnimationFrame(this::refreshAutoSearch);
-//		} else {
-//			notStarted = true;
-//		}
-//		bar.setValue(diff);
-//
-//	}
 
 	public boolean isAutoSearch() {
 		return autoSearch;
@@ -416,10 +392,11 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 
 	public void export() {
 		getFrom().map(Dates::printDateTime).ifPresent(this::setFrom);
-//		hiddenKey.value = getKeyValue();
 		hiddenTopic.value = getTopic();
 		hiddenKeyFormat.value = getKeyFormat().name();
 		hiddenMessageFormat.value = getMessageFormat().name();
+		// TODO ConnectionId !!!
+		hiddenConnectionId.value = "fake";
 		exportForm.asElement().submit();
 	}
 

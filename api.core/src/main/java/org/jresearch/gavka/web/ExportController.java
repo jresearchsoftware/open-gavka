@@ -29,14 +29,14 @@ public class ExportController {
 
 	@SuppressWarnings("nls")
 	@PostMapping(GavkaMessageService.M_R_EXPORT)
-	public ResponseEntity<StreamingResponseBody> export(@RequestParam final Optional<String> topic, @RequestParam final Optional<String> key, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") final Optional<LocalDateTime> from, @RequestParam final Optional<KeyFormat> keyFormat, @RequestParam final Optional<MessageFormat> messageFormat) {
+	public ResponseEntity<StreamingResponseBody> export(@RequestParam final String connectionId, @RequestParam final Optional<String> topic, @RequestParam final Optional<String> key, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") final Optional<LocalDateTime> from, @RequestParam final Optional<KeyFormat> keyFormat, @RequestParam final Optional<MessageFormat> messageFormat) {
 		final MessageFilter filter = toMessageFilter(topic, key, from, keyFormat, messageFormat);
 		final ContentDisposition disposition = ContentDisposition.builder("attachment").filename("gavka.export").build();
 		return ResponseEntity
 				.ok()
 				.contentType(MediaType.APPLICATION_OCTET_STREAM)
 				.header(HttpHeaders.CONTENT_DISPOSITION, disposition.toString())
-				.body(out -> messageService.exportMessages(out, filter));
+				.body(out -> messageService.exportMessages(connectionId, out, filter));
 	}
 
 	private static MessageFilter toMessageFilter(final Optional<String> topic, final Optional<String> key, final Optional<LocalDateTime> from, final Optional<KeyFormat> keyFormat, final Optional<MessageFormat> messageFormat) {

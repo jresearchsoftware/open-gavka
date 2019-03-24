@@ -18,25 +18,25 @@ public interface GavkaMessageService {
 	/** {@link #export(MessageParameters)} method id */
 	String M_R_EXPORT = "/export"; //$NON-NLS-1$
 
-	/** {@link #topics()} method id */
-	String M_R_TOPICS = "/topics"; //$NON-NLS-1$
+	/** {@link #topics(String)} method id */
+	String M_R_TOPICS = "/topics/{connectionId}"; //$NON-NLS-1$
 
-	/** {@link #keyFormats()} method id */
-	String M_R_KEY_FORMATS = "/keyFormats"; //$NON-NLS-1$
+	/** {@link #keyFormats(String)} method id */
+	String M_R_KEY_FORMATS = "/keyFormats/{connectionId}"; //$NON-NLS-1$
 
-	/** {@link #messageFormats()} method id */
-	String M_R_MESSAGE_FORMATS = "/messageFormats"; //$NON-NLS-1$
+	/** {@link #messageFormats(String)} method id */
+	String M_R_MESSAGE_FORMATS = "/messageFormats/{connectionId}"; //$NON-NLS-1$
 
 	/** {@link #connections()} method id */
 	String M_R_CONNECTIONS = "/connections"; //$NON-NLS-1$
 
 	MessagePortion get(RequestMessagesParameters parameters);
 
-	List<String> topics();
+	List<String> topics(String connectionId);
 
-	List<KeyFormat> keyFormats();
+	List<KeyFormat> keyFormats(String connectionId);
 
-	List<MessageFormat> messageFormats();
+	List<MessageFormat> messageFormats(String connectionId);
 
-	List<String> connections();
+	List<ConnectionLabel> connections();
 }
