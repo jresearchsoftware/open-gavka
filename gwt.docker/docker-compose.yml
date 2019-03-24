@@ -1,24 +1,25 @@
-version: "2.0"
+version: "2"
 
 services:
     gavka-api: 
-        image: gavka/gavka-api:dev
+#        image: gavka/gavka-api:dev
+        image: gavka/gavka-api:latest
         environment:  
 # uncomment if you do not have kafka and want to use mock          
 #          - spring.profiles.active=nokafka
 # if you have working kafka, put here connection parameters to kafka   
           - bootstrap.servers=172.16.1.1:9092
           - schema.registry.url=http://172.16.1.1:8081
-    gavka-admin:
+    gavkin-ui:
         depends_on: 
             - gavka-api
-        image: gavka/gavkin-ui:dev
-        ports:
-            - 90:80
-    gavka-client:
+#        image: gavka/gavkin-ui:dev
+        image: gavka/gavkin-ui:latest
+    gavka-ui:
         depends_on: 
             - gavka-api
             - gavkin-ui
-        image: gavka/gavka-ui:dev
+#        image: gavka/gavka-ui:dev
+        image: gavka/gavka-ui:latest
         ports:
             - 90:80
