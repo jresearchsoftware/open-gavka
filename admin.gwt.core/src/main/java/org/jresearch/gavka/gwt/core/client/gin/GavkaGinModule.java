@@ -5,7 +5,6 @@ import org.jresearch.commons.gwt.client.mvc.INotificator;
 import org.jresearch.commons.gwt.client.mvc.LogNotificator;
 import org.jresearch.gavka.gwt.core.client.app.GavkaAppController;
 import org.jresearch.gavka.gwt.core.client.module.connection.gin.ConnectionGinModule;
-import org.jresearch.gavka.gwt.core.client.module.message.gin.MessagaGinModule;
 
 import com.google.gwt.inject.client.AbstractGinModule;
 
@@ -16,7 +15,6 @@ public class GavkaGinModule extends AbstractGinModule {
 		// Common apps
 		install(new UtilsGinModule());
 		// modules
-		install(new MessagaGinModule());
 		install(new ConnectionGinModule());
 
 		bind(GavkaAppController.class).asEagerSingleton();
