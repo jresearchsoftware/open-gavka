@@ -5,6 +5,10 @@ public class ConnectionLabel {
 	private String id;
 	private String label;
 
+	public ConnectionLabel() {
+		// For JSON
+	}
+
 	public ConnectionLabel(String id, String label) {
 		this.id = id;
 		this.label = label;

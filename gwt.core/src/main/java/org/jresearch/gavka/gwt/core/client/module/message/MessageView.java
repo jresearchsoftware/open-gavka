@@ -9,7 +9,6 @@ import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import org.dominokit.domino.ui.button.Button;
 import org.dominokit.domino.ui.cards.Card;
@@ -43,6 +42,7 @@ import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.i18n.client.TimeZone;
 import com.google.gwt.i18n.shared.DateTimeFormat;
 import com.google.gwt.i18n.shared.DateTimeFormat.PredefinedFormat;
+import com.google.inject.assistedinject.Assisted;
 
 import elemental2.dom.CSSProperties;
 import elemental2.dom.DomGlobal;
@@ -50,7 +50,6 @@ import elemental2.dom.Event;
 import elemental2.dom.HTMLElement;
 import elemental2.dom.Node;
 
-@Singleton
 public class MessageView extends AbstractView<MessageController> implements TableEventListener {
 
 	enum ColumnName {
@@ -86,8 +85,8 @@ public class MessageView extends AbstractView<MessageController> implements Tabl
 
 	@SuppressWarnings("null")
 	@Inject
-	public MessageView(@Nonnull final MessageController controller, @Nonnull final MessageDataSource messageDataSource, @Nonnull final FilterBarPlugin filter) {
-		super(controller);
+	public MessageView(@Nonnull final MessageDataSource messageDataSource, @Nonnull final FilterBarPlugin filter, @Assisted("connectionId") @Nonnull String connectionId, @Assisted("topic") @Nonnull String topic) {
+		super(null);
 		this.filter = filter;
 		noDataElement = Row.of16Colmns().appendChild(Column.span16().appendChild(DomGlobal.document.createTextNode("No data")));
 		this.messageDataSource = messageDataSource;

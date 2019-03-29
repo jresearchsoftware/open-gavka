@@ -24,6 +24,7 @@ public class ConnectionController extends AbstractModuleController<ConnectionVie
 
 	@Nonnull
 	public static final String ID = "org.jresearch.gavka.gwt.core.client.module.connection.ConnectionController"; //$NON-NLS-1$
+	@Nonnull
 	private GavkaConnectionRestService srv;
 	private GavkaAppController gavkaAppController;
 	private Map<String, Connection> cons = new HashMap<>();

@@ -7,14 +7,18 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
+import org.dominokit.domino.ui.Typography.Paragraph;
 import org.dominokit.domino.ui.layout.Layout;
+import org.dominokit.domino.ui.tabs.Tab;
+import org.dominokit.domino.ui.tabs.TabsPanel;
 import org.dominokit.domino.ui.tree.Tree;
 import org.dominokit.domino.ui.tree.TreeItem;
 import org.jresearch.commons.gwt.client.app.AbstractAppView;
 import org.jresearch.commons.gwt.client.app.IAppModule;
 import org.jresearch.commons.gwt.client.mvc.event.Bus;
 import org.jresearch.commons.gwt.client.mvc.event.module.ModuleEvent;
-import org.jresearch.commons.gwt.shared.tools.Strings;
+import org.jresearch.gavka.gwt.core.client.module.message.MessageController;
+import org.jresearch.gavka.rest.api.ConnectionLabel;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -28,39 +32,35 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 
 	private final class NavClickHandler implements EventListener {
 
-		private final String moduleId;
-		private final String submoduleId;
+		private final ConnectionLabel connectionLabel;
+		private final String topic;
 
-		private NavClickHandler(final String moduleId) {
-			this(moduleId, null);
-		}
-
-		private NavClickHandler(final String moduleId, final String submoduleId) {
-			this.moduleId = moduleId;
-			this.submoduleId = submoduleId;
+		private NavClickHandler(final ConnectionLabel connectionLabel, final String topic) {
+			this.connectionLabel = connectionLabel;
+			this.topic = topic;
 		}
 
 		@Override
 		public void handleEvent(final Event evt) {
-			ModuleEvent event = new ModuleEvent(moduleId);
-			if (Strings.isValuable(submoduleId)) {
-				event.setData(submoduleId);
-			}
-			bus.fire(event);
+			bus.fire(new ModuleEvent(MessageController.id(MessageController.ID, connectionLabel.getId(), topic)));
 		}
 	}
 
 	@Nonnull
 	private final Layout layout;
-	private final Tree moduleTree;
-	private Map<String, TreeItem> moduleNodes = new HashMap<>();
-	private Multimap<String, String> submodules = HashMultimap.create();
+	private final Tree connectionTree;
+	private Map<ConnectionLabel, TreeItem> connectionNodes = new HashMap<>();
+	private Multimap<ConnectionLabel, String> topics = HashMultimap.create();
+	private String defaultModule;
+	private Map<String, Tab> tabs = new HashMap<>();
+	private TabsPanel tabsPanel;
 
 	@Inject
 	public GavkaAppView(@Nonnull final GavkaAppController controller, @Nonnull final Bus bus) {
 		super(controller, bus);
 		layout = Layout.create("Gavka");
-		layout.getLeftPanel().appendChild(moduleTree = Tree.create("Modules"));
+		layout.getLeftPanel().appendChild(connectionTree = Tree.create("Connections"));
+		layout.setContent(tabsPanel = TabsPanel.create());
 	}
 
 	@Override
@@ -71,8 +71,21 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 
 	@Override
 	public boolean updateChildContent(final String viewId, final HTMLElement content) {
-		layout.setContent(content);
+		Tab tab = tabs.get(viewId);
+		if (tab == null) {
+			tab = Tab.create(getTopicName(viewId));
+			tabs.put(viewId, tab);
+			tabsPanel.appendChild(tab);
+			tab.appendChild(TabsPanel.create()
+					.appendChild(Tab.create("Messages").appendChild(content))
+					.appendChild(Tab.create("Consumers").appendChild(Paragraph.create("TODO"))));
+		}
+		tabsPanel.activateTab(tab);
 		return true;
+	}
+
+	private static String getTopicName(String viewId) {
+		return viewId.substring(viewId.lastIndexOf('.'));
 	}
 
 	@Override
@@ -87,7 +100,9 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 
 	@Override
 	public void initModules(final List<IAppModule> modules) {
-		modules.forEach(this::addModule);
+		if (!modules.isEmpty()) {
+			defaultModule = modules.get(0).getModuleId();
+		}
 	}
 
 	/*
@@ -128,20 +143,25 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 		layout.show();
 	}
 
-	public void addModule(final IAppModule module) {
-		TreeItem moduleNode = TreeItem.create(module.getName());
-		moduleNodes.put(module.getModuleId(), moduleNode);
-		moduleTree.appendChild(moduleNode.addClickListener(new NavClickHandler(module.getModuleId())));
+	@Nonnull
+	public TreeItem addConnection(final ConnectionLabel connection) {
+		TreeItem moduleNode = TreeItem.create(connection.getLabel());
+		connectionNodes.put(connection, moduleNode);
+		connectionTree.appendChild(moduleNode);
+		return moduleNode;
 	}
 
-	public void addSubmodule(String moduleId, String submoduleId, String title) {
+	public void addTopic(ConnectionLabel connection, String topic) {
 		// wrong parameters or already registered
-		if (moduleId == null || submoduleId == null || submodules.containsEntry(moduleId, submoduleId)) {
+		if (connection == null || topic == null || topics.containsEntry(connection, topic)) {
 			return;
 		}
-		submodules.put(moduleId, submoduleId);
-		TreeItem moduleNode = moduleNodes.get(moduleId);
-		moduleNode.appendChild(TreeItem.create(title).addClickListener(new NavClickHandler(moduleId, submoduleId)));
+		topics.put(connection, topic);
+		TreeItem connectionNode = connectionNodes.get(connection);
+		if (connectionNode == null) {
+			connectionNode = addConnection(connection);
+		}
+		connectionNode.appendChild(TreeItem.create(topic).addClickListener(new NavClickHandler(connection, topic)));
 	}
 
 }

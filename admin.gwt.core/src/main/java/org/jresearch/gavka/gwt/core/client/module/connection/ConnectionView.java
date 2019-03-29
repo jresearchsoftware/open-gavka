@@ -82,7 +82,7 @@ public class ConnectionView extends AbstractView<ConnectionController> {
 	}
 
 	private void load(@SuppressWarnings("unused") Boolean added) {
-		controller.refreshConnections();
+		controller().refreshConnections();
 	}
 
 	void edit(Connection connection) {
