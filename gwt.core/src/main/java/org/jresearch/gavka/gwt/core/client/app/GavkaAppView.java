@@ -8,7 +8,11 @@ import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
 import org.dominokit.domino.ui.Typography.Paragraph;
+import org.dominokit.domino.ui.collapsible.Collapsible;
+import org.dominokit.domino.ui.icons.Icon;
+import org.dominokit.domino.ui.icons.Icons;
 import org.dominokit.domino.ui.layout.Layout;
+import org.dominokit.domino.ui.style.Styles;
 import org.dominokit.domino.ui.tabs.Tab;
 import org.dominokit.domino.ui.tabs.TabsPanel;
 import org.dominokit.domino.ui.tree.Tree;
@@ -54,12 +58,36 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 	private String defaultModule;
 	private Map<String, Tab> tabs = new HashMap<>();
 	private TabsPanel tabsPanel;
+	private final Icon lockIcon = Icons.ALL.lock()
+			.style()
+			.setMarginBottom("0px")
+			.setMarginTop("0px")
+			.setCursor("pointer")
+			.add(Styles.pull_right)
+			.get();
+	private boolean locked = true;
+	private final Collapsible lockCollapsible = Collapsible.create(lockIcon).show();
 
 	@Inject
 	public GavkaAppView(@Nonnull final GavkaAppController controller, @Nonnull final Bus bus) {
 		super(controller, bus);
 		layout = Layout.create("Gavka");
+		layout.fixLeftPanelPosition();
 		layout.getLeftPanel().appendChild(connectionTree = Tree.create("Connections"));
+		connectionTree.getHeader().appendChild(lockIcon.asElement());
+		lockIcon.addClickListener(evt -> {
+			if (locked) {
+				layout.unfixLeftPanelPosition();
+				lockIcon.asElement().textContent = Icons.ALL.lock_open().getName();
+				layout.hideLeftPanel();
+				locked = false;
+			} else {
+				layout.fixLeftPanelPosition();
+				lockIcon.asElement().textContent = Icons.ALL.lock().getName();
+				locked = true;
+			}
+		});
+
 		layout.setContent(tabsPanel = TabsPanel.create());
 	}
 
