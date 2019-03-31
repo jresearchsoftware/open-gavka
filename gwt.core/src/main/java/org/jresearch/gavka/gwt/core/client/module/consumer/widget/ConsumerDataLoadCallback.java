@@ -5,7 +5,7 @@ import java.util.List;
 import org.jresearch.gavka.domain.Message;
 
 @FunctionalInterface
-public interface MessageDataLoadCallback {
+public interface ConsumerDataLoadCallback {
 
 	void onLoad(List<Message> messages);
 

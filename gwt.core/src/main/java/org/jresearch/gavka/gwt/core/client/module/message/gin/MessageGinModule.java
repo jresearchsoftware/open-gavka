@@ -6,9 +6,9 @@ import org.jresearch.gavka.gwt.core.client.module.message.MessageModule;
 
 import com.google.gwt.inject.client.multibindings.GinMultibinder;
 
-public class MessagaGinModule extends InstallableGinModule {
+public class MessageGinModule extends InstallableGinModule {
 
-	private static final String ID = "org.jresearch.gavka.gwt.core.client.module.message.gin.MessagaGinModule"; //$NON-NLS-1$
+	private static final String ID = "org.jresearch.gavka.gwt.core.client.module.message.gin.MessageGinModule"; //$NON-NLS-1$
 
 	@Override
 	protected String getId() {

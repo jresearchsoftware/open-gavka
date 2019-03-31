@@ -11,25 +11,25 @@ import com.google.inject.Provider;
 import com.google.inject.Singleton;
 
 @Singleton
-public class MessageControllerFactory implements GafkaFactory<MessageController> {
+public class ConsumerControllerFactory implements GafkaFactory<ConsumerController> {
 
 	@Nonnull
 	private final Provider<Bus> bus;
 	@Nonnull
 	private final Provider<GavkaAppController> appController;
 	@Nonnull
-	private final Provider<MessageViewFactory> view;
+	private final Provider<ConsumerViewFactory> view;
 
 	@Inject
-	public MessageControllerFactory(@Nonnull final Provider<Bus> bus, @Nonnull final Provider<GavkaAppController> appController, @Nonnull final Provider<MessageViewFactory> view) {
+	public ConsumerControllerFactory(@Nonnull final Provider<Bus> bus, @Nonnull final Provider<GavkaAppController> appController, @Nonnull final Provider<ConsumerViewFactory> view) {
 		this.bus = bus;
 		this.appController = appController;
 		this.view = view;
 	}
 
 	@Override
-	public MessageController create(@Nonnull final String connectionId, @Nonnull final String topic) {
-		return new MessageController(bus.get(), appController.get(), view.get(), connectionId, topic);
+	public ConsumerController create(@Nonnull final String connectionId, @Nonnull final String topic) {
+		return new ConsumerController(bus.get(), appController.get(), view.get(), connectionId, topic);
 	}
 
 }

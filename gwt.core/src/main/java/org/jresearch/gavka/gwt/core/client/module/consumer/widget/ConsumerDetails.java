@@ -10,13 +10,13 @@ import org.jresearch.gavka.domain.Message;
 
 import elemental2.dom.HTMLElement;
 
-public class MessageDetails implements IsElement<HTMLElement> {
+public class ConsumerDetails implements IsElement<HTMLElement> {
 
 	private final Row rowElement = Row.create()
 			.style().add(Styles.margin_0).get();
 	private final CellRenderer.CellInfo<Message> cell;
 
-	public MessageDetails(final CellRenderer.CellInfo<Message> cell) {
+	public ConsumerDetails(final CellRenderer.CellInfo<Message> cell) {
 		this.cell = cell;
 		initDetails();
 	}

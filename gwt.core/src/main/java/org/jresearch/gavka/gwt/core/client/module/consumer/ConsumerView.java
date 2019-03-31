@@ -1,6 +1,6 @@
 package org.jresearch.gavka.gwt.core.client.module.consumer;
 
-import static org.jresearch.gavka.gwt.core.client.module.consumer.MessageView.ColumnName.*;
+import static org.jresearch.gavka.gwt.core.client.module.consumer.ConsumerView.ColumnName.*;
 
 import java.util.Date;
 import java.util.List;
@@ -32,8 +32,8 @@ import org.jresearch.commons.gwt.client.mvc.AbstractView;
 import org.jresearch.commons.gwt.client.mvc.INotificator;
 import org.jresearch.gavka.domain.Message;
 import org.jresearch.gavka.gwt.core.client.module.consumer.widget.FilterBarPlugin;
-import org.jresearch.gavka.gwt.core.client.module.consumer.widget.MessageDataSource;
-import org.jresearch.gavka.gwt.core.client.module.consumer.widget.MessageDetails;
+import org.jresearch.gavka.gwt.core.client.module.consumer.widget.ConsumerDataSource;
+import org.jresearch.gavka.gwt.core.client.module.consumer.widget.ConsumerDetails;
 import org.jresearch.gavka.rest.api.MessageParameters;
 
 import com.google.common.collect.ImmutableList;
@@ -49,7 +49,7 @@ import elemental2.dom.Event;
 import elemental2.dom.HTMLElement;
 import elemental2.dom.Node;
 
-public class MessageView extends AbstractView<MessageController> implements TableEventListener {
+public class ConsumerView extends AbstractView<ConsumerController> implements TableEventListener {
 
 	enum ColumnName {
 		KEY,
@@ -68,7 +68,7 @@ public class MessageView extends AbstractView<MessageController> implements Tabl
 	@Nonnull
 	private final LocalListDataStore<Message> localListDataStore;
 	@Nonnull
-	private final MessageDataSource messageDataSource;
+	private final ConsumerDataSource consumerDataSource;
 	@Nonnull
 	private Button prevBtnTop;
 	@Nonnull
@@ -83,15 +83,15 @@ public class MessageView extends AbstractView<MessageController> implements Tabl
 	private final FilterBarPlugin filter;
 
 	@SuppressWarnings("null")
-	public MessageView(@Nonnull final INotificator notificator, @Nonnull final MessageDataSource messageDataSource, @Nonnull final String connectionId, @Nonnull final String topic) {
+	public ConsumerView(@Nonnull final INotificator notificator, @Nonnull final ConsumerDataSource consumerDataSource, @Nonnull final String connectionId, @Nonnull final String topic) {
 		super(null, notificator);
 		this.filter = new FilterBarPlugin(connectionId, topic);
 		noDataElement = Row.of16Colmns().appendChild(Column.span16().appendChild(DomGlobal.document.createTextNode("No data")));
-		this.messageDataSource = messageDataSource;
+		this.consumerDataSource = consumerDataSource;
 
 		final TableConfig<Message> tableConfig = createBasicTableConfig()
 				.addPlugin(filter)
-				.addPlugin(new RecordDetailsPlugin<>(cell -> new MessageDetails(cell).asElement(), Icons.ALL.folder_open(), Icons.ALL.folder()));
+				.addPlugin(new RecordDetailsPlugin<>(cell -> new ConsumerDetails(cell).asElement(), Icons.ALL.folder_open(), Icons.ALL.folder()));
 
 		localListDataStore = new LocalListDataStore<>();
 		(table = new DataTable<>(tableConfig, localListDataStore)).bodyElement().appendChild(noDataElement);
@@ -128,13 +128,13 @@ public class MessageView extends AbstractView<MessageController> implements Tabl
 	}
 
 	private void onNextBtn(@SuppressWarnings("unused") final Event evt) {
-		messageDataSource.next();
+		consumerDataSource.next();
 		refresh();
 	}
 
 	private void onPrevBtn(@SuppressWarnings("unused") final Event evt) {
-		if (messageDataSource.isPreviousePartExist()) {
-			messageDataSource.prev();
+		if (consumerDataSource.isPreviousePartExist()) {
+			consumerDataSource.prev();
 			refresh();
 		} else {
 			prevBtnTop.disable();
@@ -144,19 +144,19 @@ public class MessageView extends AbstractView<MessageController> implements Tabl
 
 	private void refresh() {
 		final MessageParameters parameters = filter.getMessageParameters();
-		if (messageDataSource.isReloadNeed(parameters)) {
+		if (consumerDataSource.isReloadNeed(parameters)) {
 			loader.start();
 			localListDataStore.setData(ImmutableList.of());
 			localListDataStore.load();
-			messageDataSource.load(parameters, this::onLoad);
+			consumerDataSource.load(parameters, this::onLoad);
 		}
 	}
 
 	private void onLoad(final List<Message> data) {
 		localListDataStore.setData(data);
 		localListDataStore.load();
-		prevBtnTop.setDisabled(!messageDataSource.isPreviousePartExist());
-		prevBtnBottom.setDisabled(!messageDataSource.isPreviousePartExist());
+		prevBtnTop.setDisabled(!consumerDataSource.isPreviousePartExist());
+		prevBtnBottom.setDisabled(!consumerDataSource.isPreviousePartExist());
 		loader.stop();
 		if (data.isEmpty()) {
 			table.bodyElement().appendChild(noDataElement);

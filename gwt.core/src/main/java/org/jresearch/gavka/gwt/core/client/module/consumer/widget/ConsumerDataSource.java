@@ -17,7 +17,7 @@ import org.jresearch.gavka.rest.api.RequestMessagesParameters;
 
 import com.google.common.collect.ImmutableList;
 
-public class MessageDataSource {
+public class ConsumerDataSource {
 
 	@Nonnull
 	private final GavkaMessageRestService srv;
@@ -32,14 +32,14 @@ public class MessageDataSource {
 	private MessageParameters currentPrameters = new MessageParameters();
 
 	@Inject
-	public MessageDataSource(@Nonnull final GavkaMessageRestService srv, @Nonnull final Bus bus) {
+	public ConsumerDataSource(@Nonnull final GavkaMessageRestService srv, @Nonnull final Bus bus) {
 		this.srv = srv;
 		this.bus = bus;
 		pages = new Stack<>();
 		initPages();
 	}
 
-	public void load(final MessageParameters messageParameters, final MessageDataLoadCallback callback) {
+	public void load(final MessageParameters messageParameters, final ConsumerDataLoadCallback callback) {
 		if (!loading) {
 			reload = false;
 			loading = true;

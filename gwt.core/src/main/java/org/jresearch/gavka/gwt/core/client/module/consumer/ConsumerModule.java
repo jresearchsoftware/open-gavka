@@ -6,14 +6,14 @@ import javax.inject.Singleton;
 import org.jresearch.gavka.gwt.core.client.module.GafkaModule;
 
 @Singleton
-public class MessageModule extends GafkaModule<MessageController> {
+public class ConsumerModule extends GafkaModule<ConsumerController> {
 
 	private static final String NAME = "Consumers"; //$NON-NLS-1$
 
 	@SuppressWarnings("all")
 	@Inject
-	public MessageModule(final MessageControllerFactory factory) {
-		super(NAME, MessageController.ID, factory);
+	public ConsumerModule(final ConsumerControllerFactory factory) {
+		super(NAME, ConsumerController.ID, factory);
 	}
 
 }
