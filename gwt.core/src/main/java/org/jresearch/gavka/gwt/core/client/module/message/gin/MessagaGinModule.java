@@ -2,7 +2,6 @@ package org.jresearch.gavka.gwt.core.client.module.message.gin;
 
 import org.jresearch.commons.gwt.client.app.IAppModule;
 import org.jresearch.commons.gwt.client.gin.InstallableGinModule;
-import org.jresearch.gavka.gwt.core.client.module.message.MessageControllerFactory;
 import org.jresearch.gavka.gwt.core.client.module.message.MessageModule;
 import org.jresearch.gavka.gwt.core.client.module.message.MessageViewFactory;
 
@@ -22,16 +21,11 @@ public class MessagaGinModule extends InstallableGinModule {
 	protected void configure() {
 
 		// Factories
-		install(new GinFactoryModuleBuilder().build(MessageControllerFactory.class));
 		install(new GinFactoryModuleBuilder().build(MessageViewFactory.class));
-
-//		bind(MessageController.class).asEagerSingleton();
 
 		final GinMultibinder<IAppModule> multibinder = GinMultibinder.newSetBinder(binder(), IAppModule.class);
 		multibinder.addBinding().to(MessageModule.class).asEagerSingleton();
 
-//		final GinMultibinder<ControllerFactory> multibinder01 = GinMultibinder.newSetBinder(binder(), ControllerFactory.class);
-//		multibinder01.addBinding().to(MessageControllerFactory.class).asEagerSingleton();
 	}
 
 }

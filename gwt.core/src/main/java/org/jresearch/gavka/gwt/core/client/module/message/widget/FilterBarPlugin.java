@@ -5,7 +5,6 @@ import static org.jboss.gwt.elemento.core.InputType.*;
 
 import java.util.Date;
 import java.util.EnumSet;
-import java.util.List;
 import java.util.Optional;
 
 import javax.annotation.Nonnull;
@@ -36,14 +35,11 @@ import org.dominokit.domino.ui.timepicker.TimeBox.PickerStyle;
 import org.dominokit.domino.ui.timepicker.TimePicker;
 import org.dominokit.domino.ui.timepicker.TimePicker.TimeSelectionHandler;
 import org.dominokit.domino.ui.utils.HasChangeHandlers.ChangeHandler;
-import org.fusesource.restygwt.client.REST;
 import org.gwtproject.i18n.shared.DateTimeFormatInfo;
 import org.gwtproject.timer.client.Timer;
 import org.jboss.gwt.elemento.core.EventType;
 import org.jboss.gwt.elemento.core.builder.HtmlContentBuilder;
 import org.jboss.gwt.elemento.core.builder.InputBuilder;
-import org.jresearch.commons.gwt.client.mvc.GwtMethodCallback;
-import org.jresearch.commons.gwt.client.mvc.event.Bus;
 import org.jresearch.commons.gwt.client.tool.Dates;
 import org.jresearch.commons.gwt.client.widget.Uis;
 import org.jresearch.commons.gwt.shared.model.time.GwtLocalDateModel;
@@ -52,11 +48,9 @@ import org.jresearch.commons.gwt.shared.model.time.GwtLocalTimeModel;
 import org.jresearch.gavka.domain.KeyFormat;
 import org.jresearch.gavka.domain.Message;
 import org.jresearch.gavka.domain.MessageFormat;
-import org.jresearch.gavka.gwt.core.client.module.message.srv.GavkaMessageRestService;
 import org.jresearch.gavka.rest.api.MessageParameters;
 
 import com.google.gwt.dom.client.Style.Cursor;
-import com.google.inject.Inject;
 
 import elemental2.dom.Event;
 import elemental2.dom.EventListener;
@@ -71,10 +65,9 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 			.style("padding-bottom: 5px;");
 
 	private int autoSearchDelay = 5_000;
+
 	@Nonnull
 	private DataTable<Message> dataTable;
-	@Nonnull
-	private final Select<String> topicBox;
 	@Nonnull
 	private final Select<KeyFormat> keyFormatBox;
 	@Nonnull
@@ -106,13 +99,16 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 
 	@Nonnull
 	private HtmlContentBuilder<HTMLFormElement> exportForm;
+	@Nonnull
+	private final String topic;
+	@Nonnull
+	private final String connectionId;
 
 	@SuppressWarnings("null")
-	@Inject
-	public FilterBarPlugin(@Nonnull final GavkaMessageRestService srv, @Nonnull final Bus bus) {
-		// TODO connections!!!!
-		REST.withCallback(new GwtMethodCallback<>(bus, this::addTopics)).call(srv).topics("fake");
+	public FilterBarPlugin(@Nonnull final String connectionId, @Nonnull final String topic) {
 
+		this.connectionId = connectionId;
+		this.topic = topic;
 		autoSearchTimer = new Timer() {
 			@Override
 			public void run() {
@@ -127,14 +123,9 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 				.get();
 		final Icon clearIconDate = clearIconKey.copy();
 		final Icon clearIconTime = clearIconKey.copy();
-		final Icon clearIconTopic = clearIconKey.copy();
 		final Icon clearIconKeyFormat = clearIconKey.copy();
 		final Icon clearIconMassageFormat = clearIconKey.copy();
 
-		topicBox = Select.<String>create("Topic")
-				.setRightAddon(clearIconTopic)
-				.setName("topic")
-				.styler(FilterBarPlugin::zerroBottomMargin);
 		keyBox = TextBox.create("Key")
 				.setRightAddon(clearIconKey)
 				.setName("key")
@@ -152,13 +143,11 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 		clearIconKey.addClickListener(e -> clearBox(keyBox, e));
 		clearIconDate.addClickListener(e -> clearBox(dateBox, e));
 		clearIconTime.addClickListener(e -> clearBox(timeBox, e));
-		clearIconTopic.addClickListener(e -> clearSelect(topicBox, e));
 
 		final Row_12 row1 = Row.create()
-				.addColumn(Column.span3().appendChild(topicBox))
-				.addColumn(Column.span3().appendChild(keyBox))
-				.addColumn(Column.span3().appendChild(dateBox))
-				.addColumn(Column.span3().appendChild(timeBox))
+				.addColumn(Column.span4().appendChild(keyBox))
+				.addColumn(Column.span4().appendChild(dateBox))
+				.addColumn(Column.span4().appendChild(timeBox))
 				.styler(FilterBarPlugin::zerroBottomMargin);
 
 		keyFormatBox = Select.<KeyFormat>create("Key format")
@@ -185,8 +174,8 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 				.addClickListener(this::clearFilters);
 
 		final Row_12 row2 = Row.create()
-				.addColumn(Column.span3().appendChild(keyFormatBox))
-				.addColumn(Column.span3().appendChild(messageFormatBox))
+				.addColumn(Column.span4().appendChild(keyFormatBox))
+				.addColumn(Column.span4().appendChild(messageFormatBox))
 				.addColumn(Column.span1().offset(10).appendChild((searchBtn = Button.create("Search")).disable().addClickListener(this::doSearch)))
 				.addColumn(Column.span1().offset(11).appendChild(clearFiltersIcon))
 				.styler(FilterBarPlugin::zerroBottomMargin);
@@ -198,7 +187,6 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 	}
 
 	private HtmlContentBuilder<HTMLFormElement> createForm() {
-		// TODO connections!!!!
 		final HtmlContentBuilder<HTMLFormElement> form = form();
 		final HTMLFormElement formEl = form.asElement();
 		formEl.action = "/api/rest/messages/export";
@@ -231,13 +219,6 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 		doSearch();
 	}
 
-	public void addTopics(final List<String> topics) {
-		topics.stream().map(t -> SelectOption.create(t, t)).forEach(topicBox::appendChild);
-		topicBox.selectAt(0);
-		searchBtn.enable();
-		doSearch();
-	}
-
 	private static void zerroBottomMargin(final Style<?, ?> style) {
 		style.setMarginBottom("0"); //$NON-NLS-1$
 	}
@@ -247,6 +228,8 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 		dataTable = dt;
 		dt.addTableEventListner(SearchClearedEvent.SEARCH_EVENT_CLEARED, this);
 		dt.asElement().appendChild(div.asElement());
+		searchBtn.enable();
+		autoSearchTimer.schedule(0);
 	}
 
 	private void clearSelect(final Select<?> box, final Event evt) {
@@ -295,8 +278,6 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 			messageFormatBox.addSelectionHandler(msgSelHandler);
 			keyFormatBox.addEventListener(EventType.input.getName(), autoSearchEventListener);
 			keyFormatBox.addSelectionHandler(keySelHandler);
-			topicBox.addEventListener(EventType.input.getName(), autoSearchEventListener);
-			topicBox.addSelectionHandler(stringSelHandler);
 		} else {
 			autoSearchTimer.cancel();
 			keyBox.removeEventListener(EventType.input.getName(), autoSearchEventListener);
@@ -307,8 +288,6 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 			messageFormatBox.removeSelectionHandler(msgSelHandler);
 			keyFormatBox.removeEventListener(EventType.input.getName(), autoSearchEventListener);
 			keyFormatBox.removeSelectionHandler(keySelHandler);
-			topicBox.removeEventListener(EventType.input.getName(), autoSearchEventListener);
-			topicBox.removeSelectionHandler(stringSelHandler);
 		}
 
 		return this;
@@ -334,7 +313,6 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 			handleClearEvent(timeBox);
 			messageFormatBox.selectAt(0);
 			keyFormatBox.selectAt(0);
-			topicBox.selectAt(0);
 		}
 	}
 
@@ -346,20 +324,13 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 
 	public MessageParameters getMessageParameters() {
 		final MessageParameters messageParameters = new MessageParameters();
-		messageParameters.setTopic(getTopic());
+		messageParameters.setTopic(topic);
 		messageParameters.setFrom(getFrom().orElse(null));
 		messageParameters.setKey(getKeyValue());
 		messageParameters.setKeyFormat(getKeyFormat());
 		messageParameters.setMessageFormat(getMessageFormat());
+		messageParameters.setConnection(connectionId);
 		return messageParameters;
-	}
-
-	@SuppressWarnings("null")
-	@Nonnull
-	private String getTopic() {
-		return Optional.of(topicBox)
-				.map(Select::getValue)
-				.orElse(Uis.NOTHING);
 	}
 
 	@SuppressWarnings("null")
@@ -392,11 +363,10 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 
 	public void export() {
 		getFrom().map(Dates::printDateTime).ifPresent(this::setFrom);
-		hiddenTopic.value = getTopic();
+		hiddenTopic.value = topic;
 		hiddenKeyFormat.value = getKeyFormat().name();
 		hiddenMessageFormat.value = getMessageFormat().name();
-		// TODO ConnectionId !!!
-		hiddenConnectionId.value = "fake";
+		hiddenConnectionId.value = connectionId;
 		exportForm.asElement().submit();
 	}
 

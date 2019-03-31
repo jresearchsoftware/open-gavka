@@ -1,9 +1,35 @@
 package org.jresearch.gavka.gwt.core.client.module.message;
 
-import com.google.inject.assistedinject.Assisted;
+import javax.annotation.Nonnull;
 
-public interface MessageControllerFactory {
+import org.jresearch.commons.gwt.client.mvc.event.Bus;
+import org.jresearch.gavka.gwt.core.client.app.GavkaAppController;
+import org.jresearch.gavka.gwt.core.client.module.GafkaControllerFactory;
 
-	MessageController create(@Assisted("connectionId") String connectionId, @Assisted("topic") String topic);
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+import com.google.inject.Singleton;
+
+@Singleton
+public class MessageControllerFactory implements GafkaControllerFactory<MessageController> {
+
+	@Nonnull
+	private final Provider<Bus> bus;
+	@Nonnull
+	private final Provider<GavkaAppController> appController;
+	@Nonnull
+	private final Provider<MessageViewFactory> view;
+
+	@Inject
+	public MessageControllerFactory(@Nonnull final Provider<Bus> bus, @Nonnull final Provider<GavkaAppController> appController, @Nonnull final Provider<MessageViewFactory> view) {
+		this.bus = bus;
+		this.appController = appController;
+		this.view = view;
+	}
+
+	@Override
+	public MessageController create(@Nonnull final String connectionId, @Nonnull final String topic) {
+		return new MessageController(bus.get(), appController.get(), view.get(), connectionId, topic);
+	}
 
 }

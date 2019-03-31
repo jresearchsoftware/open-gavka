@@ -4,7 +4,6 @@ import java.util.Stack;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import org.fusesource.restygwt.client.Method;
 import org.fusesource.restygwt.client.REST;
@@ -18,7 +17,6 @@ import org.jresearch.gavka.rest.api.RequestMessagesParameters;
 
 import com.google.common.collect.ImmutableList;
 
-@Singleton
 public class MessageDataSource {
 
 	@Nonnull

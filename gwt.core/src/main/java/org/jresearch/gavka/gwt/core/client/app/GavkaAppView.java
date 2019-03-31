@@ -1,5 +1,6 @@
 package org.jresearch.gavka.gwt.core.client.app;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -7,7 +8,6 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
-import org.dominokit.domino.ui.Typography.Paragraph;
 import org.dominokit.domino.ui.collapsible.Collapsible;
 import org.dominokit.domino.ui.icons.Icon;
 import org.dominokit.domino.ui.icons.Icons;
@@ -17,10 +17,12 @@ import org.dominokit.domino.ui.tabs.Tab;
 import org.dominokit.domino.ui.tabs.TabsPanel;
 import org.dominokit.domino.ui.tree.Tree;
 import org.dominokit.domino.ui.tree.TreeItem;
+import org.dominokit.domino.ui.utils.DominoElement;
 import org.jresearch.commons.gwt.client.app.AbstractAppView;
 import org.jresearch.commons.gwt.client.app.IAppModule;
 import org.jresearch.commons.gwt.client.mvc.event.Bus;
 import org.jresearch.commons.gwt.client.mvc.event.module.ModuleEvent;
+import org.jresearch.gavka.gwt.core.client.module.GafkaModule;
 import org.jresearch.gavka.gwt.core.client.module.message.MessageController;
 import org.jresearch.gavka.rest.api.ConnectionLabel;
 
@@ -30,6 +32,7 @@ import com.google.gwt.safehtml.shared.SafeHtml;
 
 import elemental2.dom.Event;
 import elemental2.dom.EventListener;
+import elemental2.dom.HTMLDivElement;
 import elemental2.dom.HTMLElement;
 
 public class GavkaAppView extends AbstractAppView<GavkaAppController> {
@@ -53,10 +56,10 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 	@Nonnull
 	private final Layout layout;
 	private final Tree connectionTree;
-	private Map<ConnectionLabel, TreeItem> connectionNodes = new HashMap<>();
-	private Multimap<ConnectionLabel, String> topics = HashMultimap.create();
+	private final Map<ConnectionLabel, TreeItem> connectionNodes = new HashMap<>();
+	private final Multimap<ConnectionLabel, String> topics = HashMultimap.create();
 	private String defaultModule;
-	private Map<String, Tab> tabs = new HashMap<>();
+	private final Map<String, Tab> tabs = new HashMap<>();
 	private TabsPanel tabsPanel;
 	private final Icon lockIcon = Icons.ALL.lock()
 			.style()
@@ -67,6 +70,8 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 			.get();
 	private boolean locked = true;
 	private final Collapsible lockCollapsible = Collapsible.create(lockIcon).show();
+	private final List<GafkaModule> tabModules = new ArrayList<>();
+	private final Map<String, TabsPanel> tabsPanels = new HashMap<>();
 
 	@Inject
 	public GavkaAppView(@Nonnull final GavkaAppController controller, @Nonnull final Bus bus) {
@@ -99,21 +104,42 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 
 	@Override
 	public boolean updateChildContent(final String viewId, final HTMLElement content) {
-		Tab tab = tabs.get(viewId);
-		if (tab == null) {
-			tab = Tab.create(getTopicName(viewId));
-			tabs.put(viewId, tab);
-			tabsPanel.appendChild(tab);
-			tab.appendChild(TabsPanel.create()
-					.appendChild(Tab.create("Messages").appendChild(content))
-					.appendChild(Tab.create("Consumers").appendChild(Paragraph.create("TODO"))));
+		final String tabId = getConnectionTopicName(viewId);
+		Tab connectionTab = tabs.get(tabId);
+		if (connectionTab == null) {
+			connectionTab = Tab.create(getTopicName(viewId));
+			tabs.put(tabId, connectionTab);
+			final TabsPanel moduleTabs = TabsPanel.create();
+			tabsPanels.put(tabId, moduleTabs);
+			connectionTab.appendChild(moduleTabs);
+			tabModules.stream().map(m -> createTab(tabId, m)).forEachOrdered(moduleTabs::appendChild);
+			tabsPanel.appendChild(connectionTab);
 		}
-		tabsPanel.activateTab(tab);
+		tabsPanel.activateTab(connectionTab);
+		final Tab tab = tabs.get(viewId);
+		if (tab != null) {
+			tabsPanels.get(tabId).activateTab(tab);
+			final DominoElement<HTMLDivElement> container = tab.getContentContainer();
+			if (!container.hasChildNodes()) {
+				container.appendChild(content);
+			}
+		}
 		return true;
 	}
 
-	private static String getTopicName(String viewId) {
-		return viewId.substring(viewId.lastIndexOf('.'));
+	private Tab createTab(final String tabId, final GafkaModule tabModule) {
+		final Tab result = Tab.create(tabModule.getName());
+		tabs.put(String.join(".", tabModule.getModuleId(), tabId), result);
+		return result;
+	}
+
+	private static String getTopicName(final String viewId) {
+		return viewId.substring(viewId.lastIndexOf('.') + 1);
+	}
+
+	private static String getConnectionTopicName(final String viewId) {
+		final int index = viewId.lastIndexOf('.', viewId.lastIndexOf('.') - 1);
+		return viewId.substring(index + 1);
 	}
 
 	@Override
@@ -131,6 +157,10 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 		if (!modules.isEmpty()) {
 			defaultModule = modules.get(0).getModuleId();
 		}
+		modules.stream()
+				.filter(m -> m instanceof GafkaModule)
+				.map(m -> (GafkaModule) m)
+				.forEach(tabModules::add);
 	}
 
 	/*
@@ -173,13 +203,13 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 
 	@Nonnull
 	public TreeItem addConnection(final ConnectionLabel connection) {
-		TreeItem moduleNode = TreeItem.create(connection.getLabel());
+		final TreeItem moduleNode = TreeItem.create(connection.getLabel());
 		connectionNodes.put(connection, moduleNode);
 		connectionTree.appendChild(moduleNode);
 		return moduleNode;
 	}
 
-	public void addTopic(ConnectionLabel connection, String topic) {
+	public void addTopic(final ConnectionLabel connection, final String topic) {
 		// wrong parameters or already registered
 		if (connection == null || topic == null || topics.containsEntry(connection, topic)) {
 			return;

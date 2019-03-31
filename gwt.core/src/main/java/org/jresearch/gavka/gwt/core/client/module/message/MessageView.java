@@ -85,9 +85,9 @@ public class MessageView extends AbstractView<MessageController> implements Tabl
 
 	@SuppressWarnings("null")
 	@Inject
-	public MessageView(@Nonnull final MessageDataSource messageDataSource, @Nonnull final FilterBarPlugin filter, @Assisted("connectionId") @Nonnull String connectionId, @Assisted("topic") @Nonnull String topic) {
+	public MessageView(@Nonnull final MessageDataSource messageDataSource, @Assisted("connectionId") @Nonnull final String connectionId, @Assisted("topic") @Nonnull final String topic) {
 		super(null);
-		this.filter = filter;
+		this.filter = new FilterBarPlugin(connectionId, topic);
 		noDataElement = Row.of16Colmns().appendChild(Column.span16().appendChild(DomGlobal.document.createTextNode("No data")));
 		this.messageDataSource = messageDataSource;
 
