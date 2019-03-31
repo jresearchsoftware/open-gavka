@@ -67,11 +67,17 @@ public class GavkaAppController extends AbstractAppController<GavkaAppView> {
 
 	private void updateTopic(final String activeModuleId, final ConnectionLabel connection, final String topic) {
 		getOptView().ifPresent(v -> v.addTopic(connection, topic));
-		getModules().stream()
-				.filter(m -> m instanceof GafkaModule)
-				.map(m -> (GafkaModule) m)
-				.map(GafkaModule::getControllerFactory)
-				.forEach(f -> f.create(connection.getId(), topic));
+		for (final IAppModule module : getModules()) {
+			if (module instanceof GafkaModule) {
+				final GafkaModule gMod = (GafkaModule) module;
+				gMod.getControllerFactory().create(connection.getId(), topic);
+			}
+		}
+//		getModules().stream()
+//				.filter(m -> m instanceof GafkaModule)
+//				.map(m -> (GafkaModule) m)
+//				.map(GafkaModule::getControllerFactory)
+//				.forEach(f -> f.create(connection.getId(), topic));
 		if (needInit) {
 			needInit = false;
 			bus.fire(new ModuleEvent(MessageController.id(activeModuleId, connection.getId(), topic)));

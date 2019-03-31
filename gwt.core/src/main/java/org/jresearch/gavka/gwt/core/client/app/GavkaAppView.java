@@ -27,6 +27,7 @@ import org.jresearch.gavka.gwt.core.client.module.GafkaModule;
 import org.jresearch.gavka.gwt.core.client.module.message.MessageController;
 import org.jresearch.gavka.rest.api.ConnectionLabel;
 
+import com.google.common.base.Splitter;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.gwt.safehtml.shared.SafeHtml;
@@ -40,17 +41,19 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 
 	private final class NavClickHandler implements EventListener {
 
-		private final ConnectionLabel connectionLabel;
+		private final String moduleId;
+		private final String connectionId;
 		private final String topic;
 
-		private NavClickHandler(final ConnectionLabel connectionLabel, final String topic) {
-			this.connectionLabel = connectionLabel;
+		private NavClickHandler(final String moduleId, final String connectionId, final String topic) {
+			this.moduleId = moduleId;
+			this.connectionId = connectionId;
 			this.topic = topic;
 		}
 
 		@Override
 		public void handleEvent(final Event evt) {
-			bus.fire(new ModuleEvent(MessageController.id(MessageController.ID, connectionLabel.getId(), topic)));
+			bus.fire(new ModuleEvent(MessageController.id(moduleId, connectionId, topic)));
 		}
 	}
 
@@ -131,6 +134,8 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 	private Tab createTab(final String tabId, final GafkaModule tabModule) {
 		final Tab result = Tab.create(tabModule.getName());
 		tabs.put(String.join(".", tabModule.getModuleId(), tabId), result);
+		final List<String> list = Splitter.on('.').splitToList(tabId);
+		result.addClickListener(new NavClickHandler(tabModule.getModuleId(), list.get(0), list.get(1)));
 		return result;
 	}
 
@@ -220,7 +225,7 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 		if (connectionNode == null) {
 			connectionNode = addConnection(connection);
 		}
-		connectionNode.appendChild(TreeItem.create(topic).addClickListener(new NavClickHandler(connection, topic)));
+		connectionNode.appendChild(TreeItem.create(topic).addClickListener(new NavClickHandler(defaultModule, connection.getId(), topic)));
 	}
 
 }
