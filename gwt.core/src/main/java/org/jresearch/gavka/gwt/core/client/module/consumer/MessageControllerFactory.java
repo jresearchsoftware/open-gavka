@@ -1,4 +1,4 @@
-package org.jresearch.gavka.gwt.core.client.module.message;
+package org.jresearch.gavka.gwt.core.client.module.consumer;
 
 import javax.annotation.Nonnull;
 

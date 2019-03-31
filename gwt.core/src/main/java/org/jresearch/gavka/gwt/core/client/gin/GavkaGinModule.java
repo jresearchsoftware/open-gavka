@@ -16,6 +16,7 @@ public class GavkaGinModule extends AbstractGinModule {
 		install(new UtilsGinModule());
 		// modules
 		install(new MessagaGinModule());
+		install(new org.jresearch.gavka.gwt.core.client.module.consumer.gin.MessagaGinModule());
 
 		bind(GavkaAppController.class).asEagerSingleton();
 		bind(INotificator.class).to(LogNotificator.class).asEagerSingleton();

@@ -22,6 +22,7 @@ import org.fusesource.restygwt.client.REST;
 import org.jboss.gwt.elemento.core.Elements;
 import org.jresearch.commons.gwt.client.mvc.AbstractView;
 import org.jresearch.commons.gwt.client.mvc.GwtMethodCallback;
+import org.jresearch.commons.gwt.client.mvc.INotificator;
 import org.jresearch.commons.gwt.client.mvc.event.Bus;
 import org.jresearch.gavka.domain.Connection;
 import org.jresearch.gavka.gwt.core.client.module.connection.editor.EditConnectionDialog;
@@ -51,8 +52,8 @@ public class ConnectionView extends AbstractView<ConnectionController> {
 
 	@SuppressWarnings("null")
 	@Inject
-	public ConnectionView(@Nonnull final ConnectionController controller, @Nonnull final GavkaConnectionRestService gavkaConnectionRestService, @Nonnull Bus bus, @Nonnull EditConnectionDialog conectionEditor) {
-		super(controller);
+	public ConnectionView(@Nonnull final INotificator notificator, @Nonnull final ConnectionController controller, @Nonnull final GavkaConnectionRestService gavkaConnectionRestService, @Nonnull final Bus bus, @Nonnull final EditConnectionDialog conectionEditor) {
+		super(controller, notificator);
 		this.gavkaConnectionRestService = gavkaConnectionRestService;
 		this.bus = bus;
 		this.conectionEditor = conectionEditor;
@@ -72,20 +73,20 @@ public class ConnectionView extends AbstractView<ConnectionController> {
 		controller.refreshConnections();
 	}
 
-	private void add(Event evt) {
+	private void add(final Event evt) {
 		edit(new Connection());
 
 	}
 
-	private void save(Connection connection) {
+	private void save(final Connection connection) {
 		REST.withCallback(new GwtMethodCallback<>(bus, this::load)).call(gavkaConnectionRestService).save(connection);
 	}
 
-	private void load(@SuppressWarnings("unused") Boolean added) {
+	private void load(@SuppressWarnings("unused") final Boolean added) {
 		controller().refreshConnections();
 	}
 
-	void edit(Connection connection) {
+	void edit(final Connection connection) {
 		conectionEditor.edit(connection);
 		conectionEditor.getModalDialog().open();
 	}
@@ -103,7 +104,7 @@ public class ConnectionView extends AbstractView<ConnectionController> {
 	}
 
 	@SuppressWarnings("boxing")
-	public void updateConnections(List<Connection> connections) {
+	public void updateConnections(final List<Connection> connections) {
 		connectionRows.forEach(Row_12::remove);
 		connectionRows.clear();
 		final AtomicInteger counter = new AtomicInteger(0);
@@ -116,31 +117,31 @@ public class ConnectionView extends AbstractView<ConnectionController> {
 				.forEachOrdered(element::appendChild);
 	}
 
-	private Row_12 toRow(List<Connection> connections) {
-		Row_12 result = Row.create();
+	private Row_12 toRow(final List<Connection> connections) {
+		final Row_12 result = Row.create();
 		connections.stream().map(this::toColumn).forEach(result::addColumn);
 		connectionRows.add(result);
 		return result;
 	}
 
-	private Column toColumn(Connection connection) {
+	private Column toColumn(final Connection connection) {
 		return Column
 				.span3()
 				.appendChild(toInfoBox(connection));
 	}
 
-	private InfoBox toInfoBox(Connection connection) {
+	private InfoBox toInfoBox(final Connection connection) {
 		return InfoBox.create(getIcon(connection), connection.getId(), connection.getLabel())
 				.setBackground(getColor(connection))
 				.setHoverEffect(InfoBox.HoverEffect.ZOOM)
 				.addClickListener(e -> edit(connection));
 	}
 
-	private static BaseIcon<?> getIcon(Connection connection) {
+	private static BaseIcon<?> getIcon(final Connection connection) {
 		return Icons.of(connection.getIcon());
 	}
 
-	private static Color getColor(Connection connection) {
+	private static Color getColor(final Connection connection) {
 		return Color.of(connection.getColor());
 	}
 

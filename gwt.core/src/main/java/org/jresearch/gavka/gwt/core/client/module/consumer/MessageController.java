@@ -1,4 +1,4 @@
-package org.jresearch.gavka.gwt.core.client.module.message;
+package org.jresearch.gavka.gwt.core.client.module.consumer;
 
 import javax.annotation.Nonnull;
 
@@ -12,10 +12,10 @@ public class MessageController extends AbstractModuleController<MessageView> {
 	@Nonnull
 	private static final String STRING = "."; //$NON-NLS-1$
 	@Nonnull
-	public static final String ID = "org.jresearch.gavka.gwt.core.client.module.message.MessageController"; //$NON-NLS-1$
+	public static final String ID = "org.jresearch.gavka.gwt.core.client.module.consumer.MessageController"; //$NON-NLS-1$
 
 	public MessageController(@Nonnull final Bus bus, @Nonnull final GavkaAppController appController, @Nonnull final MessageViewFactory view, @Nonnull final String connectionId, @Nonnull final String topic) {
-		super(id(ID, connectionId, topic), bus, appController, new GafkaViewProvider<MessageView>(view, connectionId, topic));
+		super(id(ID, connectionId, topic), bus, appController, new GafkaViewProvider(view, connectionId, topic));
 	}
 
 	@SuppressWarnings("null")

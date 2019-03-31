@@ -1,6 +1,6 @@
-package org.jresearch.gavka.gwt.core.client.module.message;
+package org.jresearch.gavka.gwt.core.client.module.consumer;
 
-import static org.jresearch.gavka.gwt.core.client.module.message.MessageView.ColumnName.*;
+import static org.jresearch.gavka.gwt.core.client.module.consumer.MessageView.ColumnName.*;
 
 import java.util.Date;
 import java.util.List;
@@ -31,9 +31,9 @@ import org.dominokit.domino.ui.utils.TextNode;
 import org.jresearch.commons.gwt.client.mvc.AbstractView;
 import org.jresearch.commons.gwt.client.mvc.INotificator;
 import org.jresearch.gavka.domain.Message;
-import org.jresearch.gavka.gwt.core.client.module.message.widget.FilterBarPlugin;
-import org.jresearch.gavka.gwt.core.client.module.message.widget.MessageDataSource;
-import org.jresearch.gavka.gwt.core.client.module.message.widget.MessageDetails;
+import org.jresearch.gavka.gwt.core.client.module.consumer.widget.FilterBarPlugin;
+import org.jresearch.gavka.gwt.core.client.module.consumer.widget.MessageDataSource;
+import org.jresearch.gavka.gwt.core.client.module.consumer.widget.MessageDetails;
 import org.jresearch.gavka.rest.api.MessageParameters;
 
 import com.google.common.collect.ImmutableList;

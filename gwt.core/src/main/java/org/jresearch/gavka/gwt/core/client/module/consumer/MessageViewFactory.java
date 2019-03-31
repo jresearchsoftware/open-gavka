@@ -1,10 +1,10 @@
-package org.jresearch.gavka.gwt.core.client.module.message;
+package org.jresearch.gavka.gwt.core.client.module.consumer;
 
 import javax.annotation.Nonnull;
 
 import org.jresearch.commons.gwt.client.mvc.INotificator;
 import org.jresearch.gavka.gwt.core.client.module.GafkaFactory;
-import org.jresearch.gavka.gwt.core.client.module.message.widget.MessageDataSource;
+import org.jresearch.gavka.gwt.core.client.module.consumer.widget.MessageDataSource;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;

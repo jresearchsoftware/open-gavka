@@ -20,6 +20,7 @@ import org.dominokit.domino.ui.tree.TreeItem;
 import org.dominokit.domino.ui.utils.DominoElement;
 import org.jresearch.commons.gwt.client.app.AbstractAppView;
 import org.jresearch.commons.gwt.client.app.IAppModule;
+import org.jresearch.commons.gwt.client.mvc.INotificator;
 import org.jresearch.commons.gwt.client.mvc.event.Bus;
 import org.jresearch.commons.gwt.client.mvc.event.module.ModuleEvent;
 import org.jresearch.gavka.gwt.core.client.module.GafkaModule;
@@ -74,8 +75,8 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 	private final Map<String, TabsPanel> tabsPanels = new HashMap<>();
 
 	@Inject
-	public GavkaAppView(@Nonnull final GavkaAppController controller, @Nonnull final Bus bus) {
-		super(controller, bus);
+	public GavkaAppView(@Nonnull final INotificator notificator, @Nonnull final GavkaAppController controller, @Nonnull final Bus bus) {
+		super(notificator, controller, bus);
 		layout = Layout.create("Gavka");
 		layout.fixLeftPanelPosition();
 		layout.getLeftPanel().appendChild(connectionTree = Tree.create("Connections"));

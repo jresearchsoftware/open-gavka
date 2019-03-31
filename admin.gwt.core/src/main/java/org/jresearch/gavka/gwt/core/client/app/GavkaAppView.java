@@ -12,6 +12,7 @@ import org.dominokit.domino.ui.tree.Tree;
 import org.dominokit.domino.ui.tree.TreeItem;
 import org.jresearch.commons.gwt.client.app.AbstractAppView;
 import org.jresearch.commons.gwt.client.app.IAppModule;
+import org.jresearch.commons.gwt.client.mvc.INotificator;
 import org.jresearch.commons.gwt.client.mvc.event.Bus;
 import org.jresearch.commons.gwt.client.mvc.event.module.ModuleEvent;
 import org.jresearch.commons.gwt.shared.tools.Strings;
@@ -42,7 +43,7 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 
 		@Override
 		public void handleEvent(final Event evt) {
-			ModuleEvent event = new ModuleEvent(moduleId);
+			final ModuleEvent event = new ModuleEvent(moduleId);
 			if (Strings.isValuable(submoduleId)) {
 				event.setData(submoduleId);
 			}
@@ -53,12 +54,12 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 	@Nonnull
 	private final Layout layout;
 	private final Tree moduleTree;
-	private Map<String, TreeItem> moduleNodes = new HashMap<>();
-	private Multimap<String, String> submodules = HashMultimap.create();
+	private final Map<String, TreeItem> moduleNodes = new HashMap<>();
+	private final Multimap<String, String> submodules = HashMultimap.create();
 
 	@Inject
-	public GavkaAppView(@Nonnull final GavkaAppController controller, @Nonnull final Bus bus) {
-		super(controller, bus);
+	public GavkaAppView(@Nonnull final INotificator notificator, @Nonnull final GavkaAppController controller, @Nonnull final Bus bus) {
+		super(notificator, controller, bus);
 		layout = Layout.create("Gavka");
 		layout.getLeftPanel().appendChild(moduleTree = Tree.create("Modules"));
 	}
@@ -129,18 +130,18 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 	}
 
 	public void addModule(final IAppModule module) {
-		TreeItem moduleNode = TreeItem.create(module.getName());
+		final TreeItem moduleNode = TreeItem.create(module.getName());
 		moduleNodes.put(module.getModuleId(), moduleNode);
 		moduleTree.appendChild(moduleNode.addClickListener(new NavClickHandler(module.getModuleId())));
 	}
 
-	public void addSubmodule(String moduleId, String submoduleId, String title) {
+	public void addSubmodule(final String moduleId, final String submoduleId, final String title) {
 		// wrong parameters or already registered
 		if (moduleId == null || submoduleId == null || submodules.containsEntry(moduleId, submoduleId)) {
 			return;
 		}
 		submodules.put(moduleId, submoduleId);
-		TreeItem moduleNode = moduleNodes.get(moduleId);
+		final TreeItem moduleNode = moduleNodes.get(moduleId);
 		moduleNode.appendChild(TreeItem.create(title).addClickListener(new NavClickHandler(moduleId, submoduleId)));
 	}
 
