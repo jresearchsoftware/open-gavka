@@ -1,12 +1,10 @@
 package org.jresearch.gavka.gwt.core.client.module.consumer.widget;
 
-import java.util.List;
-
-import org.jresearch.gavka.domain.Message;
+import org.jresearch.gavka.rest.data.TopicRestInfo;
 
 @FunctionalInterface
 public interface ConsumerDataLoadCallback {
 
-	void onLoad(List<Message> messages);
+	void onLoad(TopicRestInfo topicInfo);
 
 }

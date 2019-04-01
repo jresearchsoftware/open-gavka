@@ -6,16 +6,25 @@ import java.util.Map;
 public class TopicInfo {
 
 	private String name;
-	
 	private List<ConsumerGroupForTopic> consumerGroups;
+	private Map<Integer, PartitionOffsetInfo> partitions;
 
-	private Map<Integer,PartitionOffsetInfo> partitions;
-	
+	public TopicInfo() {
+		// for JSON
+	}
+
+	public TopicInfo(final String name, final List<ConsumerGroupForTopic> consumerGroups, final Map<Integer, PartitionOffsetInfo> partitions) {
+		super();
+		this.name = name;
+		this.consumerGroups = consumerGroups;
+		this.partitions = partitions;
+	}
+
 	public String getName() {
 		return name;
 	}
 
-	public void setName(String name) {
+	public void setName(final String name) {
 		this.name = name;
 	}
 
@@ -23,7 +32,7 @@ public class TopicInfo {
 		return consumerGroups;
 	}
 
-	public void setConsumerGroups(List<ConsumerGroupForTopic> consumerGroups) {
+	public void setConsumerGroups(final List<ConsumerGroupForTopic> consumerGroups) {
 		this.consumerGroups = consumerGroups;
 	}
 
@@ -31,15 +40,15 @@ public class TopicInfo {
 		return partitions;
 	}
 
-	public void setPartitions(Map<Integer, PartitionOffsetInfo> partitions) {
+	public void setPartitions(final Map<Integer, PartitionOffsetInfo> partitions) {
 		this.partitions = partitions;
 	}
-	
-	public void addPartition(Integer number, PartitionOffsetInfo po) {
+
+	public void addPartition(final Integer number, final PartitionOffsetInfo po) {
 		partitions.put(number, po);
 	}
-	
-	public void removePartition(Integer number) {
+
+	public void removePartition(final Integer number) {
 		partitions.remove(number);
 	}
 
@@ -54,29 +63,38 @@ public class TopicInfo {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
+	public boolean equals(final Object obj) {
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
-		TopicInfo other = (TopicInfo) obj;
+		}
+		final TopicInfo other = (TopicInfo) obj;
 		if (consumerGroups == null) {
-			if (other.consumerGroups != null)
+			if (other.consumerGroups != null) {
 				return false;
-		} else if (!consumerGroups.equals(other.consumerGroups))
+			}
+		} else if (!consumerGroups.equals(other.consumerGroups)) {
 			return false;
+		}
 		if (name == null) {
-			if (other.name != null)
+			if (other.name != null) {
 				return false;
-		} else if (!name.equals(other.name))
+			}
+		} else if (!name.equals(other.name)) {
 			return false;
+		}
 		if (partitions == null) {
-			if (other.partitions != null)
+			if (other.partitions != null) {
 				return false;
-		} else if (!partitions.equals(other.partitions))
+			}
+		} else if (!partitions.equals(other.partitions)) {
 			return false;
+		}
 		return true;
 	}
 
@@ -84,6 +102,5 @@ public class TopicInfo {
 	public String toString() {
 		return "TopicInfo [name=" + name + ", consumerGroups=" + consumerGroups + ", partitions=" + partitions + "]";
 	}
-	
-	
+
 }

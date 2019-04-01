@@ -24,7 +24,7 @@
 			<groupId>org.jresearch.gavka</groupId>
 			<artifactId>org.jresearch.gavka.domain</artifactId>
 		</dependency>
-		 <dependency>
+		<dependency>
 			<groupId>org.jresearch.commons.gwt.base</groupId>
 			<artifactId>org.jresearch.commons.gwt.base.shared</artifactId>
 		</dependency>
@@ -36,14 +36,44 @@
 			<groupId>com.google.gwt</groupId>
 			<artifactId>gwt-dev</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.immutables</groupId>
+			<artifactId>value-annotations</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.google.errorprone</groupId>
+			<artifactId>error_prone_annotations</artifactId>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<annotationProcessorPaths>
+						<path>
+							<groupId>org.immutables</groupId>
+							<artifactId>value</artifactId>
+							<version>${immutables.ver}</version>
+						</path>
+					</annotationProcessorPaths>
+				</configuration>
+			</plugin>
+			<plugin>
 				<groupId>net.ltgt.gwt.maven</groupId>
 				<artifactId>gwt-maven-plugin</artifactId>
 				<configuration>
-					<moduleName>org.jresearch.gavka.rest.api.module</moduleName>
+					<moduleName>org.jresearch.gavka.rest.module</moduleName>
+					<moduleShortName>module</moduleShortName>
 				</configuration>
 			</plugin>
 		</plugins>

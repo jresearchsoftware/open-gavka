@@ -3,16 +3,14 @@ package org.jresearch.gavka.domain;
 public class PartitionOffsetInfo {
 
 	private long partitionNumber;
-	
 	private long startOffset;
-	
 	private long endOffset;
 
 	public PartitionOffsetInfo() {
 		super();
 	}
 
-	public PartitionOffsetInfo(long partitionNumber, long startOffset, long endOffset) {
+	public PartitionOffsetInfo(final long partitionNumber, final long startOffset, final long endOffset) {
 		super();
 		this.partitionNumber = partitionNumber;
 		this.startOffset = startOffset;
@@ -23,7 +21,7 @@ public class PartitionOffsetInfo {
 		return partitionNumber;
 	}
 
-	public void setPartitionNumber(long partitionNumber) {
+	public void setPartitionNumber(final long partitionNumber) {
 		this.partitionNumber = partitionNumber;
 	}
 
@@ -31,7 +29,7 @@ public class PartitionOffsetInfo {
 		return startOffset;
 	}
 
-	public void setStartOffset(long startOffset) {
+	public void setStartOffset(final long startOffset) {
 		this.startOffset = startOffset;
 	}
 
@@ -39,7 +37,7 @@ public class PartitionOffsetInfo {
 		return endOffset;
 	}
 
-	public void setEndOffset(long endOffset) {
+	public void setEndOffset(final long endOffset) {
 		this.endOffset = endOffset;
 	}
 
@@ -54,23 +52,27 @@ public class PartitionOffsetInfo {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
+	public boolean equals(final Object obj) {
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
-		PartitionOffsetInfo other = (PartitionOffsetInfo) obj;
-		if (endOffset != other.endOffset)
+		}
+		final PartitionOffsetInfo other = (PartitionOffsetInfo) obj;
+		if (endOffset != other.endOffset) {
 			return false;
-		if (partitionNumber != other.partitionNumber)
+		}
+		if (partitionNumber != other.partitionNumber) {
 			return false;
-		if (startOffset != other.startOffset)
+		}
+		if (startOffset != other.startOffset) {
 			return false;
+		}
 		return true;
 	}
-	
-	
-	
+
 }

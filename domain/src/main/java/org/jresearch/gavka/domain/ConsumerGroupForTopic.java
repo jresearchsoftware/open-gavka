@@ -6,14 +6,13 @@ import java.util.Map;
 public class ConsumerGroupForTopic {
 
 	private String groupId;
-	
-	private Map<Integer,PartitionInfoForConsumerGroup> partitionInfo =  new HashMap<>();
+	private Map<Integer, PartitionInfoForConsumerGroup> partitionInfo = new HashMap<>();
 
 	public ConsumerGroupForTopic() {
 		super();
 	}
 
-	public ConsumerGroupForTopic(String groupId, Map<Integer, PartitionInfoForConsumerGroup> partitionInfo) {
+	public ConsumerGroupForTopic(final String groupId, final Map<Integer, PartitionInfoForConsumerGroup> partitionInfo) {
 		super();
 		this.groupId = groupId;
 		this.partitionInfo = partitionInfo;
@@ -23,7 +22,7 @@ public class ConsumerGroupForTopic {
 		return groupId;
 	}
 
-	public void setGroupId(String groupId) {
+	public void setGroupId(final String groupId) {
 		this.groupId = groupId;
 	}
 
@@ -31,18 +30,18 @@ public class ConsumerGroupForTopic {
 		return partitionInfo;
 	}
 
-	public void setPartitionInfo(Map<Integer, PartitionInfoForConsumerGroup> partitionInfo) {
+	public void setPartitionInfo(final Map<Integer, PartitionInfoForConsumerGroup> partitionInfo) {
 		this.partitionInfo = partitionInfo;
 	}
-	
-	public void addPartitionInfo(Integer p, PartitionInfoForConsumerGroup v) {
+
+	public void addPartitionInfo(final Integer p, final PartitionInfoForConsumerGroup v) {
 		partitionInfo.put(p, v);
 	}
-	
-	public void removePartitionInfo(Integer p) {
+
+	public void removePartitionInfo(final Integer p) {
 		partitionInfo.remove(p);
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -53,24 +52,31 @@ public class ConsumerGroupForTopic {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
+	public boolean equals(final Object obj) {
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
-		ConsumerGroupForTopic other = (ConsumerGroupForTopic) obj;
+		}
+		final ConsumerGroupForTopic other = (ConsumerGroupForTopic) obj;
 		if (groupId == null) {
-			if (other.groupId != null)
+			if (other.groupId != null) {
 				return false;
-		} else if (!groupId.equals(other.groupId))
+			}
+		} else if (!groupId.equals(other.groupId)) {
 			return false;
+		}
 		if (partitionInfo == null) {
-			if (other.partitionInfo != null)
+			if (other.partitionInfo != null) {
 				return false;
-		} else if (!partitionInfo.equals(other.partitionInfo))
+			}
+		} else if (!partitionInfo.equals(other.partitionInfo)) {
 			return false;
+		}
 		return true;
 	}
 
@@ -79,5 +85,4 @@ public class ConsumerGroupForTopic {
 		return "ConsumerGroupForTopic [groupId=" + groupId + ", partitionInfo=" + partitionInfo + "]";
 	}
 
-	
 }

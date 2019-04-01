@@ -3,16 +3,14 @@ package org.jresearch.gavka.domain;
 public class PartitionInfoForConsumerGroup {
 
 	private int partition;
-	
 	private long currentOffset;
-	
 	private long lag;
-	
+
 	public PartitionInfoForConsumerGroup() {
 		super();
 	}
-	
-	public PartitionInfoForConsumerGroup(int partition, long currentOffset, long lag) {
+
+	public PartitionInfoForConsumerGroup(final int partition, final long currentOffset, final long lag) {
 		super();
 		this.partition = partition;
 		this.currentOffset = currentOffset;
@@ -23,7 +21,7 @@ public class PartitionInfoForConsumerGroup {
 		return currentOffset;
 	}
 
-	public void setCurrentOffset(long currentOffset) {
+	public void setCurrentOffset(final long currentOffset) {
 		this.currentOffset = currentOffset;
 	}
 
@@ -31,17 +29,15 @@ public class PartitionInfoForConsumerGroup {
 		return lag;
 	}
 
-	public void setLag(long lag) {
+	public void setLag(final long lag) {
 		this.lag = lag;
 	}
-
 
 	public int getPartition() {
 		return partition;
 	}
 
-
-	public void setPartition(int partition) {
+	public void setPartition(final int partition) {
 		this.partition = partition;
 	}
 
@@ -56,20 +52,26 @@ public class PartitionInfoForConsumerGroup {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
+	public boolean equals(final Object obj) {
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
-		PartitionInfoForConsumerGroup other = (PartitionInfoForConsumerGroup) obj;
-		if (currentOffset != other.currentOffset)
+		}
+		final PartitionInfoForConsumerGroup other = (PartitionInfoForConsumerGroup) obj;
+		if (currentOffset != other.currentOffset) {
 			return false;
-		if (lag != other.lag)
+		}
+		if (lag != other.lag) {
 			return false;
-		if (partition != other.partition)
+		}
+		if (partition != other.partition) {
 			return false;
+		}
 		return true;
 	}
 
@@ -79,6 +81,4 @@ public class PartitionInfoForConsumerGroup {
 				+ lag + "]";
 	}
 
-	
-	
 }

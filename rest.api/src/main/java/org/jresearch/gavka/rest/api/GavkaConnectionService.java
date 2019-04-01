@@ -4,9 +4,7 @@ import java.util.List;
 
 import org.jresearch.gavka.domain.Connection;
 
-public interface GavkaConnectionService {
-
-	String SRV_ROOT = "/rest"; //$NON-NLS-1$
+public interface GavkaConnectionService extends GavkaBaseService {
 
 	/** Service id */
 	String SRV_PATH = "/connection"; //$NON-NLS-1$

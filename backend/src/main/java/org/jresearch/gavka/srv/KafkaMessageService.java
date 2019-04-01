@@ -136,7 +136,7 @@ public class KafkaMessageService extends AbstractMessageService {
 			}
 			log.debug("Message offsets for topic {}:{} ", filter.getTopic(), po);
 			return new MessagePortion(po, messages);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			log.error("Exception reading records", e);
 			return null;
 		}
@@ -153,7 +153,7 @@ public class KafkaMessageService extends AbstractMessageService {
 		return partitions;
 	}
 
-	private static void positionConsumer(final Map<Integer, TopicPartition> partitions, final MessageFilter filter, final KafkaConsumer<Object, Object> consumer, Map<Integer, Long> partitionOffsets) {
+	private static void positionConsumer(final Map<Integer, TopicPartition> partitions, final MessageFilter filter, final KafkaConsumer<Object, Object> consumer, final Map<Integer, Long> partitionOffsets) {
 		if (filter.getFrom() == null) {
 			// no start time, position to the beginning
 			consumer.seekToBeginning(partitions.values());
@@ -167,12 +167,12 @@ public class KafkaMessageService extends AbstractMessageService {
 			final Map<TopicPartition, OffsetAndTimestamp> result = consumer.offsetsForTimes(query);
 			result.entrySet().stream().forEach(entry -> {
 				if (entry.getValue() != null) {
-					Long offset = entry.getValue().offset();
-					TopicPartition partition = entry.getKey();
+					final Long offset = entry.getValue().offset();
+					final TopicPartition partition = entry.getKey();
 					consumer.seek(partition, offset);
 					partitionOffsets.put(partition.partition(), offset);
 				} else {
-					TopicPartition partition = entry.getKey();
+					final TopicPartition partition = entry.getKey();
 					consumer.seekToEnd(Collections.singleton(partition));
 					partitionOffsets.put(partition.partition(), consumer.position(partition));
 				}
@@ -230,12 +230,12 @@ public class KafkaMessageService extends AbstractMessageService {
 	@Override
 	public void exportMessages(final String connectionId, final OutputStream bos, final MessageFilter filter) throws IOException {
 		final SimpleDateFormat sf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
-		Properties props = getProperties();
+		final Properties props = getProperties();
 		props.put("key.deserializer", getKeyDeserializer(filter.getKeyFormat()));
 		props.put("value.deserializer", getMessageDeserializer(filter.getMessageFormat()));
 		props.put("auto.offset.reset", "earliest");
 
-		long stopTime = System.currentTimeMillis();
+		final long stopTime = System.currentTimeMillis();
 		long currentTime = 0;
 		try (final KafkaConsumer<Object, Object> consumer = new KafkaConsumer<>(props)) {
 			final Map<Integer, TopicPartition> partitions = initConsumer(filter, consumer);
@@ -270,39 +270,39 @@ public class KafkaMessageService extends AbstractMessageService {
 	}
 
 	@Override
-	public TopicInfo getTopic(String topicName) {
-		TopicInfo ti = new TopicInfo();
+	public TopicInfo getTopic(final String connectionId, final String topicName) {
+		final TopicInfo ti = new TopicInfo();
 		ti.setName(topicName);
 
 		final KafkaConsumer<Object, Object> consumer = new KafkaConsumer<>(getProperties());
-		List<TopicPartition> partitions = consumer.partitionsFor(topicName).stream()
+		final List<TopicPartition> partitions = consumer.partitionsFor(topicName).stream()
 				.map(s -> new TopicPartition(topicName, s.partition())).collect(Collectors.toList());
-		Map<TopicPartition, Long> beginingOffsets = consumer.beginningOffsets(partitions);
-		Map<TopicPartition, Long> endOffsets = consumer.endOffsets(partitions);
-		for (TopicPartition topicPartition : partitions) {
-			int pNumber = topicPartition.partition();
-			PartitionOffsetInfo po = new PartitionOffsetInfo(pNumber, beginingOffsets.get(pNumber), endOffsets.get(pNumber));
+		final Map<TopicPartition, Long> beginingOffsets = consumer.beginningOffsets(partitions);
+		final Map<TopicPartition, Long> endOffsets = consumer.endOffsets(partitions);
+		for (final TopicPartition topicPartition : partitions) {
+			final int pNumber = topicPartition.partition();
+			final PartitionOffsetInfo po = new PartitionOffsetInfo(pNumber, beginingOffsets.get(pNumber), endOffsets.get(pNumber));
 			ti.addPartition(pNumber, po);
 		}
 		consumer.close();
 		try {
-			List<ConsumerGroupForTopic> cgf = new LinkedList<>();
-			List<String> groupIds = kafkaClient.listConsumerGroups().all().get().stream().map(s -> s.groupId())
+			final List<ConsumerGroupForTopic> cgf = new LinkedList<>();
+			final List<String> groupIds = kafkaClient.listConsumerGroups().all().get().stream().map(s -> s.groupId())
 					.collect(Collectors.toList());
-			Map<String, ConsumerGroupDescription> groups = kafkaClient.describeConsumerGroups(groupIds).all().get();
-			for (String groupId : groupIds) {
-				ConsumerGroupDescription descr = groups.get(groupId);
-				Optional<TopicPartition> tp = descr.members().stream().map(s -> s.assignment().topicPartitions())
+			final Map<String, ConsumerGroupDescription> groups = kafkaClient.describeConsumerGroups(groupIds).all().get();
+			for (final String groupId : groupIds) {
+				final ConsumerGroupDescription descr = groups.get(groupId);
+				final Optional<TopicPartition> tp = descr.members().stream().map(s -> s.assignment().topicPartitions())
 						.flatMap(coll -> coll.stream()).filter(s -> s.topic().equals(topicName)).findAny();
 				if (tp.isPresent()) {
-					ConsumerGroupForTopic gr = new ConsumerGroupForTopic();
+					final ConsumerGroupForTopic gr = new ConsumerGroupForTopic();
 					gr.setGroupId(groupId);
 					kafkaClient.listConsumerGroupOffsets(groupId).partitionsToOffsetAndMetadata().get()
 							.forEach((k, v) -> {
 								if (k.topic().equals(topicName)) {
-									PartitionInfoForConsumerGroup pi = new PartitionInfoForConsumerGroup();
+									final PartitionInfoForConsumerGroup pi = new PartitionInfoForConsumerGroup();
 									pi.setCurrentOffset(v.offset());
-									PartitionOffsetInfo po = ti.getPartitions().get(k.partition());
+									final PartitionOffsetInfo po = ti.getPartitions().get(k.partition());
 									if (po == null) {
 										pi.setLag(v.offset());
 									} else {
@@ -317,7 +317,7 @@ public class KafkaMessageService extends AbstractMessageService {
 			}
 			ti.setConsumerGroups(cgf);
 
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			log.error("Exception getting consumer groups", e);
 		}
 		return ti;

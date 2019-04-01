@@ -5,9 +5,7 @@ import java.util.List;
 import org.jresearch.gavka.domain.KeyFormat;
 import org.jresearch.gavka.domain.MessageFormat;
 
-public interface GavkaMessageService {
-
-	String SRV_ROOT = "/rest"; //$NON-NLS-1$
+public interface GavkaMessageService extends GavkaBaseService {
 
 	/** Service id */
 	String SRV_PATH = "/messages"; //$NON-NLS-1$

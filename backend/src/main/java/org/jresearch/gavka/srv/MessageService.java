@@ -17,5 +17,6 @@ public interface MessageService {
 
 	void exportMessages(String connectionId, OutputStream bos, MessageFilter filter) throws IOException;
 
-	TopicInfo getTopic(String topicName);
+	TopicInfo getTopic(String connectionId, String topicName);
+
 }
