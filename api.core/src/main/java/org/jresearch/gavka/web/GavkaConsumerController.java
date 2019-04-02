@@ -18,8 +18,8 @@ import org.jresearch.gavka.rest.data.PartitionInfo;
 import org.jresearch.gavka.rest.data.TopicRestInfo;
 import org.jresearch.gavka.srv.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,7 +33,7 @@ public class GavkaConsumerController implements GavkaConsumerService {
 	private MessageService messageService;
 
 	@Override
-	@PostMapping(M_R_GET)
+	@GetMapping(M_R_GET)
 	public TopicRestInfo get(@PathVariable final String connectionId, @PathVariable final String topic) {
 		final TopicInfo info = messageService.getTopic(connectionId, topic);
 		return toRest(info);
@@ -41,7 +41,7 @@ public class GavkaConsumerController implements GavkaConsumerService {
 
 	@SuppressWarnings("null")
 	private static TopicRestInfo toRest(final TopicInfo info) {
-		return ImmutableTopicRestInfo.builder()
+		return new ImmutableTopicRestInfo.Builder()
 				.addAllGroupInfo(toRest(info.getConsumerGroups()))
 				.addAllPartitionInfo(toRest(info.getPartitions()))
 				.name(info.getName())
@@ -57,7 +57,7 @@ public class GavkaConsumerController implements GavkaConsumerService {
 	@Nonnull
 	@SuppressWarnings("null")
 	private static PartitionInfo toRest(final PartitionOffsetInfo partition) {
-		return ImmutablePartitionInfo.builder()
+		return new ImmutablePartitionInfo.Builder()
 				.endOffset(partition.getEndOffset())
 				.partitionNumber(partition.getPartitionNumber())
 				.startOffset(partition.getStartOffset())
@@ -79,7 +79,7 @@ public class GavkaConsumerController implements GavkaConsumerService {
 	@Nonnull
 	@SuppressWarnings("null")
 	private static GroupInfo toRest(final String groupId, final PartitionInfoForConsumerGroup partition) {
-		return ImmutableGroupInfo.builder()
+		return new ImmutableGroupInfo.Builder()
 				.currentOffset(partition.getCurrentOffset())
 				.groupId(groupId)
 				.lag(partition.getLag())

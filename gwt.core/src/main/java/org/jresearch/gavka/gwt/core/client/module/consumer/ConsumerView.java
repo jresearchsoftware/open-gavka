@@ -1,5 +1,6 @@
 package org.jresearch.gavka.gwt.core.client.module.consumer;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -96,6 +97,7 @@ public class ConsumerView extends AbstractView<ConsumerController> {
 		tableCard = Card.create()
 				.appendChild(partitionTable.styler(s -> s.setMarginBottom(1 + Unit.EM.getType())))
 				.appendChild(groupTable.styler(s -> s.setMarginBottom(1 + Unit.EM.getType())));
+		refresh();
 	}
 
 	private void refresh() {
@@ -109,16 +111,19 @@ public class ConsumerView extends AbstractView<ConsumerController> {
 	}
 
 	private void onLoad(final TopicRestInfo data) {
-		groupDataStore.setData(data.groupInfo());
+		final Optional<TopicRestInfo> oData = Optional.ofNullable(data);
+		final List<GroupInfo> groupInfo = oData.map(TopicRestInfo::groupInfo).orElseGet(ImmutableList::of);
+		groupDataStore.setData(groupInfo);
 		groupDataStore.load();
-		partitionDataStore.setData(data.partitionInfo());
+		final List<PartitionInfo> partitionInfo = oData.map(TopicRestInfo::partitionInfo).orElseGet(ImmutableList::of);
+		partitionDataStore.setData(partitionInfo);
 		partitionDataStore.load();
 		groupLoader.stop();
 		partitionLoader.stop();
-		if (data.groupInfo().isEmpty()) {
+		if (groupInfo.isEmpty()) {
 			groupTable.bodyElement().appendChild(groupNoDataElement);
 		}
-		if (data.partitionInfo().isEmpty()) {
+		if (partitionInfo.isEmpty()) {
 			partitionTable.bodyElement().appendChild(partitionNoDataElement);
 		}
 	}

@@ -5,11 +5,10 @@ import java.util.List;
 import org.immutables.value.Value;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @Value.Immutable
-@JsonSerialize(as = ImmutableTopicRestInfo.class)
-@JsonDeserialize(as = ImmutableTopicRestInfo.class)
+@Value.Style(builder = "new") // builder has to have constructor
+@JsonDeserialize(builder = ImmutableTopicRestInfo.Builder.class)
 public interface TopicRestInfo {
 
 	String name();
