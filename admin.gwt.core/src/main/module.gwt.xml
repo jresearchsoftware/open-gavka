@@ -9,7 +9,6 @@
     <inherits name="org.jresearch.gavka.domain.module"/>
     <inherits name="org.jresearch.commons.gwt.module"/>
     <inherits name="org.jresearch.commons.gwt.shared"/>
-    <inherits name="org.jresearch.gavka.rest.api.module"/>
 	<inherits name='org.gwtproject.i18n.DateTimeFormat'/>
 	<inherits name='org.gwtproject.i18n.CLDR'/>
 	<set-configuration-property name="CssResource.conversionMode" value="strict"/>
