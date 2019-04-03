@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
@@ -24,7 +25,6 @@ import org.jresearch.commons.gwt.client.mvc.INotificator;
 import org.jresearch.commons.gwt.client.mvc.event.Bus;
 import org.jresearch.commons.gwt.client.mvc.event.module.ModuleEvent;
 import org.jresearch.gavka.gwt.core.client.module.GafkaModule;
-import org.jresearch.gavka.gwt.core.client.module.message.MessageController;
 import org.jresearch.gavka.rest.api.ConnectionLabel;
 
 import com.google.common.base.Splitter;
@@ -53,7 +53,22 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 
 		@Override
 		public void handleEvent(final Event evt) {
-			bus.fire(new ModuleEvent(MessageController.id(moduleId, connectionId, topic)));
+			bus.fire(new ModuleEvent(GafkaModule.id(moduleId, connectionId, topic)));
+		}
+	}
+
+	private final class TabClickHandler implements EventListener {
+
+		@Nonnull
+		private final String connectionTopicId;
+
+		private TabClickHandler(@Nonnull final String connectionTopicId) {
+			this.connectionTopicId = connectionTopicId;
+		}
+
+		@Override
+		public void handleEvent(final Event evt) {
+			bus.fire(new TabEvent(connectionTopicId));
 		}
 	}
 
@@ -64,6 +79,7 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 	private final Multimap<ConnectionLabel, String> topics = HashMultimap.create();
 	private String defaultModule;
 	private final Map<String, Tab> tabs = new HashMap<>();
+	private final Map<String, TreeItem> topicNodes = new HashMap<>();
 	private TabsPanel tabsPanel;
 	private final Icon lockIcon = Icons.ALL.lock()
 			.style()
@@ -106,19 +122,15 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 		throw new UnsupportedOperationException();
 	}
 
+	@SuppressWarnings("boxing")
 	@Override
 	public boolean updateChildContent(final String viewId, final HTMLElement content) {
-		final String tabId = getConnectionTopicName(viewId);
-		Tab connectionTab = tabs.get(tabId);
-		if (connectionTab == null) {
-			connectionTab = Tab.create(getTopicName(viewId));
-			tabs.put(tabId, connectionTab);
-			final TabsPanel moduleTabs = TabsPanel.create();
-			tabsPanels.put(tabId, moduleTabs);
-			connectionTab.appendChild(moduleTabs);
-			tabModules.stream().map(m -> createTab(tabId, m)).forEachOrdered(moduleTabs::appendChild);
-			tabsPanel.appendChild(connectionTab);
-		}
+		final Optional<String> tabId = GafkaModule.getConnectionTopicName(viewId);
+		return tabId.map(id -> updateChildContent(id, viewId, content)).orElse(Boolean.FALSE).booleanValue();
+	}
+
+	private boolean updateChildContent(final String tabId, final String viewId, final HTMLElement content) {
+		final Tab connectionTab = tabs.computeIfAbsent(tabId, this::createConnectionTab);
 		tabsPanel.activateTab(connectionTab);
 		final Tab tab = tabs.get(viewId);
 		if (tab != null) {
@@ -131,21 +143,28 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 		return true;
 	}
 
-	private Tab createTab(final String tabId, final GafkaModule tabModule) {
+	private Tab createConnectionTab(final String tabId) {
+		final Optional<String> topicName = GafkaModule.getTopicName(tabId);
+		return topicName.map(name -> createConnectionTab(name, tabId)).orElse(null);
+	}
+
+	private Tab createConnectionTab(final String topicName, final String tabId) {
+		final Tab connectionTab = Tab.create(topicName)
+				.addClickListener(new TabClickHandler(tabId));
+		final TabsPanel moduleTabs = TabsPanel.create();
+		tabsPanels.put(tabId, moduleTabs);
+		connectionTab.appendChild(moduleTabs);
+		tabModules.stream().map(m -> createTab(tabId, m)).forEachOrdered(moduleTabs::appendChild);
+		tabsPanel.appendChild(connectionTab);
+		return connectionTab;
+	}
+
+	private Tab createTab(final String tabId, final GafkaModule<?> tabModule) {
 		final Tab result = Tab.create(tabModule.getName());
 		tabs.put(String.join(".", tabModule.getModuleId(), tabId), result);
 		final List<String> list = Splitter.on('.').splitToList(tabId);
 		result.addClickListener(new NavClickHandler(tabModule.getModuleId(), list.get(0), list.get(1)));
 		return result;
-	}
-
-	private static String getTopicName(final String viewId) {
-		return viewId.substring(viewId.lastIndexOf('.') + 1);
-	}
-
-	private static String getConnectionTopicName(final String viewId) {
-		final int index = viewId.lastIndexOf('.', viewId.lastIndexOf('.') - 1);
-		return viewId.substring(index + 1);
 	}
 
 	@Override
@@ -207,6 +226,7 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 		layout.show();
 	}
 
+	@SuppressWarnings("null")
 	@Nonnull
 	public TreeItem addConnection(final ConnectionLabel connection) {
 		final TreeItem moduleNode = TreeItem.create(connection.getLabel());
@@ -225,7 +245,18 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 		if (connectionNode == null) {
 			connectionNode = addConnection(connection);
 		}
-		connectionNode.appendChild(TreeItem.create(topic).addClickListener(new NavClickHandler(defaultModule, connection.getId(), topic)));
+		final TreeItem topicNode = TreeItem.create(topic)
+				.addClickListener(new NavClickHandler(defaultModule, connection.getId(), topic));
+		topicNodes.put(String.join(".", connection.getId(), topic), topicNode);
+		connectionNode.appendChild(topicNode);
+	}
+
+	public void selectTopic(@Nonnull final String connectionTopicId) {
+		final TreeItem treeItem = topicNodes.get(connectionTopicId);
+		if (treeItem != null) {
+			treeItem.show(true).activate(true);
+		}
+
 	}
 
 }

@@ -11,18 +11,16 @@ import org.jresearch.commons.gwt.client.app.AbstractAppController;
 import org.jresearch.commons.gwt.client.app.IAppModule;
 import org.jresearch.commons.gwt.client.mvc.GwtMethodCallback;
 import org.jresearch.commons.gwt.client.mvc.event.Bus;
-import org.jresearch.commons.gwt.client.mvc.event.InitEvent;
 import org.jresearch.commons.gwt.client.mvc.event.module.ModuleEvent;
 import org.jresearch.commons.gwt.client.service.AppRestService;
 import org.jresearch.commons.gwt.client.service.LocalizationRestService;
 import org.jresearch.gavka.gwt.core.client.module.GafkaModule;
-import org.jresearch.gavka.gwt.core.client.module.message.MessageController;
 import org.jresearch.gavka.gwt.core.client.module.message.srv.GavkaMessageRestService;
 import org.jresearch.gavka.rest.api.ConnectionLabel;
 
 import com.google.gwt.inject.client.AsyncProvider;
 
-public class GavkaAppController extends AbstractAppController<GavkaAppView> {
+public class GavkaAppController extends AbstractAppController<GavkaAppView> implements TabHandler {
 
 	@Nonnull
 	private static final String ID = "org.jresearch.gavka.gwt.core.client.app.GavkaAppController"; //$NON-NLS-1$
@@ -34,14 +32,15 @@ public class GavkaAppController extends AbstractAppController<GavkaAppView> {
 	public GavkaAppController(@Nonnull final GavkaMessageRestService srv, @Nonnull final Set<IAppModule> appModules, @Nonnull final AppRestService appService, @Nonnull final AsyncProvider<GavkaAppView> view, @Nonnull final LocalizationRestService localizationService, @Nonnull final Bus bus) {
 		super(ID, appService, localizationService, appModules, view, bus, false);
 		this.srv = srv;
+		bus.addHandler(TabEvent.TYPE, this);
 	}
 
 	@Override
-	public void onInit(final InitEvent initEvent) {
-		super.onInit(initEvent);
+	protected void onViewLoad() {
 		// Load connections
 		// Load topics for each connection
 		// Load initial module with connection id and topic
+		super.onViewLoad();
 		final String activeModuleId = getActiveModuleId();
 		if (activeModuleId != null) {
 			loadConnections(activeModuleId);
@@ -67,20 +66,25 @@ public class GavkaAppController extends AbstractAppController<GavkaAppView> {
 
 	private void updateTopic(final String activeModuleId, final ConnectionLabel connection, final String topic) {
 		getOptView().ifPresent(v -> v.addTopic(connection, topic));
-		for (final IAppModule module : getModules()) {
-			if (module instanceof GafkaModule) {
-				final GafkaModule gMod = (GafkaModule) module;
-				gMod.getControllerFactory().create(connection.getId(), topic);
-			}
-		}
-//		getModules().stream()
-//				.filter(m -> m instanceof GafkaModule)
-//				.map(m -> (GafkaModule) m)
-//				.map(GafkaModule::getControllerFactory)
-//				.forEach(f -> f.create(connection.getId(), topic));
+//		for (final IAppModule module : getModules()) {
+//			if (module instanceof GafkaModule) {
+//				final GafkaModule gMod = (GafkaModule) module;
+//				gMod.getControllerFactory().create(connection.getId(), topic);
+//			}
+//		}
+		getModules().stream()
+				.filter(m -> m instanceof GafkaModule)
+				.map(m -> (GafkaModule) m)
+				.map(GafkaModule::getControllerFactory)
+				.forEach(f -> f.create(connection.getId(), topic));
 		if (needInit) {
 			needInit = false;
-			bus.fire(new ModuleEvent(MessageController.id(activeModuleId, connection.getId(), topic)));
+			bus.fire(new ModuleEvent(GafkaModule.id(activeModuleId, connection.getId(), topic)));
 		}
+	}
+
+	@Override
+	public void onConnectionTab(final TabEvent event) {
+		getOptView().ifPresent(v -> v.selectTopic(event.getConnectionTopicId()));
 	}
 }
