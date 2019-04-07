@@ -40,7 +40,7 @@ public class GavkaConsumerController implements GavkaConsumerService {
 	}
 
 	@SuppressWarnings("null")
-	private static TopicRestInfo toRest(final TopicInfo info) {
+	public static TopicRestInfo toRest(final TopicInfo info) {
 		return new ImmutableTopicRestInfo.Builder()
 				.addAllGroupInfo(toRest(info.getConsumerGroups()))
 				.addAllPartitionInfo(toRest(info.getPartitions()))

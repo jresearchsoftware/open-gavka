@@ -71,7 +71,7 @@ public class ConsumerView extends AbstractView<ConsumerController> {
 	@SuppressWarnings("null")
 	public ConsumerView(@Nonnull final INotificator notificator, @Nonnull final GavkaConsumerRestService srv, @Nonnull final Bus bus, @Nonnull final String connectionId, @Nonnull final String topic) {
 		super(null, notificator);
-		this.consumerDataSource = new ConsumerDataSource(connectionId, topic, srv, bus);
+		this.consumerDataSource = new ConsumerDataSource(connectionId, topic, srv, bus, this::onLoad);
 
 		final TableConfig<PartitionInfo> partitionTableConfig = createPartitionTableConfig();
 

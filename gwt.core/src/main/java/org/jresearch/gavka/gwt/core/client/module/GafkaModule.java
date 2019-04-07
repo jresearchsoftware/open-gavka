@@ -5,6 +5,8 @@ import java.util.Optional;
 import javax.annotation.Nonnull;
 
 import org.jresearch.commons.gwt.client.app.GeneralModule;
+import org.jresearch.gavka.rest.data.GafkaCoordinates;
+import org.jresearch.gavka.rest.data.ImmutableGafkaCoordinates;
 
 public class GafkaModule<T> extends GeneralModule {
 
@@ -42,6 +44,10 @@ public class GafkaModule<T> extends GeneralModule {
 		final int endIndex = id.lastIndexOf('.') - 1;
 		final int startIndex = id.lastIndexOf('.', endIndex);
 		return startIndex == -1 ? Optional.empty() : Optional.of(id.substring(startIndex + 1, endIndex));
+	}
+
+	public static GafkaCoordinates create(@Nonnull final String connectionId, @Nonnull final String topic) {
+		return new ImmutableGafkaCoordinates.Builder().connectionId(connectionId).topic(topic).build();
 	}
 
 }
