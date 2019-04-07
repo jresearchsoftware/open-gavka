@@ -12,10 +12,9 @@ import org.dominokit.domino.ui.datatable.ColumnConfig;
 import org.dominokit.domino.ui.datatable.DataTable;
 import org.dominokit.domino.ui.datatable.TableConfig;
 import org.dominokit.domino.ui.datatable.TableRow;
+import org.dominokit.domino.ui.datatable.plugins.EmptyStatePlugin;
 import org.dominokit.domino.ui.datatable.store.LocalListDataStore;
-import org.dominokit.domino.ui.grid.Column;
-import org.dominokit.domino.ui.grid.Row;
-import org.dominokit.domino.ui.grid.Row_16;
+import org.dominokit.domino.ui.icons.Icons;
 import org.dominokit.domino.ui.loaders.Loader;
 import org.dominokit.domino.ui.loaders.LoaderEffect;
 import org.dominokit.domino.ui.utils.TextNode;
@@ -32,7 +31,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.i18n.client.NumberFormat;
 
-import elemental2.dom.DomGlobal;
 import elemental2.dom.HTMLElement;
 import elemental2.dom.Node;
 
@@ -69,29 +67,22 @@ public class ConsumerView extends AbstractView<ConsumerController> {
 	private final DataTable<PartitionInfo> partitionTable;
 	@Nonnull
 	private final DataTable<GroupInfo> groupTable;
-	@Nonnull
-	private final Row_16 partitionNoDataElement;
-	@Nonnull
-	private final Row_16 groupNoDataElement;
 
 	@SuppressWarnings("null")
 	public ConsumerView(@Nonnull final INotificator notificator, @Nonnull final GavkaConsumerRestService srv, @Nonnull final Bus bus, @Nonnull final String connectionId, @Nonnull final String topic) {
 		super(null, notificator);
 		this.consumerDataSource = new ConsumerDataSource(connectionId, topic, srv, bus);
-		partitionNoDataElement = Row.of16Colmns().appendChild(Column.span16().appendChild(DomGlobal.document.createTextNode("No data")));
 
 		final TableConfig<PartitionInfo> partitionTableConfig = createPartitionTableConfig();
 
 		partitionDataStore = new LocalListDataStore<>();
-		(partitionTable = new DataTable<>(partitionTableConfig, partitionDataStore)).bodyElement().appendChild(partitionNoDataElement);
+		partitionTable = new DataTable<>(partitionTableConfig, partitionDataStore);
 		partitionLoader = Loader.create(partitionTable.asElement(), LoaderEffect.WIN8);
-
-		groupNoDataElement = Row.of16Colmns().appendChild(Column.span16().appendChild(DomGlobal.document.createTextNode("No data")));
 
 		final TableConfig<GroupInfo> groupTableConfig = createGroupTableConfig();
 
 		groupDataStore = new LocalListDataStore<>();
-		(groupTable = new DataTable<>(groupTableConfig, groupDataStore)).bodyElement().appendChild(groupNoDataElement);
+		groupTable = new DataTable<>(groupTableConfig, groupDataStore);
 		groupLoader = Loader.create(groupTable.asElement(), LoaderEffect.WIN8);
 
 		tableCard = Card.create()
@@ -120,12 +111,6 @@ public class ConsumerView extends AbstractView<ConsumerController> {
 		partitionDataStore.load();
 		groupLoader.stop();
 		partitionLoader.stop();
-		if (groupInfo.isEmpty()) {
-			groupTable.bodyElement().appendChild(groupNoDataElement);
-		}
-		if (partitionInfo.isEmpty()) {
-			partitionTable.bodyElement().appendChild(partitionNoDataElement);
-		}
 	}
 
 	@SuppressWarnings("null")
@@ -141,7 +126,8 @@ public class ConsumerView extends AbstractView<ConsumerController> {
 				.addColumn(ColumnConfig.<PartitionInfo>create(PartitionsColumnName.START_OFFSET.name(), "Start offset")
 						.setCellRenderer(cell -> renderNumber(cell, PartitionInfo::startOffset)))
 				.addColumn(ColumnConfig.<PartitionInfo>create(PartitionsColumnName.END_OFFSET.name(), "End offset")
-						.setCellRenderer(cell -> renderNumber(cell, PartitionInfo::endOffset)));
+						.setCellRenderer(cell -> renderNumber(cell, PartitionInfo::endOffset)))
+				.addPlugin(new EmptyStatePlugin<PartitionInfo>(Icons.ALL.card_bulleted_off_outline_mdi(), "No data"));
 	}
 
 	private static TableConfig<GroupInfo> createGroupTableConfig() {
@@ -153,7 +139,8 @@ public class ConsumerView extends AbstractView<ConsumerController> {
 				.addColumn(ColumnConfig.<GroupInfo>create(GroupsColumnName.OFFSET.name(), "Offset")
 						.setCellRenderer(cell -> renderNumber(cell, GroupInfo::currentOffset)))
 				.addColumn(ColumnConfig.<GroupInfo>create(GroupsColumnName.LAG.name(), "Lag")
-						.setCellRenderer(cell -> renderNumber(cell, GroupInfo::lag)));
+						.setCellRenderer(cell -> renderNumber(cell, GroupInfo::lag)))
+				.addPlugin(new EmptyStatePlugin<GroupInfo>(Icons.ALL.card_bulleted_off_outline_mdi(), "No data"));
 	}
 
 	private static <R> Node renderText(final CellInfo<R> cellInfo, final Function<R, String> valueAccessor) {

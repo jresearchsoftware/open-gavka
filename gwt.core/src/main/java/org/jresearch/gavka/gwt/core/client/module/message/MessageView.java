@@ -19,11 +19,11 @@ import org.dominokit.domino.ui.datatable.TableRow;
 import org.dominokit.domino.ui.datatable.events.SearchEvent;
 import org.dominokit.domino.ui.datatable.events.TableEvent;
 import org.dominokit.domino.ui.datatable.events.TableEventListener;
+import org.dominokit.domino.ui.datatable.plugins.EmptyStatePlugin;
 import org.dominokit.domino.ui.datatable.plugins.RecordDetailsPlugin;
 import org.dominokit.domino.ui.datatable.store.LocalListDataStore;
 import org.dominokit.domino.ui.grid.Column;
 import org.dominokit.domino.ui.grid.Row;
-import org.dominokit.domino.ui.grid.Row_16;
 import org.dominokit.domino.ui.icons.Icons;
 import org.dominokit.domino.ui.loaders.Loader;
 import org.dominokit.domino.ui.loaders.LoaderEffect;
@@ -44,7 +44,6 @@ import com.google.gwt.i18n.shared.DateTimeFormat;
 import com.google.gwt.i18n.shared.DateTimeFormat.PredefinedFormat;
 
 import elemental2.dom.CSSProperties;
-import elemental2.dom.DomGlobal;
 import elemental2.dom.Event;
 import elemental2.dom.HTMLElement;
 import elemental2.dom.Node;
@@ -78,23 +77,21 @@ public class MessageView extends AbstractView<MessageController> implements Tabl
 	@Nonnull
 	private final DataTable<Message> table;
 	@Nonnull
-	private final Row_16 noDataElement;
-	@Nonnull
 	private final FilterBarPlugin filter;
 
 	@SuppressWarnings("null")
 	public MessageView(@Nonnull final INotificator notificator, @Nonnull final MessageDataSource messageDataSource, @Nonnull final String connectionId, @Nonnull final String topic) {
 		super(null, notificator);
 		this.filter = new FilterBarPlugin(connectionId, topic);
-		noDataElement = Row.of16Colmns().appendChild(Column.span16().appendChild(DomGlobal.document.createTextNode("No data")));
 		this.messageDataSource = messageDataSource;
 
 		final TableConfig<Message> tableConfig = createBasicTableConfig()
 				.addPlugin(filter)
-				.addPlugin(new RecordDetailsPlugin<>(cell -> new MessageDetails(cell).asElement(), Icons.ALL.folder_open(), Icons.ALL.folder()));
+				.addPlugin(new RecordDetailsPlugin<>(cell -> new MessageDetails(cell).asElement(), Icons.ALL.folder_open(), Icons.ALL.folder()))
+				.addPlugin(new EmptyStatePlugin<Message>(Icons.ALL.card_bulleted_off_outline_mdi(), "No data"));
 
 		localListDataStore = new LocalListDataStore<>();
-		(table = new DataTable<>(tableConfig, localListDataStore)).bodyElement().appendChild(noDataElement);
+		table = new DataTable<>(tableConfig, localListDataStore);
 		loader = Loader.create(table.asElement(), LoaderEffect.WIN8);
 		tableCard = Card.create()
 				.appendChild(Row.of32Colmns()
@@ -158,9 +155,6 @@ public class MessageView extends AbstractView<MessageController> implements Tabl
 		prevBtnTop.setDisabled(!messageDataSource.isPreviousePartExist());
 		prevBtnBottom.setDisabled(!messageDataSource.isPreviousePartExist());
 		loader.stop();
-		if (data.isEmpty()) {
-			table.bodyElement().appendChild(noDataElement);
-		}
 	}
 
 	@SuppressWarnings("null")

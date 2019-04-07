@@ -6,10 +6,11 @@ public class ConnectionLabel {
 	private String label;
 
 	public ConnectionLabel() {
+
 		// For JSON
 	}
 
-	public ConnectionLabel(String id, String label) {
+	public ConnectionLabel(final String id, final String label) {
 		this.id = id;
 		this.label = label;
 	}
@@ -18,7 +19,7 @@ public class ConnectionLabel {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(final String id) {
 		this.id = id;
 	}
 
@@ -26,7 +27,7 @@ public class ConnectionLabel {
 		return label;
 	}
 
-	public void setLabel(String label) {
+	public void setLabel(final String label) {
 		this.label = label;
 	}
 
