@@ -38,7 +38,7 @@ public class ConsumerDataSource {
 		this.srv = srv;
 		this.bus = bus;
 		final TopicRestInfoMapper topicRestInfoMapper = GWT.create(TopicRestInfoMapper.class);
-		final GafkaCoordinatesMapper gafkaCoordinatesMapper = GWT.create(TopicRestInfoMapper.class);
+		final GafkaCoordinatesMapper gafkaCoordinatesMapper = GWT.create(GafkaCoordinatesMapper.class);
 		final Location location = DomGlobal.location;
 		final boolean secure = location.getProtocol().equals("https"); //$NON-NLS-1$
 		final WebSocket socket = new WebSocket(secure ? "wss" : "ws" + "://" + location.getHost() + "/api/rest/ws/consumer");

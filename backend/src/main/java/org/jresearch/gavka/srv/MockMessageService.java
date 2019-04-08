@@ -24,6 +24,11 @@ import com.google.common.collect.ImmutableMap;
 @Component
 public class MockMessageService extends AbstractMessageService {
 
+	long currentOffset = 0;
+	long lag = 0;
+	long startOffset = 100;
+	long endOffset = 200;
+
 	@Override
 	public MessagePortion getMessages(final String connectionId, final PagingParameters pagingParameters, final MessageFilter filter) {
 		final List<Message> messages = "no".equalsIgnoreCase(filter.getKey()) ? ImmutableList.of() : Messages.getMessages();
@@ -45,9 +50,9 @@ public class MockMessageService extends AbstractMessageService {
 
 	@Override
 	public TopicInfo getTopic(final String connectionId, final String topicName) {
-		final Map<Integer, PartitionInfoForConsumerGroup> partitionInfo = ImmutableMap.of(1, new PartitionInfoForConsumerGroup(1, 100, 200));
+		final Map<Integer, PartitionInfoForConsumerGroup> partitionInfo = ImmutableMap.of(1, new PartitionInfoForConsumerGroup(1, currentOffset++, lag++));
 		final List<ConsumerGroupForTopic> consumerGroups = ImmutableList.of(new ConsumerGroupForTopic("groupId", partitionInfo));
-		final Map<Integer, PartitionOffsetInfo> partitions = ImmutableMap.of(1, new PartitionOffsetInfo(1, 1000, 2000));
+		final Map<Integer, PartitionOffsetInfo> partitions = ImmutableMap.of(1, new PartitionOffsetInfo(1, startOffset++, endOffset++));
 		return new TopicInfo(topicName, consumerGroups, partitions);
 	}
 

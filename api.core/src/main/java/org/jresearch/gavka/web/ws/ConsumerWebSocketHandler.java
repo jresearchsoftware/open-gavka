@@ -42,8 +42,9 @@ public class ConsumerWebSocketHandler extends AbstractWebSocketHandler {
 	private final ObjectMapper objectMapper = new ObjectMapper();
 
 	@Override
+	@SuppressWarnings("resource")
 	public void afterConnectionClosed(final WebSocketSession session, final CloseStatus status) throws Exception {
-		Multimaps.filterValues(sessions, session::equals).clear();
+		Multimaps.filterValues(sessions, new ConsumerSessionDecorator(session)::equals).clear();
 		super.afterConnectionClosed(session, status);
 	}
 
@@ -70,8 +71,9 @@ public class ConsumerWebSocketHandler extends AbstractWebSocketHandler {
 		try {
 			final TopicRestInfo rest = GavkaConsumerController.toRest(info);
 			final TextMessage message = new TextMessage(objectMapper.writeValueAsString(rest));
-			create(connectionId, topic);
-			sessions.get(create(connectionId, topic)).forEach(s -> sendConsumerUpdate(s, message));
+			final GafkaCoordinates coordinates = create(connectionId, topic);
+			sessions.get(coordinates)
+					.forEach(s -> sendConsumerUpdate(s, message));
 		} catch (final JsonProcessingException e) {
 			LOGGER.error("Can't send consumer info update ({}) for connectionId {} and topic {} - JSON serialization error", info, connectionId, topic, e);
 		}
@@ -82,6 +84,10 @@ public class ConsumerWebSocketHandler extends AbstractWebSocketHandler {
 	}
 
 	public static void sendConsumerUpdate(final WebSocketSession session, final TextMessage message) {
+		if (!session.isOpen()) {
+			LOGGER.warn("Try to use closed session {}", session);
+			return;
+		}
 		try {
 			session.sendMessage(message);
 		} catch (final IOException e) {

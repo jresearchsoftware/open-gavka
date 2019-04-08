@@ -1,5 +1,7 @@
 package org.jresearch.gavka.rest.data;
 
+import javax.annotation.Nonnull;
+
 import org.immutables.value.Value;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -9,8 +11,10 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 @JsonDeserialize(builder = ImmutableGafkaCoordinates.Builder.class)
 public interface GafkaCoordinates {
 
+	@Nonnull
 	String connectionId();
 
+	@Nonnull
 	String topic();
 
 }
