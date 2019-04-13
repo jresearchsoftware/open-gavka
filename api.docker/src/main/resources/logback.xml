@@ -7,7 +7,7 @@
 		</encoder>
 	</appender>
 
-	<logger name="org.springframework.web" level="DEBUG"/>
+	<logger name="org.springframework.web" level="TRACE"/>
 
 	<logger name="org.jresearch" level="DEBUG"/>
 
