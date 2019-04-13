@@ -58,6 +58,7 @@
 					</ignoredUsedUndeclaredDependencies>
 					<ignoredUnusedDeclaredDependencies>
 						<ignoredUnusedDeclaredDependency>org.springframework.boot:spring-boot-starter-web</ignoredUnusedDeclaredDependency>
+						<ignoredUnusedDeclaredDependency>org.springframework.boot:spring-boot-starter-websocket</ignoredUnusedDeclaredDependency>
 					</ignoredUnusedDeclaredDependencies>
 				</configuration>
 			</plugin>
