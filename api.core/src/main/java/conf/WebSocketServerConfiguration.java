@@ -20,14 +20,13 @@ public class WebSocketServerConfiguration implements WebSocketConfigurer {
 	@Autowired
 	protected ConsumerWebSocketHandler consumerWebSocketHandler;
 
-	@Bean
-	public TaskScheduler defaultSockJsTaskScheduler() {
-		return new ConcurrentTaskScheduler(Executors.newSingleThreadScheduledExecutor());
-	}
-
 	@Override
 	public void registerWebSocketHandlers(final WebSocketHandlerRegistry registry) {
-		registry.addHandler(consumerWebSocketHandler, "/consumer");
+		registry.addHandler(consumerWebSocketHandler, "/ws/consumer");
 	}
 
+	@Bean
+	public TaskScheduler taskScheduler() {
+		return new ConcurrentTaskScheduler(Executors.newSingleThreadScheduledExecutor());
+	}
 }
