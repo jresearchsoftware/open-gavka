@@ -16,7 +16,10 @@ public class GavkaBackendInitializer implements WebApplicationInitializer {
 
 		container.addListener(new ContextLoaderListener(context));
 
-		final ServletRegistration.Dynamic dispatcher = container.addServlet("dispatcher", new DispatcherServlet(context));
+		final DispatcherServlet servlet = new DispatcherServlet(context);
+		servlet.setEnableLoggingRequestDetails(true);
+
+		final ServletRegistration.Dynamic dispatcher = container.addServlet("dispatcher", servlet);
 		dispatcher.setAsyncSupported(true);
 
 		dispatcher.setLoadOnStartup(1);
