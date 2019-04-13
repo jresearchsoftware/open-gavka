@@ -3,6 +3,7 @@ package conf;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
+import org.springframework.web.server.adapter.ForwardedHeaderTransformer;
 import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -19,5 +20,17 @@ public class CoreWebMvcConfig implements WebMvcConfigurer {
 	public AsyncTaskExecutor asyncTaskExecutor() {
 		return new SimpleAsyncTaskExecutor("gavkaExport");
 	}
+
+	@Bean
+	public ForwardedHeaderTransformer forwardedHeaderTransformer() {
+		return new ForwardedHeaderTransformer();
+	}
+
+//	@Override
+//	public void addCorsMappings(CorsRegistry registry) {
+//		registry.
+//		// TODO Auto-generated method stub
+//				WebMvcConfigurer.super.addCorsMappings(registry);
+//	}
 
 }
