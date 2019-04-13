@@ -41,7 +41,7 @@ public class ConsumerDataSource {
 		final GafkaCoordinatesMapper gafkaCoordinatesMapper = GWT.create(GafkaCoordinatesMapper.class);
 		final Location location = DomGlobal.location;
 		final boolean secure = location.getProtocol().equals("https"); //$NON-NLS-1$
-		final WebSocket socket = new WebSocket(secure ? "wss" : "ws" + "://" + location.getHost() + "/api/rest/ws/consumer");
+		final WebSocket socket = new WebSocket(secure ? "wss" : "ws" + "://" + location.getHost() + "/api/ws/consumer");
 		socket.onopen = e -> {
 			// register for connection an topic
 			final GafkaCoordinates coordinates = GafkaModule.create(connection, topic);

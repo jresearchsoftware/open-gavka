@@ -20,7 +20,6 @@ public class GavkaBackendInitializer implements WebApplicationInitializer {
 		dispatcher.setAsyncSupported(true);
 
 		dispatcher.setLoadOnStartup(1);
-		dispatcher.addMapping("/rest/*");
-
+		dispatcher.addMapping("/rest/*", "/ws/*");
 	}
 }
