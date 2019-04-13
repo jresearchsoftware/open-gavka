@@ -22,7 +22,7 @@ public class WebSocketServerConfiguration implements WebSocketConfigurer {
 
 	@Override
 	public void registerWebSocketHandlers(final WebSocketHandlerRegistry registry) {
-		registry.addHandler(consumerWebSocketHandler, "/consumer");
+		registry.addHandler(consumerWebSocketHandler, "/consumer").setAllowedOrigins("*");
 	}
 
 	@Bean
