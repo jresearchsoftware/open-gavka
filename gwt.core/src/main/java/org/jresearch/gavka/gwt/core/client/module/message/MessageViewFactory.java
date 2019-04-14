@@ -5,6 +5,7 @@ import javax.annotation.Nonnull;
 import org.jresearch.commons.gwt.client.mvc.INotificator;
 import org.jresearch.gavka.gwt.core.client.module.GafkaFactory;
 import org.jresearch.gavka.gwt.core.client.module.message.widget.MessageDataSource;
+import org.jresearch.gavka.rest.data.GafkaCoordinates;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -22,9 +23,10 @@ public class MessageViewFactory implements GafkaFactory<MessageView> {
 		this.messageDataSource = messageDataSource;
 	}
 
+	@SuppressWarnings("null")
 	@Override
-	public MessageView create(@Nonnull final String connectionId, @Nonnull final String topic) {
-		return new MessageView(notificator.get(), messageDataSource.get(), connectionId, topic);
+	public MessageView create(@Nonnull final GafkaCoordinates coordinates) {
+		return new MessageView(notificator.get(), messageDataSource.get(), coordinates);
 	}
 
 }

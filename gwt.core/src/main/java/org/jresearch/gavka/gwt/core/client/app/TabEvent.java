@@ -2,6 +2,8 @@ package org.jresearch.gavka.gwt.core.client.app;
 
 import javax.annotation.Nonnull;
 
+import org.jresearch.gavka.rest.data.GafkaCoordinates;
+
 import com.google.web.bindery.event.shared.Event;
 
 public class TabEvent extends Event<TabHandler> {
@@ -9,9 +11,9 @@ public class TabEvent extends Event<TabHandler> {
 	public static final Type<TabHandler> TYPE = new Type<>();
 
 	@Nonnull
-	private final String connectionTopicId;
+	private final GafkaCoordinates connectionTopicId;
 
-	public TabEvent(@Nonnull final String connectionTopicId) {
+	public TabEvent(@Nonnull final GafkaCoordinates connectionTopicId) {
 		this.connectionTopicId = connectionTopicId;
 	}
 
@@ -25,7 +27,7 @@ public class TabEvent extends Event<TabHandler> {
 		handler.onConnectionTab(this);
 	}
 
-	public String getConnectionTopicId() {
+	public GafkaCoordinates getConnectionTopicId() {
 		return connectionTopicId;
 	}
 

@@ -5,6 +5,7 @@ import javax.annotation.Nonnull;
 import org.jresearch.commons.gwt.client.mvc.event.Bus;
 import org.jresearch.gavka.gwt.core.client.app.GavkaAppController;
 import org.jresearch.gavka.gwt.core.client.module.GafkaFactory;
+import org.jresearch.gavka.rest.data.GafkaCoordinates;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -27,9 +28,10 @@ public class ConsumerControllerFactory implements GafkaFactory<ConsumerControlle
 		this.view = view;
 	}
 
+	@SuppressWarnings("null")
 	@Override
-	public ConsumerController create(@Nonnull final String connectionId, @Nonnull final String topic) {
-		return new ConsumerController(bus.get(), appController.get(), view.get(), connectionId, topic);
+	public ConsumerController create(@Nonnull final GafkaCoordinates gafkaCoordinates) {
+		return new ConsumerController(bus.get(), appController.get(), view.get(), gafkaCoordinates);
 	}
 
 }

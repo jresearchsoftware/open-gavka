@@ -17,6 +17,7 @@ import org.jresearch.commons.gwt.client.service.LocalizationRestService;
 import org.jresearch.gavka.gwt.core.client.module.GafkaModule;
 import org.jresearch.gavka.gwt.core.client.module.message.srv.GavkaMessageRestService;
 import org.jresearch.gavka.rest.api.ConnectionLabel;
+import org.jresearch.gavka.rest.data.GafkaCoordinates;
 
 import com.google.gwt.inject.client.AsyncProvider;
 
@@ -66,20 +67,15 @@ public class GavkaAppController extends AbstractAppController<GavkaAppView> impl
 
 	private void updateTopic(final String activeModuleId, final ConnectionLabel connection, final String topic) {
 		getOptView().ifPresent(v -> v.addTopic(connection, topic));
-//		for (final IAppModule module : getModules()) {
-//			if (module instanceof GafkaModule) {
-//				final GafkaModule gMod = (GafkaModule) module;
-//				gMod.getControllerFactory().create(connection.getId(), topic);
-//			}
-//		}
+		final GafkaCoordinates coordinates = GafkaModule.create(connection.getId(), topic);
 		getModules().stream()
 				.filter(m -> m instanceof GafkaModule)
 				.map(m -> (GafkaModule) m)
 				.map(GafkaModule::getControllerFactory)
-				.forEach(f -> f.create(connection.getId(), topic));
+				.forEach(f -> f.create(coordinates));
 		if (needInit) {
 			needInit = false;
-			bus.fire(new ModuleEvent(GafkaModule.id(activeModuleId, connection.getId(), topic)));
+			bus.fire(new ModuleEvent(GafkaModule.id(activeModuleId, coordinates)));
 		}
 	}
 

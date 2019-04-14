@@ -10,4 +10,8 @@ public interface FormatText extends Messages {
 	@DefaultMessage("{0} ({1})")
 	String appender(String name, String className);
 
+	@Nonnull
+	@DefaultMessage("No coordinates stored for module {0}")
+	String coordinateError(String moduleId);
+
 }

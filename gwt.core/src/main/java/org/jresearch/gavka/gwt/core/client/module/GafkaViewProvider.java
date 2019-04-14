@@ -1,6 +1,8 @@
 package org.jresearch.gavka.gwt.core.client.module;
 
-import org.jresearch.gavka.gwt.core.client.module.GafkaFactory;
+import javax.annotation.Nonnull;
+
+import org.jresearch.gavka.rest.data.GafkaCoordinates;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -9,14 +11,14 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class GafkaViewProvider<V> implements AsyncProvider<V> {
 
+	@Nonnull
 	private final GafkaFactory<V> factory;
-	private final String connectionId;
-	private final String topic;
+	@Nonnull
+	private final GafkaCoordinates gafkaCoordinates;
 
-	public GafkaViewProvider(final GafkaFactory<V> factory, final String connectionId, final String topic) {
+	public GafkaViewProvider(@Nonnull final GafkaFactory<V> factory, @Nonnull final GafkaCoordinates gafkaCoordinates) {
 		this.factory = factory;
-		this.connectionId = connectionId;
-		this.topic = topic;
+		this.gafkaCoordinates = gafkaCoordinates;
 	}
 
 	@Override
@@ -24,7 +26,7 @@ public class GafkaViewProvider<V> implements AsyncProvider<V> {
 		GWT.runAsync(new RunAsyncCallback() {
 			@Override
 			public void onSuccess() {
-				callback.onSuccess(factory.create(connectionId, topic));
+				callback.onSuccess(factory.create(gafkaCoordinates));
 			}
 
 			@Override

@@ -35,6 +35,7 @@ import org.jresearch.gavka.gwt.core.client.module.message.widget.FilterBarPlugin
 import org.jresearch.gavka.gwt.core.client.module.message.widget.MessageDataSource;
 import org.jresearch.gavka.gwt.core.client.module.message.widget.MessageDetails;
 import org.jresearch.gavka.rest.api.MessageParameters;
+import org.jresearch.gavka.rest.data.GafkaCoordinates;
 
 import com.google.common.collect.ImmutableList;
 import com.google.gwt.dom.client.Style.Unit;
@@ -80,9 +81,9 @@ public class MessageView extends AbstractView<MessageController> implements Tabl
 	private final FilterBarPlugin filter;
 
 	@SuppressWarnings("null")
-	public MessageView(@Nonnull final INotificator notificator, @Nonnull final MessageDataSource messageDataSource, @Nonnull final String connectionId, @Nonnull final String topic) {
+	public MessageView(@Nonnull final INotificator notificator, @Nonnull final MessageDataSource messageDataSource, @Nonnull final GafkaCoordinates gafkaCoordinates) {
 		super(null, notificator);
-		this.filter = new FilterBarPlugin(connectionId, topic);
+		this.filter = new FilterBarPlugin(gafkaCoordinates);
 		this.messageDataSource = messageDataSource;
 
 		final TableConfig<Message> tableConfig = createBasicTableConfig()

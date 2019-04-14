@@ -20,9 +20,8 @@ import org.dominokit.domino.ui.loaders.LoaderEffect;
 import org.dominokit.domino.ui.utils.TextNode;
 import org.jresearch.commons.gwt.client.mvc.AbstractView;
 import org.jresearch.commons.gwt.client.mvc.INotificator;
-import org.jresearch.commons.gwt.client.mvc.event.Bus;
-import org.jresearch.gavka.gwt.core.client.module.consumer.srv.GavkaConsumerRestService;
 import org.jresearch.gavka.gwt.core.client.module.consumer.widget.ConsumerDataSource;
+import org.jresearch.gavka.rest.data.GafkaCoordinates;
 import org.jresearch.gavka.rest.data.GroupInfo;
 import org.jresearch.gavka.rest.data.PartitionInfo;
 import org.jresearch.gavka.rest.data.TopicRestInfo;
@@ -58,8 +57,6 @@ public class ConsumerView extends AbstractView<ConsumerController> {
 	@Nonnull
 	private final LocalListDataStore<GroupInfo> groupDataStore;
 	@Nonnull
-	private final ConsumerDataSource consumerDataSource;
-	@Nonnull
 	private final Loader partitionLoader;
 	@Nonnull
 	private final Loader groupLoader;
@@ -69,9 +66,9 @@ public class ConsumerView extends AbstractView<ConsumerController> {
 	private final DataTable<GroupInfo> groupTable;
 
 	@SuppressWarnings("null")
-	public ConsumerView(@Nonnull final INotificator notificator, @Nonnull final GavkaConsumerRestService srv, @Nonnull final Bus bus, @Nonnull final String connectionId, @Nonnull final String topic) {
+	public ConsumerView(@Nonnull final INotificator notificator, @Nonnull final GafkaCoordinates gafkaCoordinates) {
 		super(null, notificator);
-		this.consumerDataSource = new ConsumerDataSource(connectionId, topic, srv, bus, this::onLoad);
+		new ConsumerDataSource(gafkaCoordinates, this::onLoad);
 
 		final TableConfig<PartitionInfo> partitionTableConfig = createPartitionTableConfig();
 
@@ -98,7 +95,6 @@ public class ConsumerView extends AbstractView<ConsumerController> {
 		groupDataStore.load();
 		partitionDataStore.setData(ImmutableList.of());
 		partitionDataStore.load();
-		consumerDataSource.load(this::onLoad);
 	}
 
 	private void onLoad(final TopicRestInfo data) {

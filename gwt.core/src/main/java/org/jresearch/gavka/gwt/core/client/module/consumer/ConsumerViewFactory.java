@@ -3,9 +3,8 @@ package org.jresearch.gavka.gwt.core.client.module.consumer;
 import javax.annotation.Nonnull;
 
 import org.jresearch.commons.gwt.client.mvc.INotificator;
-import org.jresearch.commons.gwt.client.mvc.event.Bus;
 import org.jresearch.gavka.gwt.core.client.module.GafkaFactory;
-import org.jresearch.gavka.gwt.core.client.module.consumer.srv.GavkaConsumerRestService;
+import org.jresearch.gavka.rest.data.GafkaCoordinates;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -15,19 +14,16 @@ import com.google.inject.Singleton;
 public class ConsumerViewFactory implements GafkaFactory<ConsumerView> {
 
 	private final Provider<INotificator> notificator;
-	private final GavkaConsumerRestService srv;
-	private final Provider<Bus> bus;
 
 	@Inject
-	public ConsumerViewFactory(@Nonnull final Provider<INotificator> notificator, @Nonnull final GavkaConsumerRestService srv, final Provider<Bus> bus) {
+	public ConsumerViewFactory(@Nonnull final Provider<INotificator> notificator) {
 		this.notificator = notificator;
-		this.srv = srv;
-		this.bus = bus;
 	}
 
+	@SuppressWarnings("null")
 	@Override
-	public ConsumerView create(@Nonnull final String connectionId, @Nonnull final String topic) {
-		return new ConsumerView(notificator.get(), srv, bus.get(), connectionId, topic);
+	public ConsumerView create(@Nonnull final GafkaCoordinates coordinates) {
+		return new ConsumerView(notificator.get(), coordinates);
 	}
 
 }

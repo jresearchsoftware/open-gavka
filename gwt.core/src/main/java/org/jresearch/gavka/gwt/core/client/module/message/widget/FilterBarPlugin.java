@@ -49,6 +49,7 @@ import org.jresearch.gavka.domain.KeyFormat;
 import org.jresearch.gavka.domain.Message;
 import org.jresearch.gavka.domain.MessageFormat;
 import org.jresearch.gavka.rest.api.MessageParameters;
+import org.jresearch.gavka.rest.data.GafkaCoordinates;
 
 import com.google.gwt.dom.client.Style.Cursor;
 
@@ -100,15 +101,11 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 	@Nonnull
 	private HtmlContentBuilder<HTMLFormElement> exportForm;
 	@Nonnull
-	private final String topic;
-	@Nonnull
-	private final String connectionId;
+	private final GafkaCoordinates gafkaCoordinates;
 
 	@SuppressWarnings("null")
-	public FilterBarPlugin(@Nonnull final String connectionId, @Nonnull final String topic) {
-
-		this.connectionId = connectionId;
-		this.topic = topic;
+	public FilterBarPlugin(@Nonnull final GafkaCoordinates gafkaCoordinates) {
+		this.gafkaCoordinates = gafkaCoordinates;
 		autoSearchTimer = new Timer() {
 			@Override
 			public void run() {
@@ -324,12 +321,12 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 
 	public MessageParameters getMessageParameters() {
 		final MessageParameters messageParameters = new MessageParameters();
-		messageParameters.setTopic(topic);
+		messageParameters.setTopic(gafkaCoordinates.topic());
 		messageParameters.setFrom(getFrom().orElse(null));
 		messageParameters.setKey(getKeyValue());
 		messageParameters.setKeyFormat(getKeyFormat());
 		messageParameters.setMessageFormat(getMessageFormat());
-		messageParameters.setConnection(connectionId);
+		messageParameters.setConnection(gafkaCoordinates.connectionId());
 		return messageParameters;
 	}
 
@@ -363,10 +360,10 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 
 	public void export() {
 		getFrom().map(Dates::printDateTime).ifPresent(this::setFrom);
-		hiddenTopic.value = topic;
+		hiddenTopic.value = gafkaCoordinates.topic();
 		hiddenKeyFormat.value = getKeyFormat().name();
 		hiddenMessageFormat.value = getMessageFormat().name();
-		hiddenConnectionId.value = connectionId;
+		hiddenConnectionId.value = gafkaCoordinates.connectionId();
 		exportForm.asElement().submit();
 	}
 

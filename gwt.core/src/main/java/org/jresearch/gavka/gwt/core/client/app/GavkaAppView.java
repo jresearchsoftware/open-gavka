@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
@@ -26,8 +25,8 @@ import org.jresearch.commons.gwt.client.mvc.event.Bus;
 import org.jresearch.commons.gwt.client.mvc.event.module.ModuleEvent;
 import org.jresearch.gavka.gwt.core.client.module.GafkaModule;
 import org.jresearch.gavka.rest.api.ConnectionLabel;
+import org.jresearch.gavka.rest.data.GafkaCoordinates;
 
-import com.google.common.base.Splitter;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.gwt.safehtml.shared.SafeHtml;
@@ -42,27 +41,27 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 	private final class NavClickHandler implements EventListener {
 
 		private final String moduleId;
-		private final String connectionId;
-		private final String topic;
+		private final GafkaCoordinates gafkaCoordinates;
 
-		private NavClickHandler(final String moduleId, final String connectionId, final String topic) {
+		private NavClickHandler(final String moduleId, final GafkaCoordinates gafkaCoordinates) {
 			this.moduleId = moduleId;
-			this.connectionId = connectionId;
-			this.topic = topic;
+			this.gafkaCoordinates = gafkaCoordinates;
 		}
 
 		@Override
 		public void handleEvent(final Event evt) {
-			bus.fire(new ModuleEvent(GafkaModule.id(moduleId, connectionId, topic)));
+			final ModuleEvent event = new ModuleEvent(GafkaModule.id(moduleId, gafkaCoordinates));
+			event.setData(gafkaCoordinates);
+			bus.fire(event);
 		}
 	}
 
 	private final class TabClickHandler implements EventListener {
 
 		@Nonnull
-		private final String connectionTopicId;
+		private final GafkaCoordinates connectionTopicId;
 
-		private TabClickHandler(@Nonnull final String connectionTopicId) {
+		private TabClickHandler(@Nonnull final GafkaCoordinates connectionTopicId) {
 			this.connectionTopicId = connectionTopicId;
 		}
 
@@ -78,8 +77,11 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 	private final Map<ConnectionLabel, TreeItem> connectionNodes = new HashMap<>();
 	private final Multimap<ConnectionLabel, String> topics = HashMultimap.create();
 	private String defaultModule;
-	private final Map<String, Tab> tabs = new HashMap<>();
-	private final Map<String, TreeItem> topicNodes = new HashMap<>();
+	// Gafka coordinates -> to main (connection) tab
+	private final Map<GafkaCoordinates, Tab> connectionTabs = new HashMap<>();
+	// Module Id -> to module tab
+	private final Map<String, Tab> moduleTabs = new HashMap<>();
+	private final Map<GafkaCoordinates, TreeItem> topicNodes = new HashMap<>();
 	private TabsPanel tabsPanel;
 	private final Icon lockIcon = Icons.ALL.lock()
 			.style()
@@ -91,7 +93,7 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 	private boolean locked = true;
 	private final Collapsible lockCollapsible = Collapsible.create(lockIcon).show();
 	private final List<GafkaModule> tabModules = new ArrayList<>();
-	private final Map<String, TabsPanel> tabsPanels = new HashMap<>();
+	private final Map<GafkaCoordinates, TabsPanel> tabsPanels = new HashMap<>();
 
 	@Inject
 	public GavkaAppView(@Nonnull final INotificator notificator, @Nonnull final GavkaAppController controller, @Nonnull final Bus bus) {
@@ -122,17 +124,17 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 		throw new UnsupportedOperationException();
 	}
 
-	@SuppressWarnings("boxing")
 	@Override
 	public boolean updateChildContent(final String viewId, final HTMLElement content) {
-		final Optional<String> tabId = GafkaModule.getConnectionTopicName(viewId);
-		return tabId.map(id -> updateChildContent(id, viewId, content)).orElse(Boolean.FALSE).booleanValue();
+		final GafkaCoordinates tabId = GafkaModule.getCoordinates(viewId);
+		updateChildContent(tabId, viewId, content);
+		return true;
 	}
 
-	private boolean updateChildContent(final String tabId, final String viewId, final HTMLElement content) {
-		final Tab connectionTab = tabs.computeIfAbsent(tabId, this::createConnectionTab);
+	private boolean updateChildContent(final GafkaCoordinates tabId, final String viewId, final HTMLElement content) {
+		final Tab connectionTab = connectionTabs.computeIfAbsent(tabId, this::createConnectionTab);
 		tabsPanel.activateTab(connectionTab);
-		final Tab tab = tabs.get(viewId);
+		final Tab tab = moduleTabs.get(viewId);
 		if (tab != null) {
 			tabsPanels.get(tabId).activateTab(tab);
 			final DominoElement<HTMLDivElement> container = tab.getContentContainer();
@@ -143,27 +145,20 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 		return true;
 	}
 
-	private Tab createConnectionTab(final String tabId) {
-		final Optional<String> topicName = GafkaModule.getTopicName(tabId);
-		return topicName.map(name -> createConnectionTab(name, tabId)).orElse(null);
-	}
-
-	private Tab createConnectionTab(final String topicName, final String tabId) {
-		final Tab connectionTab = Tab.create(topicName)
-				.addClickListener(new TabClickHandler(tabId));
-		final TabsPanel moduleTabs = TabsPanel.create();
-		tabsPanels.put(tabId, moduleTabs);
-		connectionTab.appendChild(moduleTabs);
-		tabModules.stream().map(m -> createTab(tabId, m)).forEachOrdered(moduleTabs::appendChild);
+	private Tab createConnectionTab(@Nonnull final GafkaCoordinates tabId) {
+		final Tab connectionTab = Tab.create(tabId.topic()).addClickListener(new TabClickHandler(tabId));
+		final TabsPanel moduleTabsPanel = TabsPanel.create();
+		tabsPanels.put(tabId, moduleTabsPanel);
+		connectionTab.appendChild(moduleTabsPanel);
+		tabModules.stream().map(m -> createTab(tabId, m)).forEachOrdered(moduleTabsPanel::appendChild);
 		tabsPanel.appendChild(connectionTab);
 		return connectionTab;
 	}
 
-	private Tab createTab(final String tabId, final GafkaModule<?> tabModule) {
+	private Tab createTab(final GafkaCoordinates tabId, final GafkaModule<?> tabModule) {
 		final Tab result = Tab.create(tabModule.getName());
-		tabs.put(String.join(".", tabModule.getModuleId(), tabId), result);
-		final List<String> list = Splitter.on('.').splitToList(tabId);
-		result.addClickListener(new NavClickHandler(tabModule.getModuleId(), list.get(0), list.get(1)));
+		moduleTabs.put(GafkaModule.id(tabModule.getModuleId(), tabId), result);
+		result.addClickListener(new NavClickHandler(tabModule.getModuleId(), tabId));
 		return result;
 	}
 
@@ -235,9 +230,10 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 		return moduleNode;
 	}
 
-	public void addTopic(final ConnectionLabel connection, final String topic) {
+	@SuppressWarnings("null")
+	public void addTopic(@Nonnull final ConnectionLabel connection, @Nonnull final String topic) {
 		// wrong parameters or already registered
-		if (connection == null || topic == null || topics.containsEntry(connection, topic)) {
+		if (topics.containsEntry(connection, topic)) {
 			return;
 		}
 		topics.put(connection, topic);
@@ -245,14 +241,15 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 		if (connectionNode == null) {
 			connectionNode = addConnection(connection);
 		}
+		final GafkaCoordinates coordinates = GafkaModule.create(connection.getId(), topic);
 		final TreeItem topicNode = TreeItem.create(topic)
-				.addClickListener(new NavClickHandler(defaultModule, connection.getId(), topic));
-		topicNodes.put(String.join(".", connection.getId(), topic), topicNode);
+				.addClickListener(new NavClickHandler(defaultModule, coordinates));
+		topicNodes.put(coordinates, topicNode);
 		connectionNode.appendChild(topicNode);
 	}
 
-	public void selectTopic(@Nonnull final String connectionTopicId) {
-		final TreeItem treeItem = topicNodes.get(connectionTopicId);
+	public void selectTopic(@Nonnull final GafkaCoordinates gafkaCoordinates) {
+		final TreeItem treeItem = topicNodes.get(gafkaCoordinates);
 		if (treeItem != null) {
 			treeItem.show(true).activate(true);
 		}
