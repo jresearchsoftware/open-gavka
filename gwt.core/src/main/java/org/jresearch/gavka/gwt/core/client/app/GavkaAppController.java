@@ -76,6 +76,8 @@ public class GavkaAppController extends AbstractAppController<GavkaAppView> impl
 		if (needInit) {
 			needInit = false;
 			bus.fire(new ModuleEvent(GafkaModule.id(activeModuleId, coordinates)));
+			// Select topic in navigation tree
+			bus.fire(new TabEvent(coordinates));
 		}
 	}
 
