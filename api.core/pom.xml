@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.jresearch.gavka</groupId>
 		<artifactId>org.jresearch.gavka.pom</artifactId>
-		<version>1.0.32</version>
+		<version>1.0.33-SNAPSHOT</version>
 		<relativePath>../pom/pom.xml</relativePath>
 	</parent>
 	<artifactId>org.jresearch.gavka.api.core</artifactId>
