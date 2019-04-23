@@ -3,21 +3,22 @@ package org.jresearch.gavka.srv;
 import java.util.Optional;
 import java.util.Properties;
 
+import org.apache.kafka.clients.CommonClientConfigs;
 import org.jresearch.gavka.domain.Connection;
 
+@SuppressWarnings("nls")
 public abstract class AbstractConnectionService implements ConnectionService {
 
 	private static final String PROP_SCHEMA_REGISTRY_URL = "schema.registry.url";
-	private static final String PROP_BOOTSTRAP_SERVERS = "bootstrap.servers";
 
 	@Override
-	public Optional<Properties> getKafkaConnectionProperties(String conectionId, KafkaVersion ver) {
+	public Optional<Properties> getKafkaConnectionProperties(final String conectionId, final KafkaVersion ver) {
 		return get(conectionId).map(AbstractConnectionService::toProperties);
 	}
 
-	private static Properties toProperties(Connection conection) {
+	private static Properties toProperties(final Connection conection) {
 		final Properties result = new Properties();
-		result.put(PROP_BOOTSTRAP_SERVERS, String.join(",", conection.getBootstrapServers()));
+		result.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, String.join(",", conection.getBootstrapServers()));
 		if (conection.getSchemaRegistryUrl() != null) {
 			result.put(PROP_SCHEMA_REGISTRY_URL, conection.getSchemaRegistryUrl());
 		}

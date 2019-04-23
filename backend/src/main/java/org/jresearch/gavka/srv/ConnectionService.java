@@ -14,12 +14,12 @@ public interface ConnectionService {
 
 	List<Connection> connections();
 
-	Optional<Connection> get(String conectionId);
+	Optional<Connection> get(String connectionId);
 
 	boolean update(Connection connection);
 
 	boolean remove(String id);
 
-	Optional<Properties> getKafkaConnectionProperties(String conectionId, KafkaVersion ver);
+	Optional<Properties> getKafkaConnectionProperties(String connectionId, KafkaVersion ver);
 
 }

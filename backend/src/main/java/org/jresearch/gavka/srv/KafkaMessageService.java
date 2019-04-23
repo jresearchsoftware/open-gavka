@@ -17,9 +17,6 @@ import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
-
-import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.ConsumerGroupDescription;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -39,9 +36,10 @@ import org.jresearch.gavka.domain.TopicInfo;
 import org.jresearch.gavka.rest.api.MessagePortion;
 import org.jresearch.gavka.rest.api.PagingParameters;
 import org.jresearch.gavka.rest.api.PartitionOffset;
+import org.jresearch.gavka.srv.ConnectionService.KafkaVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -54,26 +52,18 @@ public class KafkaMessageService extends AbstractMessageService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(KafkaMessageService.class);
 
-	protected AdminClient kafkaClient;
+	@Autowired
+	private ConnectionService connectionService;
 
-	@Value("${bootstrap.servers}")
-	private String serverUrl;
-
-	@Value("${schema.registry.url:#{null}}")
-	private String schemaRegistryUrl;
-
-	@PostConstruct
-	protected void initClient() {
-		final Properties props = new Properties();
-		props.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, serverUrl);
-		kafkaClient = AdminClient.create(props);
-
+	protected AdminClient getClient(final String connectionId) {
+		final Properties props = connectionService.getKafkaConnectionProperties(connectionId, KafkaVersion.LATEST).orElseGet(Properties::new);
+		return AdminClient.create(props);
 	}
 
 	@Override
 	@SuppressWarnings({ "null" })
 	public MessagePortion getMessages(final String connectionId, final PagingParameters pagingParameters, final MessageFilter filter) {
-		final Properties props = getProperties();
+		final Properties props = getProperties(connectionId);
 
 		props.put("key.deserializer", getKeyDeserializer(filter.getKeyFormat()));
 		props.put("value.deserializer", getMessageDeserializer(filter.getMessageFormat()));
@@ -184,7 +174,7 @@ public class KafkaMessageService extends AbstractMessageService {
 	@Override
 	public List<String> getMessageTopics(final String connectionId) {
 		List<String> list = new ArrayList<>();
-		try {
+		try (AdminClient kafkaClient = getClient(connectionId)) {
 			list = new ArrayList<>(kafkaClient.listTopics().names().get());
 		} catch (final InterruptedException | ExecutionException e) {
 			LOGGER.error("Error getting topics", e);
@@ -217,12 +207,8 @@ public class KafkaMessageService extends AbstractMessageService {
 
 	}
 
-	protected Properties getProperties() {
-		final Properties props = new Properties();
-		props.put("bootstrap.servers", serverUrl);
-		if (schemaRegistryUrl != null) {
-			props.put("schema.registry.url", schemaRegistryUrl);
-		}
+	protected Properties getProperties(final String connectionId) {
+		final Properties props = connectionService.getKafkaConnectionProperties(connectionId, KafkaVersion.LATEST).orElseGet(Properties::new);
 		props.put("client.id", "gavka-tool");
 		props.put("group.id", "gavka-tool-" + UUID.randomUUID());
 		return props;
@@ -231,7 +217,7 @@ public class KafkaMessageService extends AbstractMessageService {
 	@Override
 	public void exportMessages(final String connectionId, final OutputStream bos, final MessageFilter filter) throws IOException {
 		final SimpleDateFormat sf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
-		final Properties props = getProperties();
+		final Properties props = getProperties(connectionId);
 		props.put("key.deserializer", getKeyDeserializer(filter.getKeyFormat()));
 		props.put("value.deserializer", getMessageDeserializer(filter.getMessageFormat()));
 		props.put("auto.offset.reset", "earliest");
@@ -275,18 +261,18 @@ public class KafkaMessageService extends AbstractMessageService {
 		final TopicInfo ti = new TopicInfo();
 		ti.setName(topicName);
 
-		final KafkaConsumer<Object, Object> consumer = new KafkaConsumer<>(getProperties());
-		final List<TopicPartition> partitions = consumer.partitionsFor(topicName).stream()
-				.map(s -> new TopicPartition(topicName, s.partition())).collect(Collectors.toList());
-		final Map<TopicPartition, Long> beginingOffsets = consumer.beginningOffsets(partitions);
-		final Map<TopicPartition, Long> endOffsets = consumer.endOffsets(partitions);
-		for (final TopicPartition topicPartition : partitions) {
-			final int pNumber = topicPartition.partition();
-			final PartitionOffsetInfo po = new PartitionOffsetInfo(pNumber, beginingOffsets.get(pNumber), endOffsets.get(pNumber));
-			ti.addPartition(pNumber, po);
+		try (KafkaConsumer<Object, Object> consumer = new KafkaConsumer<>(getProperties(connectionId))) {
+			final List<TopicPartition> partitions = consumer.partitionsFor(topicName).stream()
+					.map(s -> new TopicPartition(topicName, s.partition())).collect(Collectors.toList());
+			final Map<TopicPartition, Long> beginingOffsets = consumer.beginningOffsets(partitions);
+			final Map<TopicPartition, Long> endOffsets = consumer.endOffsets(partitions);
+			for (final TopicPartition topicPartition : partitions) {
+				final int pNumber = topicPartition.partition();
+				final PartitionOffsetInfo po = new PartitionOffsetInfo(pNumber, beginingOffsets.get(pNumber), endOffsets.get(pNumber));
+				ti.addPartition(pNumber, po);
+			}
 		}
-		consumer.close();
-		try {
+		try (AdminClient kafkaClient = getClient(connectionId)) {
 			final List<ConsumerGroupForTopic> cgf = new LinkedList<>();
 			final List<String> groupIds = kafkaClient.listConsumerGroups().all().get().stream().map(s -> s.groupId())
 					.collect(Collectors.toList());
