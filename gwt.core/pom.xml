@@ -41,10 +41,6 @@
 			<artifactId>gwt-timer</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>org.jresearch.dominokit</groupId>
 			<artifactId>domino-ui</artifactId>
 		</dependency>

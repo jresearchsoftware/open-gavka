@@ -12,30 +12,32 @@ import org.jresearch.gavka.domain.Message;
 import org.jresearch.gavka.domain.PartitionInfoForConsumerGroup;
 import org.jresearch.gavka.domain.PartitionOffsetInfo;
 import org.jresearch.gavka.domain.TopicInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
 
-import lombok.extern.slf4j.Slf4j;
 import one.util.streamex.IntStreamEx;
 import one.util.streamex.StreamEx;
 
 @SuppressWarnings("nls")
-@Slf4j
 public class Messages {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(Messages.class);
 
 	private static final Random RANDOM = new Random();
 
 	private static final List<Message> messages;
 	private static final List<String> topics;
-	private static final Map<String, TopicInfo> topicInfo;	
+	private static final Map<String, TopicInfo> topicInfo;
 
 	static {
-		log.debug("Generates Topics");
+		LOGGER.debug("Generates Topics");
 		topics = StreamEx.generate(Messages::generateTopic).limit(10).toList();
-		log.debug("Generates Messages");
+		LOGGER.debug("Generates Messages");
 		messages = StreamEx.generate(Messages::generateMessage).limit(1000).toList();
 		topicInfo = StreamEx.of(topics).mapToEntry(Messages::generateTopicInfo).toMap();
-	 	log.debug("All generations are done");
+		LOGGER.debug("All generations are done");
 	}
 
 	private Messages() {
@@ -46,10 +48,10 @@ public class Messages {
 		return messages;
 	}
 
-	public static TopicInfo getTopicInfo(String s) {
+	public static TopicInfo getTopicInfo(final String s) {
 		return topicInfo.get(s);
 	}
-	
+
 	public static List<String> getTopics() {
 		return topics;
 	}
@@ -69,27 +71,27 @@ public class Messages {
 	private static String generateTopic() {
 		return RandomStringUtils.randomAlphanumeric(RANDOM.nextInt(6) + 5);
 	}
-	
-	private static TopicInfo generateTopicInfo(String name) {
-		TopicInfo ti = new TopicInfo();
+
+	private static TopicInfo generateTopicInfo(final String name) {
+		final TopicInfo ti = new TopicInfo();
 		ti.setName(name);
-		ti.setPartitions(IntStreamEx.of(0,10).mapToObj(Integer::new).mapToEntry(Messages::generatePartitionOffsetInfo).toMap());
+		ti.setPartitions(IntStreamEx.of(0, 10).mapToObj(Integer::new).mapToEntry(Messages::generatePartitionOffsetInfo).toMap());
 		ti.setConsumerGroups(StreamEx.generate(Messages::generateConsumerGroup).limit(5).toList());
 		return ti;
 	}
-	
-	private static PartitionInfoForConsumerGroup generatePartitionInfo(int partition) {
+
+	private static PartitionInfoForConsumerGroup generatePartitionInfo(final int partition) {
 		return new PartitionInfoForConsumerGroup(partition, RANDOM.nextLong(), RANDOM.nextLong());
 	}
-	
+
 	private static ConsumerGroupForTopic generateConsumerGroup() {
-		ConsumerGroupForTopic cg =  new ConsumerGroupForTopic();
+		final ConsumerGroupForTopic cg = new ConsumerGroupForTopic();
 		cg.setGroupId(RandomStringUtils.randomAlphanumeric(RANDOM.nextInt(6) + 5));
-		cg.setPartitionInfo(IntStreamEx.of(0,10).mapToObj(Integer::new).mapToEntry(Messages::generatePartitionInfo).toMap());
+		cg.setPartitionInfo(IntStreamEx.of(0, 10).mapToObj(Integer::new).mapToEntry(Messages::generatePartitionInfo).toMap());
 		return cg;
 	}
-	
-	private static PartitionOffsetInfo generatePartitionOffsetInfo(int p) {
+
+	private static PartitionOffsetInfo generatePartitionOffsetInfo(final int p) {
 		return new PartitionOffsetInfo(p, 0, RANDOM.nextLong());
 	}
 

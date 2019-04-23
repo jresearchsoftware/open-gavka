@@ -39,19 +39,20 @@ import org.jresearch.gavka.domain.TopicInfo;
 import org.jresearch.gavka.rest.api.MessagePortion;
 import org.jresearch.gavka.rest.api.PagingParameters;
 import org.jresearch.gavka.rest.api.PartitionOffset;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.MoreObjects;
 
-import lombok.extern.slf4j.Slf4j;
-
 @Profile("default")
 @Component
 @SuppressWarnings("nls")
-@Slf4j
 public class KafkaMessageService extends AbstractMessageService {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(KafkaMessageService.class);
 
 	protected AdminClient kafkaClient;
 
@@ -77,21 +78,21 @@ public class KafkaMessageService extends AbstractMessageService {
 		props.put("key.deserializer", getKeyDeserializer(filter.getKeyFormat()));
 		props.put("value.deserializer", getMessageDeserializer(filter.getMessageFormat()));
 		props.put("auto.offset.reset", "earliest");
-		log.debug("Retreiving data from topic : {} ", filter.getTopic());
+		LOGGER.debug("Retreiving data from topic : {} ", filter.getTopic());
 		try (final KafkaConsumer<Object, Object> consumer = new KafkaConsumer<>(props)) {
 			final Map<Integer, Long> partitionOffsets = new HashMap<>();
 			final Map<Integer, TopicPartition> partitions = initConsumer(filter, consumer);
 
 			for (final TopicPartition tp : partitions.values()) {
 				partitions.put(tp.partition(), tp);
-				log.debug("initial offset: partition {}, position {} ", tp.partition(), consumer.position(tp));
+				LOGGER.debug("initial offset: partition {}, position {} ", tp.partition(), consumer.position(tp));
 				partitionOffsets.put(tp.partition(), consumer.position(tp));
 			}
 			// if the client sends partitions offsets then position to that
 			// offsets
 			if (!pagingParameters.getPartitionOffsets().isEmpty()) {
 				pagingParameters.getPartitionOffsets().stream().forEach(p -> {
-					log.debug("positioning offset from client partition {}, position {} ", p.getPartition(),
+					LOGGER.debug("positioning offset from client partition {}, position {} ", p.getPartition(),
 							p.getOffset());
 					partitionOffsets.put(p.getPartition(), p.getOffset());
 					consumer.seek(partitions.get(p.getPartition()), p.getOffset());
@@ -104,7 +105,7 @@ public class KafkaMessageService extends AbstractMessageService {
 			ConsumerRecords<Object, Object> records = consumer.poll(1000);
 			final int pagesSize = pagingParameters.getAmount();
 			while (messages.size() < pagesSize && !records.isEmpty()) {
-				log.debug("Getting {} records ", records.count());
+				LOGGER.debug("Getting {} records ", records.count());
 				for (final ConsumerRecord<Object, Object> consumerRecord : records) {
 					if (messages.size() == pagesSize) {
 						break;
@@ -134,10 +135,10 @@ public class KafkaMessageService extends AbstractMessageService {
 				p.setPartition(partitionOffset);
 				po.add(p);
 			}
-			log.debug("Message offsets for topic {}:{} ", filter.getTopic(), po);
+			LOGGER.debug("Message offsets for topic {}:{} ", filter.getTopic(), po);
 			return new MessagePortion(po, messages);
 		} catch (final Exception e) {
-			log.error("Exception reading records", e);
+			LOGGER.error("Exception reading records", e);
 			return null;
 		}
 	}
@@ -186,7 +187,7 @@ public class KafkaMessageService extends AbstractMessageService {
 		try {
 			list = new ArrayList<>(kafkaClient.listTopics().names().get());
 		} catch (final InterruptedException | ExecutionException e) {
-			log.error("Error getting topics", e);
+			LOGGER.error("Error getting topics", e);
 		}
 		Collections.sort(list);
 		return list;
@@ -318,7 +319,7 @@ public class KafkaMessageService extends AbstractMessageService {
 			ti.setConsumerGroups(cgf);
 
 		} catch (final Exception e) {
-			log.error("Exception getting consumer groups", e);
+			LOGGER.error("Exception getting consumer groups", e);
 		}
 		return ti;
 	}
