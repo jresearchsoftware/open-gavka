@@ -1,13 +1,15 @@
 package org.jresearch.gavka.domain;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class TopicInfo {
 
 	private String name;
-	private List<ConsumerGroupForTopic> consumerGroups;
-	private Map<Integer, PartitionOffsetInfo> partitions;
+	private List<ConsumerGroupForTopic> consumerGroups = new ArrayList<>();
+	private Map<Integer, PartitionOffsetInfo> partitions = new HashMap<>();
 
 	public TopicInfo() {
 		// for JSON

@@ -211,6 +211,8 @@ public class KafkaMessageService extends AbstractMessageService {
 		final Properties props = connectionService.getKafkaConnectionProperties(connectionId, KafkaVersion.LATEST).orElseGet(Properties::new);
 		props.put("client.id", "gavka-tool");
 		props.put("group.id", "gavka-tool-" + UUID.randomUUID());
+		props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+		props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
 		return props;
 	}
 
@@ -268,7 +270,7 @@ public class KafkaMessageService extends AbstractMessageService {
 			final Map<TopicPartition, Long> endOffsets = consumer.endOffsets(partitions);
 			for (final TopicPartition topicPartition : partitions) {
 				final int pNumber = topicPartition.partition();
-				final PartitionOffsetInfo po = new PartitionOffsetInfo(pNumber, beginingOffsets.get(pNumber), endOffsets.get(pNumber));
+				final PartitionOffsetInfo po = new PartitionOffsetInfo(pNumber, beginingOffsets.get(topicPartition), endOffsets.get(topicPartition));
 				ti.addPartition(pNumber, po);
 			}
 		}

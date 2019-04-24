@@ -126,7 +126,6 @@
 				<configuration>
 					<resources>
 						<resource>
-							<include>meta.json</include>
 							<directory>src/main/resources</directory>
 							<filtering>false</filtering>
 						</resource>
