@@ -30,8 +30,12 @@ public class GafkaModule<T> extends GeneralModule {
 
 	@SuppressWarnings("null")
 	@Nonnull
-	public static String id(final String controllerId, final GafkaCoordinates gafkaCoordinates) {
+	public static String id(@Nonnull final String controllerId, @Nonnull final GafkaCoordinates gafkaCoordinates) {
 		return String.join(STRING, controllerId, gafkaCoordinates.connectionId(), gafkaCoordinates.topic());
+	}
+
+	public static boolean isId(@Nonnull final String id, @Nonnull final GafkaCoordinates gafkaCoordinates) {
+		return id.endsWith(String.join(STRING, gafkaCoordinates.connectionId(), gafkaCoordinates.topic()));
 	}
 
 	public static GafkaCoordinates create(@Nonnull final String connectionId, @Nonnull final String topic) {
