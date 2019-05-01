@@ -297,6 +297,7 @@ public class KafkaMessageService extends AbstractMessageService {
 									} else {
 										pi.setLag(po.getEndOffset() - v.offset());
 									}
+									pi.setPartition(k.partition());
 									gr.addPartitionInfo(k.partition(), pi);
 								}
 

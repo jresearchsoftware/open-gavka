@@ -23,7 +23,7 @@ public class CousumerUpdater {
 
 	private final Cache<GafkaCoordinates, TopicInfo> updateCache = CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build();
 
-	@Scheduled(fixedRate = 1000)
+	@Scheduled(fixedRate = 10000)
 	public void check() {
 		consumerWebSocketHandler.getGafkaCoordinates().stream().parallel().forEach(this::check);
 	}
