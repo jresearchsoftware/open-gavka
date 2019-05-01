@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
@@ -56,21 +58,6 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 		}
 	}
 
-	private final class TabClickHandler implements EventListener {
-
-		@Nonnull
-		private final GafkaCoordinates connectionTopicId;
-
-		private TabClickHandler(@Nonnull final GafkaCoordinates connectionTopicId) {
-			this.connectionTopicId = connectionTopicId;
-		}
-
-		@Override
-		public void handleEvent(final Event evt) {
-			bus.fire(new TabEvent(connectionTopicId));
-		}
-	}
-
 	@Nonnull
 	private final Layout layout;
 	private final Tree connectionTree;
@@ -95,6 +82,7 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 	private final List<GafkaModule> tabModules = new ArrayList<>();
 	private final Map<GafkaCoordinates, TabsPanel> tabsPanels = new HashMap<>();
 
+	@SuppressWarnings("null")
 	@Inject
 	public GavkaAppView(@Nonnull final INotificator notificator, @Nonnull final GavkaAppController controller, @Nonnull final Bus bus) {
 		super(notificator, controller, bus);
@@ -145,8 +133,11 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 		return true;
 	}
 
-	private Tab createConnectionTab(@Nonnull final GafkaCoordinates tabId) {
-		final Tab connectionTab = Tab.create(tabId.topic()).addClickListener(new TabClickHandler(tabId));
+	private ConnectionTab createConnectionTab(@Nonnull final GafkaCoordinates tabId) {
+		final ConnectionTab connectionTab = ConnectionTab.create(bus, tabId);
+		connectionTab
+				.setClosable(true)
+				.setOnBeforeCloseHandler(this::closeTab);
 		final TabsPanel moduleTabsPanel = TabsPanel.create();
 		tabsPanels.put(tabId, moduleTabsPanel);
 		connectionTab.appendChild(moduleTabsPanel);
@@ -160,6 +151,25 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 		moduleTabs.put(GafkaModule.id(tabModule.getModuleId(), tabId), result);
 		result.addClickListener(new NavClickHandler(tabModule.getModuleId(), tabId));
 		return result;
+	}
+
+	private boolean closeTab(final Tab tab) {
+		final Optional<GafkaCoordinates> tabId = connectionTabs.entrySet().stream().filter(e -> e.getValue().equals(tab)).map(Map.Entry::getKey).findAny();
+		if (tabId.isPresent()) {
+			final GafkaCoordinates coordinates = tabId.get();
+//			connectionTabs remove
+			connectionTabs.remove(coordinates);
+//			tabsPanels remove
+			tabsPanels.remove(coordinates);
+//			moduleTabs remove - collect and only then remove
+			moduleTabs
+					.keySet()
+					.stream()
+					.filter(k -> GafkaModule.isId(k, coordinates))
+					.collect(Collectors.toList())
+					.forEach(moduleTabs::remove);
+		}
+		return true;
 	}
 
 	@Override
