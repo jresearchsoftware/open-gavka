@@ -40,8 +40,8 @@ Three files *api.war*, *gavka.war* and *gavkin.war* can be deployed to tomcat or
 
 If you have an access to running Kafka cluster add the connection parameters to the docker-compose.yml
 
-```yml
-  version: "2.0"
+```yaml
+version: "2.0"
 
 services:
     gavka-api: 
@@ -72,7 +72,7 @@ Now you can connect as http://localhost:90
 If you do not have running Kafka and just want to run it with the mock services use the following docker-compose.yml :
 
 ```yml
-  version: "2.0"
+version: "2.0"
 
 services:
     gavka-api: 
