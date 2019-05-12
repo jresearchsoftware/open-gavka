@@ -29,32 +29,40 @@ Clone the repository then
 
 `mvn package`
 
-Two files *api.war* and *gavka.war* will be under _api.app/target_ and _gwt.app/target_ directories. Those files can be deployed to tomcat or other server. Two environment variables must be specified
+Three files *api.war*, *gavka.war* and *gavkin.war* can be deployed to tomcat or other server. Two environment variables must be specified
 
 * bootstrap.servers
 * schema.registry.url
 
 ### How to Run with Docker ###
 
-**Plase, pay attention to the API container name, to correct work of the client the DNS inside the Docker should be able to resomve gavka-api host.**
+**Please, pay attention to the API container name. Docker should be able to resolve gavka-api host for the correct work of the client**
 
 If you have an access to running Kafka cluster add the connection parameters to the docker-compose.yml
 
 ```yml
   version: "2.0"
 
-  services:
-      gavka-api: 
-          image: gavka/gavka-api:dev
-          environment:  
-            - bootstrap.servers=172.16.1.1:9092
-            - schema.registry.url=http://172.16.1.1:8081
-      gavka-client:
-          depends_on: 
-              - gavka-api
-          image: gavka/gavka-ui:dev
-          ports:
-              - 90:80
+services:
+    gavka-api: 
+        image: gavka/gavka-api:latest
+        environment:  
+# uncomment if you do not have kafka and want to use mock          
+#          - spring.profiles.active=nokafka
+# if you have working kafka, put here connection parameters to kafka   
+          - bootstrap.servers=172.16.1.1:9092
+          - schema.registry.url=http://172.16.1.1:8081
+    gavkin-ui:
+        depends_on: 
+            - gavka-api
+        image: gavka/gavkin-ui:latest
+    gavka-ui:
+        depends_on: 
+            - gavka-api
+            - gavkin-ui
+        image: gavka/gavka-ui:latest
+        ports:
+            - 90:80
 ```   
 Then you can run it as 
 `docker-compose up`
@@ -66,17 +74,23 @@ If you do not have running Kafka and just want to run it with the mock services 
 ```yml
   version: "2.0"
 
-  services:
-      gavka-api: 
-          image: gavka/gavka-api:dev
-          environment:  
-            - spring.profiles.active=nokafka
-      gavka-client:
-          depends_on: 
-              - gavka-api
-          image: gavka/gavka-ui:dev
-          ports:
-              - 90:80
+services:
+    gavka-api: 
+        image: gavka/gavka-api:latest
+        environment:  
+           - spring.profiles.active=nokafka
+    gavkin-ui:
+        depends_on: 
+            - gavka-api
+        image: gavka/gavkin-ui:latest
+    gavka-ui:
+        depends_on: 
+            - gavka-api
+            - gavkin-ui
+        image: gavka/gavka-ui:latest
+        ports:
+            - 90:80
+
 ```   
 
 
