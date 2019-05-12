@@ -71,7 +71,7 @@ Now you can connect as http://localhost:90
 
 If you do not have running Kafka and just want to run it with the mock services use the following docker-compose.yml :
 
-```yml
+```yaml
 version: "2.0"
 
 services:
