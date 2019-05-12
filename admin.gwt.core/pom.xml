@@ -119,6 +119,7 @@
 				<configuration>
 					<moduleName>org.jresearch.gavka.gwt.core.admin</moduleName>
 					<moduleShortName>gavkin</moduleShortName>
+					<localWorkers>4</localWorkers>
 					<optimize>9</optimize>
 					<compilerArgs>
 						<arg>-XnoclassMetadata</arg>

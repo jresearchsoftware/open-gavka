@@ -116,6 +116,7 @@
 					<moduleName>org.jresearch.gavka.gwt.core.md</moduleName>
 					<moduleShortName>gavka</moduleShortName>
 					<optimize>9</optimize>
+					<localWorkers>4</localWorkers>
 					<compilerArgs>
 						<arg>-XnoclassMetadata</arg>
 					</compilerArgs>
