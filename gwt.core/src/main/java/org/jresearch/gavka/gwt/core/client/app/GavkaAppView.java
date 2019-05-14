@@ -15,6 +15,7 @@ import org.dominokit.domino.ui.icons.Icon;
 import org.dominokit.domino.ui.icons.Icons;
 import org.dominokit.domino.ui.layout.Layout;
 import org.dominokit.domino.ui.style.Styles;
+import org.dominokit.domino.ui.style.Unit;
 import org.dominokit.domino.ui.tabs.Tab;
 import org.dominokit.domino.ui.tabs.TabsPanel;
 import org.dominokit.domino.ui.tree.Tree;
@@ -39,6 +40,9 @@ import elemental2.dom.HTMLDivElement;
 import elemental2.dom.HTMLElement;
 
 public class GavkaAppView extends AbstractAppView<GavkaAppController> {
+
+	@SuppressWarnings("boxing")
+	private static final String LEFT_PANEL_HEIGHT = Unit.percent.of(100);
 
 	private final class NavClickHandler implements EventListener {
 
@@ -90,6 +94,7 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 		layout.fixLeftPanelPosition();
 		layout.getLeftPanel().appendChild(connectionTree = Tree.create("Connections"));
 		connectionTree.getHeader().appendChild(lockIcon.asElement());
+		connectionTree.setHeight(LEFT_PANEL_HEIGHT);
 		lockIcon.addClickListener(evt -> {
 			if (locked) {
 				layout.unfixLeftPanelPosition();

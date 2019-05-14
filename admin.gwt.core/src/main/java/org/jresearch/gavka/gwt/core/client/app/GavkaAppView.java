@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
 import org.dominokit.domino.ui.layout.Layout;
+import org.dominokit.domino.ui.style.Unit;
 import org.dominokit.domino.ui.tree.Tree;
 import org.dominokit.domino.ui.tree.TreeItem;
 import org.jresearch.commons.gwt.client.app.AbstractAppView;
@@ -26,6 +27,9 @@ import elemental2.dom.EventListener;
 import elemental2.dom.HTMLElement;
 
 public class GavkaAppView extends AbstractAppView<GavkaAppController> {
+
+	@SuppressWarnings("boxing")
+	private static final String LEFT_PANEL_HEIGHT = Unit.percent.of(100);
 
 	private final class NavClickHandler implements EventListener {
 
@@ -62,6 +66,7 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 		super(notificator, controller, bus);
 		layout = Layout.create("Gavka");
 		layout.getLeftPanel().appendChild(moduleTree = Tree.create("Modules"));
+		moduleTree.setHeight(LEFT_PANEL_HEIGHT);
 	}
 
 	@Override
