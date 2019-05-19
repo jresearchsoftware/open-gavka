@@ -53,21 +53,15 @@ public class GavkaAppController extends AbstractAppController<GavkaAppView> impl
 		REST.withCallback(callback).call(srv).connections();
 	}
 
-	private void onConnectionLoad(final String activeModuleId, final List<ConnectionLabel> connections) {
-		connections.forEach(c -> updateConnection(activeModuleId, c));
-	}
+	private void onConnectionLoad(final String activeModuleId, final List<ConnectionLabel> connections) { connections.forEach(c -> updateConnection(activeModuleId, c)); }
 
-	private void updateConnection(final String activeModuleId, final ConnectionLabel connection) {
-		REST.withCallback(new GwtMethodCallback<List<String>>(bus, r -> onTopicsLoad(activeModuleId, connection, r))).call(srv).topics(connection.getId());
-	}
+	private void updateConnection(final String activeModuleId, final ConnectionLabel connection) { REST.withCallback(new GwtMethodCallback<List<String>>(bus, r -> onTopicsLoad(activeModuleId, connection, r))).call(srv).topics(connection.id()); }
 
-	private void onTopicsLoad(final String activeModuleId, final ConnectionLabel connection, final List<String> topics) {
-		topics.forEach(t -> updateTopic(activeModuleId, connection, t));
-	}
+	private void onTopicsLoad(final String activeModuleId, final ConnectionLabel connection, final List<String> topics) { topics.forEach(t -> updateTopic(activeModuleId, connection, t)); }
 
 	private void updateTopic(final String activeModuleId, final ConnectionLabel connection, final String topic) {
 		getOptView().ifPresent(v -> v.addTopic(connection, topic));
-		final GafkaCoordinates coordinates = GafkaModule.create(connection.getId(), topic);
+		final GafkaCoordinates coordinates = GafkaModule.create(connection.id(), topic);
 		getModules().stream()
 				.filter(m -> m instanceof GafkaModule)
 				.map(m -> (GafkaModule) m)
@@ -82,7 +76,5 @@ public class GavkaAppController extends AbstractAppController<GavkaAppView> impl
 	}
 
 	@Override
-	public void onConnectionTab(final TabEvent event) {
-		getOptView().ifPresent(v -> v.selectTopic(event.getConnectionTopicId()));
-	}
+	public void onConnectionTab(final TabEvent event) { getOptView().ifPresent(v -> v.selectTopic(event.getConnectionTopicId())); }
 }

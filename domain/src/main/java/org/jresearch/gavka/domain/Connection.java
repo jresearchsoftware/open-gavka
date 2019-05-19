@@ -1,62 +1,34 @@
 package org.jresearch.gavka.domain;
 
 import java.util.List;
+import java.util.Optional;
 
-public class Connection {
+import org.immutables.value.Value;
 
-	private String id;
-	private String label;
-	private String icon = "mdi-hubspot";
-	private String color = "TEAL LIGHTEN 5";
-	private List<String> bootstrapServers;
-	private String schemaRegistryUrl;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-	public String getId() {
-		return id;
-	}
+@Value.Immutable
+@Value.Modifiable
+//Due GWT builder has to have constructor, optional accept null, standard getters
+@Value.Style(get = { "get*", "is*" }, builder = "new", optionalAcceptNullable = true)
+//For GWT deserialization
+@JsonDeserialize(builder = ImmutableConnection.Builder.class)
+public interface Connection {
 
-	public void setId(String id) {
-		this.id = id;
-	}
+	@Value.Default
+	default String getId() { return ""; }
 
-	public String getLabel() {
-		return label;
-	}
+	@Value.Default
+	default String getLabel() { return ""; }
 
-	public void setLabel(String label) {
-		this.label = label;
-	}
+	@Value.Default
+	default String getIcon() { return "mdi-hubspot"; }
 
-	public String getIcon() {
-		return icon;
-	}
+	@Value.Default
+	default String getColor() { return "TEAL LIGHTEN 5"; }
 
-	public void setIcon(String icon) {
-		this.icon = icon;
-	}
+	List<String> getBootstrapServers();
 
-	public String getColor() {
-		return color;
-	}
-
-	public void setColor(String color) {
-		this.color = color;
-	}
-
-	public List<String> getBootstrapServers() {
-		return bootstrapServers;
-	}
-
-	public void setBootstrapServers(List<String> bootstrapServers) {
-		this.bootstrapServers = bootstrapServers;
-	}
-
-	public String getSchemaRegistryUrl() {
-		return schemaRegistryUrl;
-	}
-
-	public void setSchemaRegistryUrl(String schemaRegistryUrl) {
-		this.schemaRegistryUrl = schemaRegistryUrl;
-	}
+	Optional<String> getSchemaRegistryUrl();
 
 }

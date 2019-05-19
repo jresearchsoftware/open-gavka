@@ -11,6 +11,14 @@
 	<name>JRS kafla UI: Apache Kafka admin application - backend part</name>
 	<url>https://bitbucket.org/JRS/open-gavka</url>
 	<dependencies>
+		<!-- <dependency>
+			<groupId>org.dizitart</groupId>
+			<artifactId>nitrite</artifactId>
+		</dependency> -->
+		<dependency>
+			<groupId>net.harawata</groupId>
+			<artifactId>appdirs</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>

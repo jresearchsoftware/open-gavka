@@ -14,6 +14,7 @@ import org.jresearch.commons.gwt.client.mvc.GwtMethodCallback;
 import org.jresearch.commons.gwt.client.mvc.event.Bus;
 import org.jresearch.commons.gwt.client.mvc.event.module.ModuleEvent;
 import org.jresearch.gavka.domain.Connection;
+import org.jresearch.gavka.domain.ModifiableConnection;
 import org.jresearch.gavka.gwt.core.client.app.GavkaAppController;
 import org.jresearch.gavka.gwt.core.client.module.connection.srv.GavkaConnectionRestService;
 
@@ -25,9 +26,9 @@ public class ConnectionController extends AbstractModuleController<ConnectionVie
 	@Nonnull
 	public static final String ID = "org.jresearch.gavka.gwt.core.client.module.connection.ConnectionController"; //$NON-NLS-1$
 	@Nonnull
-	private GavkaConnectionRestService srv;
-	private GavkaAppController gavkaAppController;
-	private Map<String, Connection> cons = new HashMap<>();
+	private final GavkaConnectionRestService srv;
+	private final GavkaAppController gavkaAppController;
+	private final Map<String, Connection> cons = new HashMap<>();
 
 	@Inject
 	public ConnectionController(@Nonnull final Bus bus, @Nonnull final GavkaAppController appController, @Nonnull final AsyncProvider<ConnectionView> view, @Nonnull final GavkaConnectionRestService srv) {
@@ -37,18 +38,18 @@ public class ConnectionController extends AbstractModuleController<ConnectionVie
 	}
 
 	@Override
-	public void onModileActivation(ModuleEvent event) {
+	public void onModileActivation(final ModuleEvent event) {
 		super.onModileActivation(event);
 		refreshConnections();
 	}
 
 	@Override
-	public void onModule(ModuleEvent event) {
+	public void onModule(final ModuleEvent event) {
 		super.onModule(event);
 		if (isActive()) {
-			Connection connection = cons.get(event.getData());
+			final Connection connection = cons.get(event.getData());
 			if (connection != null) {
-				getOptView().ifPresent(v -> v.edit(connection));
+				getOptView().ifPresent(v -> v.edit(ModifiableConnection.create().from(connection)));
 			}
 		}
 	}
@@ -59,13 +60,11 @@ public class ConnectionController extends AbstractModuleController<ConnectionVie
 		getOptView().ifPresent(v -> v.updateConnections(connections));
 	}
 
-	public void addSubmodule(Connection connection) {
+	public void addSubmodule(final Connection connection) {
 		cons.put(connection.getId(), connection);
 		gavkaAppController.addSubmodule(ID, connection.getId(), connection.getLabel());
 	}
 
-	public void refreshConnections() {
-		REST.withCallback(new GwtMethodCallback<>(bus, this::onLoad)).call(srv).get();
-	}
+	public void refreshConnections() { REST.withCallback(new GwtMethodCallback<>(bus, this::onLoad)).call(srv).get(); }
 
 }

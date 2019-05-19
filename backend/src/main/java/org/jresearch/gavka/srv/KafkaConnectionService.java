@@ -9,6 +9,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.PostConstruct;
 
 import org.jresearch.gavka.domain.Connection;
+import org.jresearch.gavka.domain.ImmutableConnection;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -29,42 +30,36 @@ public class KafkaConnectionService extends AbstractConnectionService {
 	private String schemaRegistryUrl;
 
 	@Nonnull
-	private List<Connection> connections = new ArrayList<>();
+	private final List<Connection> connections = new ArrayList<>();
 
 	@PostConstruct
 	protected void init() {
-		Connection connection = new Connection();
-		connection.setId(UUID.randomUUID().toString());
-		connection.setLabel("Default connection");
-		connection.setBootstrapServers(Splitter.on(',').splitToList(serverUrl));
-		connection.setSchemaRegistryUrl(schemaRegistryUrl);
-		connections.add(connection);
+		final Connection connection = new ImmutableConnection.Builder()
+				.label("Default connection")
+				.addAllBootstrapServers(Splitter.on(',').splitToList(serverUrl))
+				.schemaRegistryUrl(Optional.ofNullable(schemaRegistryUrl))
+				.build();
+		update(connection);
 	}
 
 	@Override
-	public List<Connection> connections() {
-		return ImmutableList.copyOf(connections);
-	}
+	public List<Connection> connections() { return ImmutableList.copyOf(connections); }
 
 	@Override
-	public Optional<Connection> get(String id) {
-		return StreamEx.of(connections).filterBy(Connection::getId, id).findAny();
-	}
+	public Optional<Connection> get(final String id) { return StreamEx.of(connections).filterBy(Connection::getId, id).findAny(); }
 
 	@Override
-	public boolean update(Connection connection) {
-		String id = connection.getId();
-		if (id == null || id.isEmpty()) {
-			connection.setId(UUID.randomUUID().toString());
-		} else {
-			get(id).ifPresent(connections::remove);
-		}
-		return connections.add(connection);
+	public boolean update(final Connection connection) {
+		final Connection toSave = updateId(connection);
+		get(toSave.getId()).ifPresent(connections::remove);
+		return connections.add(toSave);
 	}
 
+	private static Connection updateId(final Connection connection) { return connection.getId().isEmpty() ? new ImmutableConnection.Builder().from(connection).id(UUID.randomUUID().toString()).build() : connection; }
+
 	@Override
-	public boolean remove(String id) {
-		Optional<Connection> conn = get(id);
+	public boolean remove(final String id) {
+		final Optional<Connection> conn = get(id);
 		conn.ifPresent(connections::remove);
 		return conn.isPresent();
 	}

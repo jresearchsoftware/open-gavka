@@ -10,6 +10,7 @@ import org.jresearch.gavka.domain.MessageFilter;
 import org.jresearch.gavka.domain.MessageFormat;
 import org.jresearch.gavka.rest.api.ConnectionLabel;
 import org.jresearch.gavka.rest.api.GavkaMessageService;
+import org.jresearch.gavka.rest.api.ImmutableConnectionLabel;
 import org.jresearch.gavka.rest.api.MessageParameters;
 import org.jresearch.gavka.rest.api.MessagePortion;
 import org.jresearch.gavka.rest.api.PagingParameters;
@@ -59,30 +60,22 @@ public class GavkaController implements GavkaMessageService {
 
 	@Override
 	@GetMapping(M_R_TOPICS)
-	public List<String> topics(@PathVariable String connectionId) {
-		return messageService.getMessageTopics(connectionId);
-	}
+	public List<String> topics(@PathVariable final String connectionId) { return messageService.getMessageTopics(connectionId); }
 
 	@Override
 	@GetMapping(M_R_KEY_FORMATS)
-	public List<KeyFormat> keyFormats(@PathVariable String connectionId) {
-		return ImmutableList.copyOf(KeyFormat.values());
-	}
+	public List<KeyFormat> keyFormats(@PathVariable final String connectionId) { return ImmutableList.copyOf(KeyFormat.values()); }
 
 	@Override
 	@GetMapping(M_R_MESSAGE_FORMATS)
-	public List<MessageFormat> messageFormats(@PathVariable String connectionId) {
-		return ImmutableList.copyOf(MessageFormat.values());
-	}
+	public List<MessageFormat> messageFormats(@PathVariable final String connectionId) { return ImmutableList.copyOf(MessageFormat.values()); }
 
 	@Override
 	@GetMapping(M_R_CONNECTIONS)
-	public List<ConnectionLabel> connections() {
-		return StreamEx.of(connectionService.connections()).map(GavkaController::map).toList();
-	}
+	public List<ConnectionLabel> connections() { return StreamEx.of(connectionService.connections()).map(GavkaController::map).toList(); }
 
-	private static ConnectionLabel map(Connection conn) {
-		return new ConnectionLabel(conn.getId(), conn.getLabel());
+	private static ConnectionLabel map(final Connection conn) {
+		return new ImmutableConnectionLabel.Builder().id(conn.getId()).label(conn.getLabel()).build();
 
 	}
 

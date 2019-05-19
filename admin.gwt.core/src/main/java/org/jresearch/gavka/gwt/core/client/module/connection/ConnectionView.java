@@ -25,6 +25,7 @@ import org.jresearch.commons.gwt.client.mvc.GwtMethodCallback;
 import org.jresearch.commons.gwt.client.mvc.INotificator;
 import org.jresearch.commons.gwt.client.mvc.event.Bus;
 import org.jresearch.gavka.domain.Connection;
+import org.jresearch.gavka.domain.ModifiableConnection;
 import org.jresearch.gavka.gwt.core.client.module.connection.editor.EditConnectionDialog;
 import org.jresearch.gavka.gwt.core.client.module.connection.srv.GavkaConnectionRestService;
 
@@ -73,20 +74,13 @@ public class ConnectionView extends AbstractView<ConnectionController> {
 		controller.refreshConnections();
 	}
 
-	private void add(final Event evt) {
-		edit(new Connection());
+	private void add(final Event evt) { edit(ModifiableConnection.create()); }
 
-	}
+	private void save(final ModifiableConnection connection) { REST.withCallback(new GwtMethodCallback<>(bus, this::load)).call(gavkaConnectionRestService).save(connection); }
 
-	private void save(final Connection connection) {
-		REST.withCallback(new GwtMethodCallback<>(bus, this::load)).call(gavkaConnectionRestService).save(connection);
-	}
+	private void load(@SuppressWarnings("unused") final Boolean added) { controller().refreshConnections(); }
 
-	private void load(@SuppressWarnings("unused") final Boolean added) {
-		controller().refreshConnections();
-	}
-
-	void edit(final Connection connection) {
+	void edit(final ModifiableConnection connection) {
 		conectionEditor.edit(connection);
 		conectionEditor.getModalDialog().open();
 	}
@@ -124,30 +118,20 @@ public class ConnectionView extends AbstractView<ConnectionController> {
 		return result;
 	}
 
-	private Column toColumn(final Connection connection) {
-		return Column
-				.span3()
-				.appendChild(toInfoBox(connection));
-	}
+	private Column toColumn(final Connection connection) { return Column
+			.span3()
+			.appendChild(toInfoBox(connection)); }
 
-	private InfoBox toInfoBox(final Connection connection) {
-		return InfoBox.create(getIcon(connection), connection.getId(), connection.getLabel())
-				.setBackground(getColor(connection))
-				.setHoverEffect(InfoBox.HoverEffect.ZOOM)
-				.addClickListener(e -> edit(connection));
-	}
+	private InfoBox toInfoBox(final Connection connection) { return InfoBox.create(getIcon(connection), connection.getId(), connection.getLabel())
+			.setBackground(getColor(connection))
+			.setHoverEffect(InfoBox.HoverEffect.ZOOM)
+			.addClickListener(e -> edit(ModifiableConnection.create().from(connection))); }
 
-	private static BaseIcon<?> getIcon(final Connection connection) {
-		return Icons.of(connection.getIcon());
-	}
+	private static BaseIcon<?> getIcon(final Connection connection) { return Icons.of(connection.getIcon()); }
 
-	private static Color getColor(final Connection connection) {
-		return Color.of(connection.getColor());
-	}
+	private static Color getColor(final Connection connection) { return Color.of(connection.getColor()); }
 
 	@Override
-	public HTMLElement getContent() {
-		return element;
-	}
+	public HTMLElement getContent() { return element; }
 
 }

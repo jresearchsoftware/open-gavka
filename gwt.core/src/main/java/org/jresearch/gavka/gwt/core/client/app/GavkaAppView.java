@@ -113,9 +113,7 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 
 	@Override
 	@Nonnull
-	public HTMLElement getContent() {
-		throw new UnsupportedOperationException();
-	}
+	public HTMLElement getContent() { throw new UnsupportedOperationException(); }
 
 	@Override
 	public boolean updateChildContent(final String viewId, final HTMLElement content) {
@@ -183,9 +181,7 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 	}
 
 	@Override
-	public boolean switchToModule(final String moduleId) {
-		return true;
-	}
+	public boolean switchToModule(final String moduleId) { return true; }
 
 	@Override
 	public void initModules(final List<IAppModule> modules) {
@@ -232,14 +228,12 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 	}
 
 	@Override
-	public void showContent() {
-		layout.show();
-	}
+	public void showContent() { layout.show(); }
 
 	@SuppressWarnings("null")
 	@Nonnull
 	public TreeItem addConnection(final ConnectionLabel connection) {
-		final TreeItem moduleNode = TreeItem.create(connection.getLabel());
+		final TreeItem moduleNode = TreeItem.create(connection.label());
 		connectionNodes.put(connection, moduleNode);
 		connectionTree.appendChild(moduleNode);
 		return moduleNode;
@@ -256,7 +250,7 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 		if (connectionNode == null) {
 			connectionNode = addConnection(connection);
 		}
-		final GafkaCoordinates coordinates = GafkaModule.create(connection.getId(), topic);
+		final GafkaCoordinates coordinates = GafkaModule.create(connection.id(), topic);
 		final TreeItem topicNode = TreeItem.create(topic)
 				.addClickListener(new NavClickHandler(defaultModule, coordinates));
 		topicNodes.put(coordinates, topicNode);

@@ -16,23 +16,25 @@ import org.dominokit.domino.ui.icons.Icons;
 import org.dominokit.domino.ui.modals.ModalDialog;
 import org.dominokit.domino.ui.style.Color;
 import org.jboss.gwt.elemento.core.builder.HtmlContentBuilder;
-import org.jresearch.gavka.domain.Connection;
+import org.jresearch.commons.gwt.client.widget.OptionalEditorWrapper;
+import org.jresearch.gavka.domain.ModifiableConnection;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.SimpleBeanEditorDriver;
 
+import elemental2.dom.Event;
 import elemental2.dom.HTMLDivElement;
 
-public class EditConnectionDialog implements Editor<Connection> {
+public class EditConnectionDialog implements Editor<ModifiableConnection> {
 
 	private final Driver driver = GWT.create(Driver.class);
 
-	interface Driver extends SimpleBeanEditorDriver<Connection, EditConnectionDialog> {
+	interface Driver extends SimpleBeanEditorDriver<ModifiableConnection, EditConnectionDialog> {
 		// nothing
 	}
 
-	private ModalDialog modalDialog;
+	private final ModalDialog modalDialog;
 
 	TextBox id;
 	TextBox label;
@@ -41,15 +43,14 @@ public class EditConnectionDialog implements Editor<Connection> {
 	@Ignore
 	TextBox bootstrapServersString;
 	StringsEditorWrapper bootstrapServers;
-	TextBox schemaRegistryUrl;
+	OptionalEditorWrapper<String> schemaRegistryUrlEditor;
 
-	private Consumer<Connection> onCreateHandler = c -> {
-	};
+	private Consumer<ModifiableConnection> onCreateHandler = c -> {};
 
-	private FieldsGrouping fieldsGrouping = FieldsGrouping.create();
-	private Connection connection;
+	private final FieldsGrouping fieldsGrouping = FieldsGrouping.create();
+	private ModifiableConnection connection;
 
-	private HtmlContentBuilder<HTMLDivElement> colorMark = div().style("width: 2rem; height: 2rem;");
+	private final HtmlContentBuilder<HTMLDivElement> colorMark = div().style("width: 2rem; height: 2rem;");
 
 	@Inject
 	public EditConnectionDialog() {
@@ -93,13 +94,15 @@ public class EditConnectionDialog implements Editor<Connection> {
 				.setLeftAddon(Icons.ALL.bootstrap_mdi());
 		bootstrapServers = new StringsEditorWrapper(bootstrapServersString);
 
-		schemaRegistryUrl = TextBox.create("Schema registry URL")
+		final TextBox schemaRegistryUrl = TextBox.create("Schema registry URL")
 				.setRequired(false)
 				.setAutoValidation(true)
 				.groupBy(fieldsGrouping)
 				.setPlaceholder("hostname or IP of a schema registry")
 				.floating()
 				.setLeftAddon(Icons.ALL.registered_trademark_mdi());
+
+		schemaRegistryUrlEditor = new OptionalEditorWrapper<>(schemaRegistryUrl);
 
 		modalDialog = ModalDialog.create()
 				.setAutoClose(false)
@@ -119,7 +122,7 @@ public class EditConnectionDialog implements Editor<Connection> {
 						.linkify()
 						.setContent("CANCEL")
 						.styler(style -> style.setMinWidth("100px"))
-						.addClickListener(evt -> modalDialog.close()))
+						.addClickListener(this::onCancel))
 				.appendFooterChild(Button.createPrimary(Icons.ALL.save())
 						.setContent("SAVE")
 						.styler(style -> style.setMinWidth("100px"))
@@ -128,20 +131,22 @@ public class EditConnectionDialog implements Editor<Connection> {
 		driver.initialize(this);
 	}
 
-	private void onColor(String value) {
+	private void onCancel(final Event evt) { modalDialog.close(); }
+
+	private void onColor(final String value) {
 		try {
 			colorMark.asElement().style.backgroundColor = Color.of(value).getHex();
 			color.clearInvalid();
-		} catch (IllegalArgumentException e) {
+		} catch (final IllegalArgumentException e) {
 			icon.invalidate("Color doesn't exist");
 		}
 	}
 
-	private void onIcon(String value) {
+	private void onIcon(final String value) {
 		try {
 			icon.setRightAddon(Icons.of(value));
 			icon.clearInvalid();
-		} catch (IllegalArgumentException e) {
+		} catch (final IllegalArgumentException e) {
 			icon.invalidate("Icon doesn't exist");
 		}
 	}
@@ -155,21 +160,17 @@ public class EditConnectionDialog implements Editor<Connection> {
 		}
 	}
 
-	public ModalDialog getModalDialog() {
-		return modalDialog;
-	}
+	public ModalDialog getModalDialog() { return modalDialog; }
 
-	public void edit(Connection connection) {
+	public void edit(final ModifiableConnection connection) {
 		driver.edit(connection);
 		fieldsGrouping.clearInvalid();
 		this.connection = connection;
 	}
 
-	public Connection getConnection() {
-		return this.connection;
-	}
+	public ModifiableConnection getConnection() { return this.connection; }
 
-	public EditConnectionDialog onSave(Consumer<Connection> onCreateHandler) {
+	public EditConnectionDialog onSave(final Consumer<ModifiableConnection> onCreateHandler) {
 		this.onCreateHandler = onCreateHandler;
 		return this;
 	}
