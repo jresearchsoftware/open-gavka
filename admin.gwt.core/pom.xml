@@ -15,7 +15,6 @@
 		<dependency>
 			<groupId>com.github.nmorel.gwtjackson</groupId>
 			<artifactId>gwt-jackson-guava</artifactId>
-			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.google.gwt</groupId>
@@ -115,6 +114,7 @@
 					<ignoredUnusedDeclaredDependencies>
 						<ignoredUnusedDeclaredDependency>com.google.guava:guava-gwt</ignoredUnusedDeclaredDependency>
 						<ignoredUnusedDeclaredDependency>com.fasterxml.jackson.core:jackson-databind</ignoredUnusedDeclaredDependency>
+						<ignoredUnusedDeclaredDependency>com.github.nmorel.gwtjackson:gwt-jackson-guava</ignoredUnusedDeclaredDependency>
 					</ignoredUnusedDeclaredDependencies>
 				</configuration>
 			</plugin>
