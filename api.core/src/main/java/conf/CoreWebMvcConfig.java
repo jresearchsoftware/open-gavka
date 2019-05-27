@@ -17,20 +17,9 @@ public class CoreWebMvcConfig implements WebMvcConfigurer {
 	}
 
 	@Bean
-	public AsyncTaskExecutor asyncTaskExecutor() {
-		return new SimpleAsyncTaskExecutor("gavkaExport");
-	}
+	public AsyncTaskExecutor asyncTaskExecutor() { return new SimpleAsyncTaskExecutor("gavkaExport"); }
 
 	@Bean
-	public ForwardedHeaderTransformer forwardedHeaderTransformer() {
-		return new ForwardedHeaderTransformer();
-	}
-
-//	@Override
-//	public void addCorsMappings(CorsRegistry registry) {
-//		registry.
-//		// TODO Auto-generated method stub
-//				WebMvcConfigurer.super.addCorsMappings(registry);
-//	}
+	public ForwardedHeaderTransformer forwardedHeaderTransformer() { return new ForwardedHeaderTransformer(); }
 
 }

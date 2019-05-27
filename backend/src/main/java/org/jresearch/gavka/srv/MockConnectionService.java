@@ -34,9 +34,10 @@ public class MockConnectionService extends AbstractConnectionService {
 			.findAny(); }
 
 	@Override
-	public boolean update(final Connection connection) {
+	public Connection update(final Connection connection) {
 		get(connection.getId()).ifPresent(connections::remove);
-		return connections.add(connection);
+		connections.add(connection);
+		return connection;
 	}
 
 	@Override

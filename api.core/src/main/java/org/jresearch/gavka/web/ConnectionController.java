@@ -21,20 +21,14 @@ public class ConnectionController implements GavkaConnectionService {
 
 	@Override
 	@GetMapping(M_R_GET)
-	public List<Connection> get() {
-		return connectionService.connections();
-	}
+	public List<Connection> get() { return connectionService.connections(); }
 
 	@PostMapping(M_P_SAVE)
 	@Override
-	public boolean save(@RequestBody Connection connection) {
-		return connectionService.update(connection);
-	}
+	public Connection save(@RequestBody final Connection connection) { return connectionService.update(connection); }
 
 	@PostMapping(M_P_REMOVE)
 	@Override
-	public boolean remove(@RequestBody String connectionId) {
-		return connectionService.remove(connectionId);
-	}
+	public boolean remove(@RequestBody final String connectionId) { return connectionService.remove(connectionId); }
 
 }

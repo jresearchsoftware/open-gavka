@@ -17,7 +17,7 @@ public interface GavkaConnectionService extends GavkaBaseService {
 
 	List<Connection> get();
 
-	boolean save(Connection connection);
+	Connection save(Connection connection);
 
 	boolean remove(String connectionId);
 }

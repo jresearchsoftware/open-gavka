@@ -20,7 +20,7 @@ public interface GavkaConnectionRestService extends GavkaConnectionService, Dire
 	@POST
 	@Path(SRV_ROOT + SRV_PATH + M_P_SAVE)
 	@Override
-	boolean save(Connection connection);
+	Connection save(Connection connection);
 
 	@POST
 	@Path(SRV_ROOT + SRV_PATH + M_P_REMOVE)

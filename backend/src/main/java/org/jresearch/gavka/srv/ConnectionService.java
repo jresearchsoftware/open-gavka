@@ -16,7 +16,7 @@ public interface ConnectionService {
 
 	Optional<Connection> get(String connectionId);
 
-	boolean update(Connection connection);
+	Connection update(Connection connection);
 
 	boolean remove(String id);
 
