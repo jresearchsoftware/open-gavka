@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.1.0
+                      http://maven.apache.org/xsd/settings-1.1.0.xsd">
+	<mirrors>
+		<mirror>
+			<!--This sends everything else to /public -->
+			<id>lnexus</id>
+			<mirrorOf>*</mirrorOf>
+			<url>http://host.docker.internal:8081/repository/public</url>
+		</mirror>
+	</mirrors>
+	<servers>
+		<server>
+			<id>3rd</id>
+			<username>deployment</username>
+			<password><![CDATA[bz28cyjBgTXz@0MFE9P&]]></password>
+		</server>
+		<server>
+			<id>jopen</id>
+			<username>deployment</username>
+			<password><![CDATA[bz28cyjBgTXz@0MFE9P&]]></password>
+		</server>
+		<server>
+			<id>jopen-sn</id>
+			<username>deployment</username>
+			<password><![CDATA[bz28cyjBgTXz@0MFE9P&]]></password>
+		</server>
+		<server>
+			<id>jinternal</id>
+			<username>deployment</username>
+			<password><![CDATA[bz28cyjBgTXz@0MFE9P&]]></password>
+		</server>
+		<server>
+			<id>jinternal-sn</id>
+			<username>deployment</username>
+			<password><![CDATA[bz28cyjBgTXz@0MFE9P&]]></password>
+		</server>
+	</servers>
+	<profiles>
+		<profile>
+			<id>nexus</id>
+			<!--Enable snapshots for the built in central repo to direct -->
+			<!--all requests to nexus via the mirror -->
+			<repositories>
+				<repository>
+					<id>central</id>
+					<url>http://central</url>
+					<releases>
+						<enabled>true</enabled>
+						<!-- <updatePolicy>interval:60</updatePolicy> -->
+					</releases>
+					<snapshots>
+						<enabled>true</enabled>
+						<!-- <updatePolicy>interval:60</updatePolicy> -->
+					</snapshots>
+				</repository>
+			</repositories>
+			<pluginRepositories>
+				<pluginRepository>
+					<id>central</id>
+					<url>http://central</url>
+					<releases>
+						<enabled>true</enabled>
+						<!-- <updatePolicy>interval:60</updatePolicy> -->
+					</releases>
+					<snapshots>
+						<enabled>true</enabled>
+						<!-- <updatePolicy>interval:60</updatePolicy> -->
+					</snapshots>
+				</pluginRepository>
+			</pluginRepositories>
+		</profile>
+	</profiles>
+	<activeProfiles>
+		<!--make the profile active all the time -->
+		<activeProfile>nexus</activeProfile>
+	</activeProfiles>
+</settings>

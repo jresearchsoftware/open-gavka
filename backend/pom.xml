@@ -108,12 +108,44 @@
 	<build>
 		<plugins>
 			<plugin>
+				<groupId>org.flywaydb</groupId>
+				<artifactId>flyway-maven-plugin</artifactId>
+				<version>5.2.4</version>
+				<executions>
+					<execution>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>migrate</goal>
+						</goals>
+					</execution>
+				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>org.postgresql</groupId>
+						<artifactId>postgresql</artifactId>
+						<version>${postgresql.ver}</version>
+					</dependency>
+				</dependencies>
+				<configuration>
+					<url>jdbc:postgresql://localhost:5432/gavkaDev</url>
+					<user>gavkaDev</user>
+					<password>gavkaDev</password>
+					<locations>
+						<location>filesystem:src/main/resources/dbGavka</location>
+					</locations>
+					<table>schema_version_gavka</table>
+					<baselineOnMigrate>true</baselineOnMigrate>
+					<baselineVersion>0000</baselineVersion>
+					<placeholderPrefix>{{</placeholderPrefix>
+				</configuration>
+			</plugin>
+			<plugin>
 				<groupId>org.jooq</groupId>
 				<artifactId>jooq-codegen-maven</artifactId>
 				<version>3.11.11</version>
 				<executions>
 					<execution>
-						<phase>compile</phase>
+						<phase>generate-sources</phase>
 						<goals>
 							<goal>generate</goal>
 						</goals>
@@ -129,7 +161,7 @@
 				<configuration>
 					<jdbc>
 						<driver>org.postgresql.Driver</driver>
-						<url>jdbc:postgresql://localhost:5433/gavkaDev</url>
+						<url>jdbc:postgresql://localhost:5432/gavkaDev</url>
 						<user>gavkaDev</user>
 						<password>gavkaDev</password>
 					</jdbc>

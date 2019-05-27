@@ -1,0 +1,1 @@
+docker run -it --rm --name my-maven-project -v maven-repo:/root/.m2 -v "C:\Development\work\repo\JRS\open\gavka\backend":/usr/src/mymaven -w /usr/src/mymaven foal/mvn-postgres mvn clean package
