@@ -10,6 +10,10 @@
 	<artifactId>org.jresearch.gavka.backend</artifactId>
 	<name>JRS kafla UI: Apache Kafka admin application - backend part</name>
 	<url>https://bitbucket.org/JRS/open-gavka</url>
+	<properties>
+		<build.postgres.host>localhost</build.postgres.host>
+		<build.postgres.port>54321</build.postgres.port>
+	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>org.flywaydb</groupId>
@@ -127,7 +131,7 @@
 					</dependency>
 				</dependencies>
 				<configuration>
-					<url>jdbc:postgresql://localhost:5432/gavkaDev</url>
+					<url>jdbc:postgresql://${build.postgres.host}:${build.postgres.port}/gavkaDev</url>
 					<user>gavkaDev</user>
 					<password>gavkaDev</password>
 					<locations>
@@ -161,7 +165,7 @@
 				<configuration>
 					<jdbc>
 						<driver>org.postgresql.Driver</driver>
-						<url>jdbc:postgresql://localhost:5432/gavkaDev</url>
+						<url>jdbc:postgresql://${build.postgres.host}:${build.postgres.port}/gavkaDev</url>
 						<user>gavkaDev</user>
 						<password>gavkaDev</password>
 					</jdbc>

@@ -91,7 +91,7 @@ RUN set -ex \
 		--disable-rpath \
 		--with-uuid=e2fs \
 		--with-gnu-ld \
-		--with-pgport=5432 \
+		--with-pgport=54321 \
 		--with-system-tzdata=/usr/share/zoneinfo \
 		--prefix=/usr/local \
 		--with-includes=/usr/local/include \
