@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import javax.annotation.Nonnull;
 import javax.annotation.PostConstruct;
 
 import org.jresearch.gavka.dao.ConnectionDao;
@@ -32,9 +33,14 @@ public class KafkaConnectionService extends AbstractConnectionService {
 
 	@PostConstruct
 	protected void init() {
-		final Connection connection = new ImmutableConnection.Builder()
+		final Optional<Connection> defaultConnection = connectionDao.getByLabel("Default connection");
+
+		@SuppressWarnings("null")
+		final Connection connection = defaultConnection
+				.map(new ImmutableConnection.Builder()::from)
+				.orElseGet(ImmutableConnection.Builder::new)
 				.label("Default connection")
-				.addAllBootstrapServers(Splitter.on(',').splitToList(serverUrl))
+				.bootstrapServers(Splitter.on(',').splitToList(serverUrl))
 				.schemaRegistryUrl(Optional.ofNullable(schemaRegistryUrl))
 				.build();
 		update(connection);
@@ -53,7 +59,8 @@ public class KafkaConnectionService extends AbstractConnectionService {
 		return toSave;
 	}
 
-	private static Connection updateId(final Connection connection) { return connection.getId().isEmpty() ? new ImmutableConnection.Builder().from(connection).id(UUID.randomUUID().toString()).build() : connection; }
+	@Nonnull
+	private static Connection updateId(@Nonnull final Connection connection) { return connection.getId().isEmpty() ? new ImmutableConnection.Builder().from(connection).id(UUID.randomUUID().toString()).build() : connection; }
 
 	@Override
 	public boolean remove(final String id) {

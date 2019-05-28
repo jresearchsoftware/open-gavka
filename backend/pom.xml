@@ -114,6 +114,7 @@
 					<dependency>
 						<groupId>org.postgresql</groupId>
 						<artifactId>postgresql</artifactId>
+						<version>${postgresql.ver}</version>
 					</dependency>
 				</dependencies>
 				<configuration>
@@ -144,6 +145,7 @@
 					<dependency>
 						<groupId>org.postgresql</groupId>
 						<artifactId>postgresql</artifactId>
+						<version>${postgresql.ver}</version>
 					</dependency>
 				</dependencies>
 				<configuration>

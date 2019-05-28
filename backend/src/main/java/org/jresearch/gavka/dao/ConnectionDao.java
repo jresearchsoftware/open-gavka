@@ -30,6 +30,7 @@ public class ConnectionDao {
 	@Autowired
 	private DSLContext dslContext;
 
+	@Nonnull
 	public List<Connection> getConnections() {
 		final Result<ConnectionRecord> result = dslContext.fetch(CONNECTION);
 		return StreamEx.of(result).map(ConnectionDao::map).toList();
@@ -69,4 +70,6 @@ public class ConnectionDao {
 	public static List<String> toList(final String values) { return values == null ? ImmutableList.of() : OMIT_EMPTY_STRINGS.splitToList(values); }
 
 	public static String toString(final List<String> value) { return value == null ? null : String.join(String.valueOf(SEPARATOR), value); }
+
+	public Optional<Connection> getByLabel(final String string) { return Optional.ofNullable(dslContext.fetchOne(CONNECTION, CONNECTION.LABEL.eq(string))).map(ConnectionDao::map); }
 }

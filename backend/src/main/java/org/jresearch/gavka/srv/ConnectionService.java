@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 
+import javax.annotation.Nonnull;
+
 import org.jresearch.gavka.domain.Connection;
 
 public interface ConnectionService {
@@ -12,14 +14,18 @@ public interface ConnectionService {
 		LATEST
 	}
 
+	@Nonnull
 	List<Connection> connections();
 
-	Optional<Connection> get(String connectionId);
+	@Nonnull
+	Optional<Connection> get(@Nonnull String connectionId);
 
-	Connection update(Connection connection);
+	@Nonnull
+	Connection update(@Nonnull Connection connection);
 
-	boolean remove(String id);
+	boolean remove(@Nonnull String id);
 
-	Optional<Properties> getKafkaConnectionProperties(String connectionId, KafkaVersion ver);
+	@Nonnull
+	Optional<Properties> getKafkaConnectionProperties(@Nonnull String connectionId, @Nonnull KafkaVersion ver);
 
 }
