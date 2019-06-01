@@ -16,6 +16,10 @@
 	</properties>
 	<dependencies>
 		<dependency>
+			<groupId>org.jresearch.gavka</groupId>
+			<artifactId>org.jresearch.gavka.gwt.shared</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.flywaydb</groupId>
 			<artifactId>flyway-core</artifactId>
 		</dependency>
