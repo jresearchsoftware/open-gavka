@@ -21,6 +21,7 @@
 		<module>../api.docker</module>
 		<module>../api.core</module>
 		<module>../api.app</module>
+		<module>../gwt.shared</module>
 		<module>../gwt.app</module>
 		<module>../gwt.docker</module>
 		<module>../gwt.core</module>
@@ -82,6 +83,11 @@
 			<dependency>
 				<groupId>org.jresearch.gavka</groupId>
 				<artifactId>org.jresearch.gavka.domain</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jresearch.gavka</groupId>
+				<artifactId>org.jresearch.gavka.gwt.shared</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>

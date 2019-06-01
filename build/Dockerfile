@@ -152,7 +152,7 @@ ENV POSTGRES_PASSWORD gavkaDev
 ENV POSTGRES_DB gavkaDev
 
 #Merkurial
-RUN apk add --no-cache mercurial gnupg
+RUN apk add --no-cache mercurial gnupg  openssh-client
 
 COPY stas-entrypoint.sh /usr/local/bin/stas-entrypoint.sh
 

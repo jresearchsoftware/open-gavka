@@ -10,7 +10,6 @@
 	<artifactId>org.jresearch.gavka.domain</artifactId>
 	<name>JRS kafka UI: Apache Kafka admin application - domain objects</name>
 	<url>https://bitbucket.org/JRS/open-gavka</url>
-	<packaging>gwt-lib</packaging>
 	<dependencies>
 		<dependency>
 			<groupId>com.google.code.findbugs</groupId>
@@ -21,49 +20,8 @@
 			<artifactId>guava</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.google.gwt</groupId>
-			<artifactId>gwt-user</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.immutables</groupId>
-			<artifactId>value-annotations</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-annotations</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.google.errorprone</groupId>
-			<artifactId>error_prone_annotations</artifactId>
+			<groupId>org.jresearch.gavka</groupId>
+			<artifactId>org.jresearch.gavka.gwt.shared</artifactId>
 		</dependency>
 	</dependencies>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<annotationProcessorPaths>
-						<path>
-							<groupId>org.immutables</groupId>
-							<artifactId>value</artifactId>
-							<version>${immutables.ver}</version>
-						</path>
-					</annotationProcessorPaths>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>net.ltgt.gwt.maven</groupId>
-				<artifactId>gwt-maven-plugin</artifactId>
-				<configuration>
-					<moduleName>org.jresearch.gavka.domain.module</moduleName>
-					<moduleShortName>module</moduleShortName>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
 </project>

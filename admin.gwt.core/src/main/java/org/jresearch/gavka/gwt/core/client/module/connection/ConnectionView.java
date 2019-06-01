@@ -27,6 +27,8 @@ import org.jresearch.commons.gwt.client.mvc.event.Bus;
 import org.jresearch.gavka.domain.Connection;
 import org.jresearch.gavka.domain.ModifiableConnection;
 import org.jresearch.gavka.gwt.core.client.module.connection.editor.EditConnectionDialog;
+import org.jresearch.gavka.gwt.core.client.module.connection.editor.MdColorSelect;
+import org.jresearch.gavka.gwt.core.client.module.connection.editor.MdIconSelect;
 import org.jresearch.gavka.gwt.core.client.module.connection.srv.GavkaConnectionRestService;
 
 import elemental2.dom.DomGlobal;
@@ -74,11 +76,14 @@ public class ConnectionView extends AbstractView<ConnectionController> {
 		controller.refreshConnections();
 	}
 
-	private void add(final Event evt) { edit(ModifiableConnection.create()); }
+	private void add(final Event evt) {
+		final ModifiableConnection connection = ModifiableConnection.create().setColor(MdColorSelect.any()).setIcon(MdIconSelect.any());
+		edit(connection);
+	}
 
 	private void save(final ModifiableConnection connection) { REST.withCallback(new GwtMethodCallback<>(bus, this::load)).call(gavkaConnectionRestService).save(connection); }
 
-	private void load(@SuppressWarnings("unused") final Boolean added) { controller().refreshConnections(); }
+	private void load(@SuppressWarnings("unused") final Connection added) { controller().refreshConnections(); }
 
 	void edit(final ModifiableConnection connection) {
 		conectionEditor.edit(connection);
@@ -122,7 +127,7 @@ public class ConnectionView extends AbstractView<ConnectionController> {
 			.span3()
 			.appendChild(toInfoBox(connection)); }
 
-	private InfoBox toInfoBox(final Connection connection) { return InfoBox.create(getIcon(connection), connection.getId(), connection.getLabel())
+	private InfoBox toInfoBox(final Connection connection) { return InfoBox.create(getIcon(connection), connection.getBootstrapServers().stream().findAny().orElse("No bootstrap servers"), connection.getLabel())
 			.setBackground(getColor(connection))
 			.setHoverEffect(InfoBox.HoverEffect.ZOOM)
 			.addClickListener(e -> edit(ModifiableConnection.create().from(connection))); }

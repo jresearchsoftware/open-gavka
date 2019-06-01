@@ -11,16 +11,15 @@ import org.dominokit.domino.ui.icons.MdiIcon;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
+import com.google.gwt.user.client.Random;
 
 public class MdIconSelect extends Select<String> {
 
-	public MdIconSelect(String label) {
-		super(label, toSelectOprions(MdIcons.VALUES));
-	}
+	public MdIconSelect(final String label) { super(label, toSelectOprions(MdIcons.VALUES)); }
 
-	private static List<SelectOption<String>> toSelectOprions(Collection<MdIcons> icons) {
-		Builder<SelectOption<String>> builder = ImmutableList.<SelectOption<String>>builder();
-		for (MdIcons icon : icons) {
+	private static List<SelectOption<String>> toSelectOprions(final Collection<MdIcons> icons) {
+		final Builder<SelectOption<String>> builder = ImmutableList.<SelectOption<String>>builder();
+		for (final MdIcons icon : icons) {
 			builder.add(toSelectOption(icon.icon()));
 		}
 		return builder.build();
@@ -28,13 +27,17 @@ public class MdIconSelect extends Select<String> {
 	}
 
 	@Nonnull
-	private static SelectOption<String> toSelectOption(MdiIcon icon) {
-		SelectOption<String> option = SelectOption.create(icon.getName(), icon.getName());
+	private static SelectOption<String> toSelectOption(final MdiIcon icon) {
+		final SelectOption<String> option = SelectOption.create(icon.getName(), icon.getName());
 		option.getValueContainer().appendChild(icon);
 		return option;
 	}
 
-	public static Select<String> create(String label) {
-		return new MdIconSelect(label);
+	public static Select<String> create(final String label) { return new MdIconSelect(label); }
+
+	public static String any() {
+		final List<MdIcons> values = MdIcons.VALUES;
+		return values.get(Random.nextInt(values.size())).getIconName();
 	}
+
 }

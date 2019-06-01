@@ -7,8 +7,8 @@
 		<version>1.0.43-SNAPSHOT</version>
 		<relativePath>../pom/pom.xml</relativePath>
 	</parent>
-	<artifactId>org.jresearch.gavka.rest.api</artifactId>
-	<name>JRS kafka UI: Apache Kafka admin application - REST API</name>
+	<artifactId>org.jresearch.gavka.gwt.shared</artifactId>
+	<name>JRS kafka UI: Apache Kafka admin application - domain objects shared with GWT</name>
 	<url>https://bitbucket.org/JRS/open-gavka</url>
 	<packaging>gwt-lib</packaging>
 	<dependencies>
@@ -21,20 +21,8 @@
 			<artifactId>guava</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.jresearch.gavka</groupId>
-			<artifactId>org.jresearch.gavka.gwt.shared</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.jresearch.commons.gwt.base</groupId>
-			<artifactId>org.jresearch.commons.gwt.base.shared</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>com.google.gwt</groupId>
 			<artifactId>gwt-user</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.google.gwt</groupId>
-			<artifactId>gwt-dev</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.immutables</groupId>
@@ -72,7 +60,7 @@
 				<groupId>net.ltgt.gwt.maven</groupId>
 				<artifactId>gwt-maven-plugin</artifactId>
 				<configuration>
-					<moduleName>org.jresearch.gavka.rest.module</moduleName>
+					<moduleName>org.jresearch.gavka.domain.module</moduleName>
 					<moduleShortName>module</moduleShortName>
 				</configuration>
 			</plugin>

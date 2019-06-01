@@ -74,7 +74,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.jresearch.gavka</groupId>
-			<artifactId>org.jresearch.gavka.domain</artifactId>
+			<artifactId>org.jresearch.gavka.gwt.shared</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.jresearch.gavka</groupId>
