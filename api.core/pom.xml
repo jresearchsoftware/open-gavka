@@ -12,6 +12,10 @@
 	<url>https://bitbucket.org/JRS/open-gavka</url>
 	<dependencies>
 		<dependency>
+			<groupId>org.jresearch.gavka</groupId>
+			<artifactId>org.jresearch.gavka.gwt.shared</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>com.fasterxml.jackson.datatype</groupId>
 			<artifactId>jackson-datatype-jdk8</artifactId>
 			<scope>runtime</scope>
