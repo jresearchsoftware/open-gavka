@@ -13,10 +13,6 @@
 	<url>https://bitbucket.org/JRS/open-gavka</url>
 	<dependencies>
 		<dependency>
-			<groupId>org.jooq</groupId>
-			<artifactId>jooq</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>org.jresearch.gavka</groupId>
 			<artifactId>org.jresearch.gavka.api.core</artifactId>
 		</dependency>
