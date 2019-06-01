@@ -4,21 +4,29 @@ import javax.sql.DataSource;
 
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.configuration.FluentConfiguration;
+import org.jooq.DSLContext;
+import org.jooq.SQLDialect;
+import org.jooq.impl.DSL;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
 @Configuration
 @ComponentScan("org.jresearch.gavka")
-@SuppressWarnings("nls")
+@SuppressWarnings({ "nls", "static-method" })
 public class BackendConfig {
 
 	@Bean
 	public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() { return new PropertySourcesPlaceholderConfigurer(); }
 
 	@Bean
-	public static Flyway gavkaMigration(final DataSource dataSource) {
+	@DependsOn("gavkaMigration")
+	public DSLContext dslContext(final DataSource dataSource) { return DSL.using(dataSource, SQLDialect.POSTGRES); }
+
+	@Bean
+	public Flyway gavkaMigration(final DataSource dataSource) {
 		final Flyway flyway = new Flyway(configure(dataSource));
 		flyway.migrate();
 		return flyway;
