@@ -14,6 +14,8 @@ import org.dominokit.domino.ui.collapsible.Collapsible;
 import org.dominokit.domino.ui.icons.Icon;
 import org.dominokit.domino.ui.icons.Icons;
 import org.dominokit.domino.ui.layout.Layout;
+import org.dominokit.domino.ui.popover.PopupPosition;
+import org.dominokit.domino.ui.popover.Tooltip;
 import org.dominokit.domino.ui.style.Styles;
 import org.dominokit.domino.ui.style.Unit;
 import org.dominokit.domino.ui.tabs.Tab;
@@ -234,6 +236,7 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 	@Nonnull
 	public TreeItem addConnection(final ConnectionLabel connection) {
 		final TreeItem moduleNode = TreeItem.create(connection.label());
+		Tooltip.create(moduleNode.getClickableElement(), connection.label()).position(PopupPosition.RIGHT).getInnerElement().styler(style -> style.setMaxWidth(Unit.px.of(10000)));
 		connectionNodes.put(connection, moduleNode);
 		connectionTree.appendChild(moduleNode);
 		return moduleNode;
@@ -253,6 +256,7 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 		final GafkaCoordinates coordinates = GafkaModule.create(connection.id(), topic);
 		final TreeItem topicNode = TreeItem.create(topic)
 				.addClickListener(new NavClickHandler(defaultModule, coordinates));
+		Tooltip.create(topicNode.getClickableElement(), topic).position(PopupPosition.RIGHT).getInnerElement().styler(style -> style.setMaxWidth(Unit.px.of(10000)));
 		topicNodes.put(coordinates, topicNode);
 		connectionNode.appendChild(topicNode);
 	}

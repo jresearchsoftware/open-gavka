@@ -7,6 +7,7 @@
 	<inherits name="org.fusesource.restygwt.RestyGWT" />
 	<inherits name="com.github.nmorel.gwtjackson.GwtJackson" />
 	<inherits name="org.jresearch.gavka.domain.module" />
+    <inherits name="org.jresearch.gavka.rest.module"/>
 	<inherits name="org.jresearch.commons.gwt.module" />
 	<inherits name="org.jresearch.commons.gwt.shared" />
 	<inherits name="org.gwtproject.i18n.DateTimeFormat" />
