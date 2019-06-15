@@ -45,7 +45,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.base.MoreObjects;
 
-@Profile("default")
+@Profile("!nokafka")
 @Component
 @SuppressWarnings("nls")
 public class KafkaMessageService extends AbstractMessageService {

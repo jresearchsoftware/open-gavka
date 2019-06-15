@@ -7,7 +7,7 @@ import java.util.UUID;
 import javax.annotation.Nonnull;
 import javax.annotation.PostConstruct;
 
-import org.jresearch.gavka.dao.ConnectionDao;
+import org.jresearch.gavka.dao.IConnectionDao;
 import org.jresearch.gavka.domain.Connection;
 import org.jresearch.gavka.domain.ImmutableConnection;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.base.Splitter;
 
-@Profile("default")
+@Profile("!nokafka")
 @Component
 @SuppressWarnings("nls")
 public class KafkaConnectionService extends AbstractConnectionService {
@@ -29,11 +29,11 @@ public class KafkaConnectionService extends AbstractConnectionService {
 	private String schemaRegistryUrl;
 
 	@Autowired
-	private ConnectionDao connectionDao;
+	private IConnectionDao iConnectionDao;
 
 	@PostConstruct
 	protected void init() {
-		final Optional<Connection> defaultConnection = connectionDao.getByLabel("Default connection");
+		final Optional<Connection> defaultConnection = iConnectionDao.getByLabel("Default connection");
 
 		@SuppressWarnings("null")
 		final Connection connection = defaultConnection
@@ -47,24 +47,30 @@ public class KafkaConnectionService extends AbstractConnectionService {
 	}
 
 	@Override
-	public List<Connection> connections() { return connectionDao.getConnections(); }
+	public List<Connection> connections() {
+		return iConnectionDao.getConnections();
+	}
 
 	@Override
-	public Optional<Connection> get(final String id) { return connectionDao.getConnection(id); }
+	public Optional<Connection> get(final String id) {
+		return iConnectionDao.getConnection(id);
+	}
 
 	@Override
 	public Connection update(final Connection connection) {
 		final Connection toSave = updateId(connection);
-		connectionDao.updateConnection(toSave);
+		iConnectionDao.updateConnection(toSave);
 		return toSave;
 	}
 
 	@Nonnull
-	private static Connection updateId(@Nonnull final Connection connection) { return connection.getId().isEmpty() ? new ImmutableConnection.Builder().from(connection).id(UUID.randomUUID().toString()).build() : connection; }
+	private static Connection updateId(@Nonnull final Connection connection) {
+		return connection.getId().isEmpty() ? new ImmutableConnection.Builder().from(connection).id(UUID.randomUUID().toString()).build() : connection;
+	}
 
 	@Override
 	public boolean remove(final String id) {
-		connectionDao.removeConnection(id);
+		iConnectionDao.removeConnection(id);
 		return true;
 	}
 

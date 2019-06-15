@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.annotation.Profile;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
 @Configuration
@@ -19,13 +20,19 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 public class BackendConfig {
 
 	@Bean
-	public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() { return new PropertySourcesPlaceholderConfigurer(); }
+	public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
+		return new PropertySourcesPlaceholderConfigurer();
+	}
 
 	@Bean
 	@DependsOn("gavkaMigration")
-	public DSLContext dslContext(final DataSource dataSource) { return DSL.using(dataSource, SQLDialect.POSTGRES); }
+	@Profile("!nodb")
+	public DSLContext dslContext(final DataSource dataSource) {
+		return DSL.using(dataSource, SQLDialect.POSTGRES);
+	}
 
 	@Bean
+	@Profile("!nodb")
 	public Flyway gavkaMigration(final DataSource dataSource) {
 		final Flyway flyway = new Flyway(configure(dataSource));
 		flyway.migrate();
