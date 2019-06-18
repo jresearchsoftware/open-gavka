@@ -36,7 +36,7 @@ Clone the repository then
 
 `mvn package`
 
-Three files *api.war*, *gavka.war* and *gavkin.war* can be deployed to tomcat or other server. The database tables will be created during the first start, the database user must all the necessary rights.
+Three files *api.war*, *gavka.war* and *gavkin.war* can be deployed to tomcat or other server. The database tables will be created during the first start, the database user must have all the necessary rights.
 
 The following environment variables must be specified
 
