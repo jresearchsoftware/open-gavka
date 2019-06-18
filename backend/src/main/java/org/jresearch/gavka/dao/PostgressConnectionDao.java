@@ -50,6 +50,7 @@ public class PostgressConnectionDao implements IConnectionDao {
 		record.setId(connection.getId());
 		record.setLabel(connection.getLabel());
 		record.setSchemaRegistryUrl(connection.getSchemaRegistryUrl().orElse(null));
+		record.setProperties(connection.getProperties());
 		record.store();
 	}
 
@@ -80,6 +81,7 @@ public class PostgressConnectionDao implements IConnectionDao {
 				.icon(record.getIcon())
 				.label(record.getLabel())
 				.schemaRegistryUrl(record.getSchemaRegistryUrl())
+				.properties(record.getProperties())
 				.build();
 	}
 

@@ -167,7 +167,7 @@
 							<inputSchema>public</inputSchema>
 							<forcedTypes>
 								<forcedType>
-									<userType>java.util.Properties</userType>
+									<userType>java.util.Map</userType>
 									<binding>org.jresearch.gavka.dao.PropertiesJsonBinder</binding>
 									<types>JSONB</types>
 								</forcedType>

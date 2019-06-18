@@ -3,6 +3,8 @@ package org.jresearch.gavka.gwt.core.client.module.connection.editor;
 import static java.util.Objects.*;
 import static org.jboss.gwt.elemento.core.Elements.*;
 
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.Consumer;
 
 import javax.inject.Inject;
@@ -15,10 +17,12 @@ import org.dominokit.domino.ui.grid.Row;
 import org.dominokit.domino.ui.icons.Icons;
 import org.dominokit.domino.ui.modals.ModalDialog;
 import org.dominokit.domino.ui.style.Color;
+import org.dominokit.domino.ui.tag.TagsInput;
 import org.jboss.gwt.elemento.core.builder.HtmlContentBuilder;
 import org.jresearch.commons.gwt.client.widget.OptionalEditorWrapper;
 import org.jresearch.gavka.domain.ModifiableConnection;
 
+import com.google.common.collect.ImmutableList;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.SimpleBeanEditorDriver;
@@ -44,18 +48,27 @@ public class EditConnectionDialog implements Editor<ModifiableConnection> {
 	TextBox bootstrapServersString;
 	StringsEditorWrapper bootstrapServers;
 	OptionalEditorWrapper<String> schemaRegistryUrlEditor;
+	@Ignore
+	TagsInput<Entry<String, String>> propertyTags;
+	@Ignore
+	TextBox propertyKey;
+	@Ignore
+	TextBox propertyValue;
 
-	private Consumer<ModifiableConnection> onCreateHandler = c -> {};
+	private Consumer<ModifiableConnection> onCreateHandler = c -> {
+	};
 
 	private final FieldsGrouping fieldsGrouping = FieldsGrouping.create();
 	private ModifiableConnection connection;
 
 	private final HtmlContentBuilder<HTMLDivElement> colorMark = div().style("width: 2rem; height: 2rem;");
 
+	private final Button propertyAdd;
+
 	@Inject
 	public EditConnectionDialog() {
 
-		id = TextBox.create("Id")
+		id = TextBox.create()
 				.groupBy(fieldsGrouping)
 				.setPlaceholder("Connection id")
 				.floating()
@@ -104,6 +117,33 @@ public class EditConnectionDialog implements Editor<ModifiableConnection> {
 
 		schemaRegistryUrlEditor = new OptionalEditorWrapper<>(schemaRegistryUrl);
 
+		propertyTags = TagsInput.create("Custom properties", new PropertyTagsStore())
+				.setMaxValue(0)
+//				.setReadOnly(true)
+//				.setRequired(true)
+//				.setAutoValidation(true)
+				.groupBy(fieldsGrouping)
+				.setPlaceholder("Custom properties, use fields bellow to add")
+				.floating()
+				.setLeftAddon(Icons.ALL.settings_helper_mdi());
+		propertyKey = TextBox.create("Key")
+//				.setRequired(true)
+				.setAutoValidation(true)
+				.groupBy(fieldsGrouping)
+				.setPlaceholder("New property key")
+				.floating()
+				.setLeftAddon(Icons.ALL.key_mdi());
+		propertyValue = TextBox.create("Value")
+//				.setRequired(true)
+				.setAutoValidation(true)
+				.groupBy(fieldsGrouping)
+				.setPlaceholder("New property value")
+				.floating()
+				.setLeftAddon(Icons.ALL.treasure_chest_mdi());
+		propertyAdd = Button.createSuccess(Icons.ALL.plus_mdi()).circle().addClickListener(this::onPropertyAdd);
+//				.setButtonType(StyleType.SUCCESS);
+//		propertyAdd.style().setMargin("5px");
+
 		modalDialog = ModalDialog.create()
 				.setAutoClose(false)
 				.appendChild(Row.create()
@@ -118,6 +158,12 @@ public class EditConnectionDialog implements Editor<ModifiableConnection> {
 						.fullSpan(column -> column.appendChild(icon)))
 				.appendChild(Row.create()
 						.fullSpan(column -> column.appendChild(color)))
+				.appendChild(Row.create()
+						.fullSpan(column -> column.appendChild(propertyTags)))
+				.appendChild(Row.create()
+						.span5(column -> column.appendChild(propertyKey))
+						.span6(column -> column.appendChild(propertyValue))
+						.span1(column -> column.appendChild(propertyAdd)))
 				.appendFooterChild(Button.create(Icons.ALL.clear())
 						.linkify()
 						.setContent("CANCEL")
@@ -131,7 +177,39 @@ public class EditConnectionDialog implements Editor<ModifiableConnection> {
 		driver.initialize(this);
 	}
 
-	private void onCancel(final Event evt) { modalDialog.close(); }
+	private void onPropertyAdd(final Event evt) {
+		propertyKey.setRequired(true);
+		propertyValue.setRequired(true);
+		if (propertyKey.validate().isValid() & propertyValue.validate().isValid()) {
+			final String key = propertyKey.getValue();
+			final String value = propertyValue.getValue();
+			propertyTags.setValue(ImmutableList.of(new Map.Entry<String, String>() {
+
+				@Override
+				public String getKey() { return key; }
+
+				@Override
+				public String getValue() { return value; }
+
+				@Override
+				public String setValue(final String val) {
+					return value;
+				}
+
+			}));
+			propertyKey.setRequired(false);
+			propertyValue.setRequired(false);
+			propertyKey.clear();
+			propertyValue.clear();
+		} else {
+			propertyKey.setRequired(false);
+			propertyValue.setRequired(false);
+		}
+	}
+
+	private void onCancel(final Event evt) {
+		modalDialog.close();
+	}
 
 	private void onColor(final String value) {
 		try {
