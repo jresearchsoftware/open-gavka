@@ -97,4 +97,3 @@ services:
 ### Why is this project called Gavka? ###
 
 When we were thinking about the name of the project this dog suggested: Gav! ![artie](images/artie.JPG)
-
