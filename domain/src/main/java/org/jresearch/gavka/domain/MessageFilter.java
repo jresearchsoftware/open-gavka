@@ -9,9 +9,19 @@ public class MessageFilter {
 
 	private String topic;
 	private String key;
+	private String valuePattern;
 	private LocalDateTime from;
 	private KeyFormat keyFormat;
 	private MessageFormat messageFormat;
+
+	
+	public String getValuePattern() {
+		return valuePattern;
+	}
+
+	public void setValuePattern(String valuePattern) {
+		this.valuePattern = valuePattern;
+	}
 
 	public String getTopic() {
 		return topic;
@@ -59,6 +69,7 @@ public class MessageFilter {
 		return MoreObjects.toStringHelper(this)
 				.add("topic", topic)
 				.add("key", key)
+				.add("valuePattern", valuePattern)
 				.add("from", from)
 				.add("keyFormat", keyFormat)
 				.add("messageFormat", messageFormat)
@@ -77,6 +88,7 @@ public class MessageFilter {
 			return Objects.equal(this.getTopic(), that.getTopic())
 					&& Objects.equal(this.getKey(), that.getKey())
 					&& Objects.equal(this.getFrom(), that.getFrom())
+					&& Objects.equal(this.getValuePattern(), that.getValuePattern())
 					&& Objects.equal(this.getKeyFormat(), that.getKeyFormat())
 					&& Objects.equal(this.getMessageFormat(), that.getMessageFormat());
 		}

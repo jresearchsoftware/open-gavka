@@ -104,14 +104,17 @@ public class KafkaMessageService extends AbstractMessageService {
 					if (consumerRecord.key() != null) {
 						stringKey = consumerRecord.key().toString();
 					}
-					if (!filter.getKey().isEmpty() && !filter.getKey().equals(stringKey)) {
-						partitionOffsets.put(consumerRecord.partition(), consumerRecord.offset() + 1);
-						continue;
-					}
+					
 					String stringValue = "";
 					if (consumerRecord.value() != null) {
 						stringValue = consumerRecord.value().toString();
 					}
+					
+					if ((!filter.getKey().isEmpty() && !filter.getKey().equals(stringKey)) || ((!filter.getValuePattern().isEmpty() && !stringValue.contains(filter.getValuePattern())))) {
+						partitionOffsets.put(consumerRecord.partition(), consumerRecord.offset() + 1);
+						continue;
+					}
+
 					messages.add(new Message(stringKey, stringValue, consumerRecord.offset(),
 							consumerRecord.partition(), consumerRecord.timestamp()));
 					partitionOffsets.put(consumerRecord.partition(), consumerRecord.offset() + 1);
@@ -237,12 +240,12 @@ public class KafkaMessageService extends AbstractMessageService {
 					if (consumerRecord.key() != null) {
 						stringKey = consumerRecord.key().toString();
 					}
-					if (!filter.getKey().isEmpty() && !filter.getKey().equals(stringKey)) {
-						continue;
-					}
 					String stringValue = "";
 					if (consumerRecord.value() != null) {
 						stringValue = consumerRecord.value().toString();
+					}
+					if ((!filter.getKey().isEmpty() && !filter.getKey().equals(stringKey)) || ((!filter.getValuePattern().isEmpty() && !stringValue.contains(filter.getValuePattern())))) {
+						continue;
 					}
 					currentTime = consumerRecord.timestamp();
 					bos.write(getStringForExport(new Message(stringKey, stringValue, consumerRecord.offset(),
