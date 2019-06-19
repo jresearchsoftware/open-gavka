@@ -3,10 +3,11 @@ package org.jresearch.gavka.gwt.core.client.module.connection.editor;
 import static java.util.Objects.*;
 import static org.jboss.gwt.elemento.core.Elements.*;
 
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
+import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
 import org.dominokit.domino.ui.button.Button;
@@ -19,6 +20,7 @@ import org.dominokit.domino.ui.modals.ModalDialog;
 import org.dominokit.domino.ui.style.Color;
 import org.dominokit.domino.ui.tag.TagsInput;
 import org.jboss.gwt.elemento.core.builder.HtmlContentBuilder;
+import org.jresearch.commons.gwt.client.mvc.event.Bus;
 import org.jresearch.commons.gwt.client.widget.OptionalEditorWrapper;
 import org.jresearch.gavka.domain.ModifiableConnection;
 
@@ -29,7 +31,7 @@ import com.google.gwt.editor.client.SimpleBeanEditorDriver;
 import elemental2.dom.Event;
 import elemental2.dom.HTMLDivElement;
 
-public class EditConnectionDialog implements Editor<ModifiableConnection> {
+public class EditConnectionDialog implements Editor<ModifiableConnection>, PropertySelectHandler {
 
 	private final Driver driver = GWT.create(Driver.class);
 
@@ -48,7 +50,7 @@ public class EditConnectionDialog implements Editor<ModifiableConnection> {
 	StringsEditorWrapper bootstrapServers;
 	OptionalEditorWrapper<String> schemaRegistryUrl;
 	@Ignore
-	TagsInput<Entry<String, String>> propertyTags;
+	TagsInput<Property> propertyTags;
 	@Ignore
 	TextBox propertyKey;
 	@Ignore
@@ -66,7 +68,9 @@ public class EditConnectionDialog implements Editor<ModifiableConnection> {
 	private final Button propertyAdd;
 
 	@Inject
-	public EditConnectionDialog() {
+	public EditConnectionDialog(@Nonnull final Bus bus) {
+
+		bus.addHandler(PropertySelectEvent.TYPE, this);
 
 		id = TextBox.create()
 				.groupBy(fieldsGrouping)
@@ -117,24 +121,19 @@ public class EditConnectionDialog implements Editor<ModifiableConnection> {
 
 		schemaRegistryUrl = new OptionalEditorWrapper<>(schemaRegistryUrlBox);
 
-		propertyTags = TagsInput.create("Custom properties", new PropertyTagsStore())
+		propertyTags = PropertyInput.create("Custom properties", bus)
 				.disableUserInput()
-//				.setReadOnly(true)
-//				.setRequired(true)
-//				.setAutoValidation(true)
 				.groupBy(fieldsGrouping)
 				.setPlaceholder("Custom properties, use fields bellow to add")
 				.floating()
-				.setLeftAddon(Icons.ALL.settings_helper_mdi());
+				.setLeftAddon(Icons.ALL.settings_mdi());
 		propertyKey = TextBox.create("Key")
-//				.setRequired(true)
 				.setAutoValidation(true)
 				.groupBy(fieldsGrouping)
 				.setPlaceholder("New property key")
 				.floating()
 				.setLeftAddon(Icons.ALL.key_mdi());
 		propertyValue = TextBox.create("Value")
-//				.setRequired(true)
 				.setAutoValidation(true)
 				.groupBy(fieldsGrouping)
 				.setPlaceholder("New property value")
@@ -181,22 +180,15 @@ public class EditConnectionDialog implements Editor<ModifiableConnection> {
 		propertyKey.setRequired(true);
 		propertyValue.setRequired(true);
 		if (propertyKey.validate().isValid() & propertyValue.validate().isValid()) {
-			final String key = propertyKey.getValue();
-			final String value = propertyValue.getValue();
-			propertyTags.addValue(new Map.Entry<String, String>() {
-
-				@Override
-				public String getKey() { return key; }
-
-				@Override
-				public String getValue() { return value; }
-
-				@Override
-				public String setValue(final String val) {
-					return value;
-				}
-
-			});
+			final List<Property> list = new ArrayList<>(propertyTags.getValue());
+			final PropertyTuple newProp = PropertyTuple.of(propertyKey.getValue(), propertyValue.getValue());
+			final int i = list.indexOf(newProp);
+			if (i == -1) {
+				list.add(newProp);
+			} else {
+				list.set(i, newProp);
+			}
+			propertyTags.setValue(list);
 			propertyKey.setRequired(false);
 			propertyValue.setRequired(false);
 			propertyKey.clear();
@@ -232,6 +224,10 @@ public class EditConnectionDialog implements Editor<ModifiableConnection> {
 	}
 
 	private void onSave() {
+		// Save entered but not added custom property
+		if (propertyKey.getValue() != null && propertyValue.getValue() != null) {
+			onPropertyAdd(null);
+		}
 		if (fieldsGrouping.validate().isValid()) {
 			if (nonNull(onCreateHandler)) {
 				onCreateHandler.accept(driver.flush());
@@ -255,6 +251,15 @@ public class EditConnectionDialog implements Editor<ModifiableConnection> {
 	public EditConnectionDialog onSave(final Consumer<ModifiableConnection> onCreateHandler) {
 		this.onCreateHandler = onCreateHandler;
 		return this;
+	}
+
+	@Override
+	public void onPropertySelect(final PropertySelectEvent event) {
+		final Property property = event.getProperty();
+		if (property != null) {
+			propertyKey.setValue(property.key());
+			propertyValue.setValue(property.value());
+		}
 	}
 
 }

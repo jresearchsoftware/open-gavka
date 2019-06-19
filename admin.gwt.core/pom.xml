@@ -85,10 +85,12 @@
 			<artifactId>guava-gwt</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.jresearch.commons.gwt.mdIcon</groupId>
-			<artifactId>org.jresearch.commons.gwt.mdIcon.processor</artifactId>
-			<version>1.1.0</version>
-			<scope>provided</scope>
+			<groupId>org.immutables</groupId>
+			<artifactId>value-annotations</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.google.errorprone</groupId>
+			<artifactId>error_prone_annotations</artifactId>
 		</dependency>
 	</dependencies>
 	<build>
@@ -100,9 +102,9 @@
 					<failOnError>false</failOnError>
 					<annotationProcessorPaths>
 						<path>
-							<groupId>org.jresearch.commons.gwt.mdIcon</groupId>
-							<artifactId>org.jresearch.commons.gwt.mdIcon.processor</artifactId>
-							<version>1.1.0</version>
+							<groupId>org.immutables</groupId>
+							<artifactId>value</artifactId>
+							<version>${immutables.ver}</version>
 						</path>
 					</annotationProcessorPaths>
 				</configuration>
