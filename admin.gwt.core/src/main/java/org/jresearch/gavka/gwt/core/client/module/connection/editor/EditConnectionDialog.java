@@ -22,7 +22,6 @@ import org.jboss.gwt.elemento.core.builder.HtmlContentBuilder;
 import org.jresearch.commons.gwt.client.widget.OptionalEditorWrapper;
 import org.jresearch.gavka.domain.ModifiableConnection;
 
-import com.google.common.collect.ImmutableList;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.SimpleBeanEditorDriver;
@@ -184,7 +183,7 @@ public class EditConnectionDialog implements Editor<ModifiableConnection> {
 		if (propertyKey.validate().isValid() & propertyValue.validate().isValid()) {
 			final String key = propertyKey.getValue();
 			final String value = propertyValue.getValue();
-			propertyTags.apddValue(ImmutableList.of(new Map.Entry<String, String>() {
+			propertyTags.addValue(new Map.Entry<String, String>() {
 
 				@Override
 				public String getKey() { return key; }
@@ -197,7 +196,7 @@ public class EditConnectionDialog implements Editor<ModifiableConnection> {
 					return value;
 				}
 
-			}));
+			});
 			propertyKey.setRequired(false);
 			propertyValue.setRequired(false);
 			propertyKey.clear();
