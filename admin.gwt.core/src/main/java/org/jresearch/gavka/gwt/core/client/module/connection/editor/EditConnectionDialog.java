@@ -47,13 +47,14 @@ public class EditConnectionDialog implements Editor<ModifiableConnection> {
 	@Ignore
 	TextBox bootstrapServersString;
 	StringsEditorWrapper bootstrapServers;
-	OptionalEditorWrapper<String> schemaRegistryUrlEditor;
+	OptionalEditorWrapper<String> schemaRegistryUrl;
 	@Ignore
 	TagsInput<Entry<String, String>> propertyTags;
 	@Ignore
 	TextBox propertyKey;
 	@Ignore
 	TextBox propertyValue;
+	PropertiesEditor properties;
 
 	private Consumer<ModifiableConnection> onCreateHandler = c -> {
 	};
@@ -107,7 +108,7 @@ public class EditConnectionDialog implements Editor<ModifiableConnection> {
 				.setLeftAddon(Icons.ALL.bootstrap_mdi());
 		bootstrapServers = new StringsEditorWrapper(bootstrapServersString);
 
-		final TextBox schemaRegistryUrl = TextBox.create("Schema registry URL")
+		final TextBox schemaRegistryUrlBox = TextBox.create("Schema registry URL")
 				.setRequired(false)
 				.setAutoValidation(true)
 				.groupBy(fieldsGrouping)
@@ -115,10 +116,10 @@ public class EditConnectionDialog implements Editor<ModifiableConnection> {
 				.floating()
 				.setLeftAddon(Icons.ALL.registered_trademark_mdi());
 
-		schemaRegistryUrlEditor = new OptionalEditorWrapper<>(schemaRegistryUrl);
+		schemaRegistryUrl = new OptionalEditorWrapper<>(schemaRegistryUrlBox);
 
 		propertyTags = TagsInput.create("Custom properties", new PropertyTagsStore())
-				.setMaxValue(0)
+				.disableUserInput()
 //				.setReadOnly(true)
 //				.setRequired(true)
 //				.setAutoValidation(true)
@@ -141,8 +142,8 @@ public class EditConnectionDialog implements Editor<ModifiableConnection> {
 				.floating()
 				.setLeftAddon(Icons.ALL.treasure_chest_mdi());
 		propertyAdd = Button.createSuccess(Icons.ALL.plus_mdi()).circle().addClickListener(this::onPropertyAdd);
-//				.setButtonType(StyleType.SUCCESS);
-//		propertyAdd.style().setMargin("5px");
+
+		properties = new PropertiesEditor(propertyTags);
 
 		modalDialog = ModalDialog.create()
 				.setAutoClose(false)
@@ -153,7 +154,7 @@ public class EditConnectionDialog implements Editor<ModifiableConnection> {
 				.appendChild(Row.create()
 						.fullSpan(column -> column.appendChild(bootstrapServersString)))
 				.appendChild(Row.create()
-						.fullSpan(column -> column.appendChild(schemaRegistryUrl)))
+						.fullSpan(column -> column.appendChild(schemaRegistryUrlBox)))
 				.appendChild(Row.create()
 						.fullSpan(column -> column.appendChild(icon)))
 				.appendChild(Row.create()
@@ -183,7 +184,7 @@ public class EditConnectionDialog implements Editor<ModifiableConnection> {
 		if (propertyKey.validate().isValid() & propertyValue.validate().isValid()) {
 			final String key = propertyKey.getValue();
 			final String value = propertyValue.getValue();
-			propertyTags.setValue(ImmutableList.of(new Map.Entry<String, String>() {
+			propertyTags.apddValue(ImmutableList.of(new Map.Entry<String, String>() {
 
 				@Override
 				public String getKey() { return key; }
@@ -208,6 +209,8 @@ public class EditConnectionDialog implements Editor<ModifiableConnection> {
 	}
 
 	private void onCancel(final Event evt) {
+		propertyKey.clear();
+		propertyValue.clear();
 		modalDialog.close();
 	}
 
@@ -233,6 +236,8 @@ public class EditConnectionDialog implements Editor<ModifiableConnection> {
 		if (fieldsGrouping.validate().isValid()) {
 			if (nonNull(onCreateHandler)) {
 				onCreateHandler.accept(driver.flush());
+				propertyKey.clear();
+				propertyValue.clear();
 				modalDialog.close();
 			}
 		}
