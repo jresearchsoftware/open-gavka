@@ -12,10 +12,6 @@
 	<url>https://bitbucket.org/JRS/open-gavka</url>
 	<dependencies>
 		<dependency>
-			<groupId>com.google.code.findbugs</groupId>
-			<artifactId>jsr305</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 		</dependency>
