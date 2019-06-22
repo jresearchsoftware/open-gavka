@@ -1,104 +1,31 @@
 package org.jresearch.gavka.rest.api;
 
-import javax.annotation.Nullable;
+import java.util.Optional;
 
+import org.immutables.value.Value;
 import org.jresearch.commons.gwt.shared.model.time.GwtLocalDateTimeModel;
 import org.jresearch.gavka.domain.KeyFormat;
 import org.jresearch.gavka.domain.MessageFormat;
 
-import com.google.common.base.MoreObjects;
-import com.google.common.base.Objects;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-public class MessageParameters {
+@Value.Immutable
+@Value.Style(builder = "new") // builder has to have constructor
+@JsonDeserialize(builder = ImmutableMessageParameters.Builder.class)
+public interface MessageParameters {
 
-	private String connection;
-	private String topic;
-	private String key;
-	@Nullable
-	private GwtLocalDateTimeModel from;
-	private KeyFormat keyFormat;
-	private MessageFormat messageFormat;
+	String connection();
 
-	public String getTopic() {
-		return topic;
-	}
+	String topic();
 
-	public void setTopic(final String topic) {
-		this.topic = topic;
-	}
+	String key();
 
-	public String getKey() {
-		return key;
-	}
+	String valuePattern();
 
-	public void setKey(final String key) {
-		this.key = key;
-	}
+	Optional<GwtLocalDateTimeModel> from();
 
-	@Nullable
-	public GwtLocalDateTimeModel getFrom() {
-		return from;
-	}
+	KeyFormat keyFormat();
 
-	public void setFrom(@Nullable final GwtLocalDateTimeModel from) {
-		this.from = from;
-	}
-
-	public KeyFormat getKeyFormat() {
-		return keyFormat;
-	}
-
-	public void setKeyFormat(final KeyFormat keyFormat) {
-		this.keyFormat = keyFormat;
-	}
-
-	public MessageFormat getMessageFormat() {
-		return messageFormat;
-	}
-
-	public void setMessageFormat(final MessageFormat messageFormat) {
-		this.messageFormat = messageFormat;
-	}
-
-	public String getConnection() {
-		return connection;
-	}
-
-	public void setConnection(String connection) {
-		this.connection = connection;
-	}
-
-	@SuppressWarnings({ "nls", "null" })
-	@Override
-	public String toString() {
-		return MoreObjects.toStringHelper(this)
-				.add("connection", connection)
-				.add("topic", topic)
-				.add("key", key)
-				.add("from", from)
-				.add("keyFormat", keyFormat)
-				.add("messageFormat", messageFormat)
-				.toString();
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hashCode(getConnection(), getTopic(), getKey(), getFrom(), getKeyFormat(), getMessageFormat());
-	}
-
-	@SuppressWarnings("null")
-	@Override
-	public boolean equals(final Object object) {
-		if (object instanceof MessageParameters) {
-			final MessageParameters that = (MessageParameters) object;
-			return Objects.equal(this.getTopic(), that.getTopic())
-					&& Objects.equal(this.getConnection(), that.getConnection())
-					&& Objects.equal(this.getKey(), that.getKey())
-					&& Objects.equal(this.getFrom(), that.getFrom())
-					&& Objects.equal(this.getKeyFormat(), that.getKeyFormat())
-					&& Objects.equal(this.getMessageFormat(), that.getMessageFormat());
-		}
-		return false;
-	}
+	MessageFormat messageFormat();
 
 }

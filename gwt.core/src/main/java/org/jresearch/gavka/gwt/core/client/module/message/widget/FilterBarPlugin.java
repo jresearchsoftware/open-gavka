@@ -48,6 +48,7 @@ import org.jresearch.commons.gwt.shared.model.time.GwtLocalTimeModel;
 import org.jresearch.gavka.domain.KeyFormat;
 import org.jresearch.gavka.domain.Message;
 import org.jresearch.gavka.domain.MessageFormat;
+import org.jresearch.gavka.rest.api.ImmutableMessageParameters;
 import org.jresearch.gavka.rest.api.MessageParameters;
 import org.jresearch.gavka.rest.data.GafkaCoordinates;
 
@@ -76,6 +77,8 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 	@Nonnull
 	private final TextBox keyBox;
 	@Nonnull
+	private final TextBox valuePatternBox;
+	@Nonnull
 	private final DateBox dateBox;
 	@Nonnull
 	private final TimeBox timeBox;
@@ -85,7 +88,6 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 	private final DateSelectionHandler dateHandler = this::autoSearch;
 	private final TimeSelectionHandler timeHandler = this::autoSearch;
 	private final ChangeHandler<String> stringHandler = this::autoSearch;
-	private final SelectionHandler<String> stringSelHandler = this::autoSearch;
 	private final SelectionHandler<KeyFormat> keySelHandler = this::autoSearch;
 	private final SelectionHandler<MessageFormat> msgSelHandler = this::autoSearch;
 
@@ -119,6 +121,7 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 				.setCursor(Cursor.POINTER.getCssName())
 				.get();
 		final Icon clearIconDate = clearIconKey.copy();
+		final Icon clearIconvaluePattern = clearIconKey.copy();
 		final Icon clearIconTime = clearIconKey.copy();
 		final Icon clearIconKeyFormat = clearIconKey.copy();
 		final Icon clearIconMassageFormat = clearIconKey.copy();
@@ -126,6 +129,10 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 		keyBox = TextBox.create("Key")
 				.setRightAddon(clearIconKey)
 				.setName("key")
+				.styler(FilterBarPlugin::zerroBottomMargin);
+		valuePatternBox = TextBox.create("Value pattern")
+				.setRightAddon(clearIconKey)
+				.setName("valuePattern")
 				.styler(FilterBarPlugin::zerroBottomMargin);
 		dateBox = DateBox.create("Date (UTC)")
 				.setRightAddon(clearIconDate)
@@ -138,13 +145,14 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 		timeBox.clear();
 
 		clearIconKey.addClickListener(e -> clearBox(keyBox, e));
+		clearIconvaluePattern.addClickListener(e -> clearBox(valuePatternBox, e));
 		clearIconDate.addClickListener(e -> clearBox(dateBox, e));
 		clearIconTime.addClickListener(e -> clearBox(timeBox, e));
 
 		final Row_12 row1 = Row.create()
 				.addColumn(Column.span4().appendChild(keyBox))
+				.addColumn(Column.span4().appendChild(valuePatternBox))
 				.addColumn(Column.span4().appendChild(dateBox))
-				.addColumn(Column.span4().appendChild(timeBox))
 				.styler(FilterBarPlugin::zerroBottomMargin);
 
 		keyFormatBox = Select.<KeyFormat>create("Key format")
@@ -173,6 +181,7 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 		final Row_12 row2 = Row.create()
 				.addColumn(Column.span4().appendChild(keyFormatBox))
 				.addColumn(Column.span4().appendChild(messageFormatBox))
+				.addColumn(Column.span2().appendChild(timeBox))
 				.addColumn(Column.span1().offset(10).appendChild((searchBtn = Button.create("Search")).disable().addClickListener(this::doSearch)))
 				.addColumn(Column.span1().offset(11).appendChild(clearFiltersIcon))
 				.styler(FilterBarPlugin::zerroBottomMargin);
@@ -259,9 +268,7 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 		autoSearchTimer.schedule(autoSearchDelay);
 	}
 
-	public boolean isAutoSearch() {
-		return autoSearch;
-	}
+	public boolean isAutoSearch() { return autoSearch; }
 
 	public FilterBarPlugin setAutoSearch(final boolean autoSearch) {
 		this.autoSearch = autoSearch;
@@ -269,6 +276,8 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 		if (autoSearch) {
 			keyBox.addEventListener(EventType.input.getName(), autoSearchEventListener);
 			keyBox.addChangeHandler(stringHandler);
+			valuePatternBox.addEventListener(EventType.input.getName(), autoSearchEventListener);
+			valuePatternBox.addChangeHandler(stringHandler);
 			dateBox.getDatePicker().addDateSelectionHandler(dateHandler);
 			timeBox.getTimePicker().addTimeSelectionHandler(timeHandler);
 			messageFormatBox.addEventListener(EventType.input.getName(), autoSearchEventListener);
@@ -279,6 +288,8 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 			autoSearchTimer.cancel();
 			keyBox.removeEventListener(EventType.input.getName(), autoSearchEventListener);
 			keyBox.removeChangeHandler(stringHandler);
+			valuePatternBox.removeEventListener(EventType.input.getName(), autoSearchEventListener);
+			valuePatternBox.removeChangeHandler(stringHandler);
 			dateBox.getDatePicker().removeDateSelectionHandler(dateHandler);
 			timeBox.getTimePicker().removeTimeSelectionHandler(timeHandler);
 			messageFormatBox.removeEventListener(EventType.input.getName(), autoSearchEventListener);
@@ -290,13 +301,9 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 		return this;
 	}
 
-	public int getAutoSearchDelay() {
-		return autoSearchDelay;
-	}
+	public int getAutoSearchDelay() { return autoSearchDelay; }
 
-	public void setAutoSearchDelay(final int autoSearchDelayInMillies) {
-		this.autoSearchDelay = autoSearchDelayInMillies;
-	}
+	public void setAutoSearchDelay(final int autoSearchDelayInMillies) { this.autoSearchDelay = autoSearchDelayInMillies; }
 
 	private void doSearch() {
 		dataTable.getSearchContext().fireSearchEvent();
@@ -306,6 +313,7 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 	public void handleEvent(final TableEvent event) {
 		if (SearchClearedEvent.SEARCH_EVENT_CLEARED.equals(event.getType())) {
 			handleClearEvent(keyBox);
+			handleClearEvent(valuePatternBox);
 			handleClearEvent(dateBox);
 			handleClearEvent(timeBox);
 			messageFormatBox.selectAt(0);
@@ -319,16 +327,15 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 		box.resumeChangeHandlers();
 	}
 
-	public MessageParameters getMessageParameters() {
-		final MessageParameters messageParameters = new MessageParameters();
-		messageParameters.setTopic(gafkaCoordinates.topic());
-		messageParameters.setFrom(getFrom().orElse(null));
-		messageParameters.setKey(getKeyValue());
-		messageParameters.setKeyFormat(getKeyFormat());
-		messageParameters.setMessageFormat(getMessageFormat());
-		messageParameters.setConnection(gafkaCoordinates.connectionId());
-		return messageParameters;
-	}
+	public MessageParameters getMessageParameters() { return new ImmutableMessageParameters.Builder()
+			.connection(gafkaCoordinates.connectionId())
+			.from(getFrom())
+			.key(getKeyValue())
+			.keyFormat(getKeyFormat())
+			.messageFormat(getMessageFormat())
+			.topic(gafkaCoordinates.topic())
+			.valuePattern(getValuePattern())
+			.build(); }
 
 	@SuppressWarnings("null")
 	@Nonnull
@@ -343,16 +350,25 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 		return Optional.of(new GwtLocalDateTimeModel(gwtDate, gwtTime));
 	}
 
+	@Nonnull
 	private String getKeyValue() {
 		final String value = keyBox.getValue();
 		return value == null ? Uis.NOTHING : value;
 	}
 
+	@Nonnull
+	private String getValuePattern() {
+		final String value = valuePatternBox.getValue();
+		return value == null ? Uis.NOTHING : value;
+	}
+
+	@Nonnull
 	private MessageFormat getMessageFormat() {
 		final MessageFormat value = messageFormatBox.getValue();
 		return value == null ? MessageFormat.values()[0] : value;
 	}
 
+	@Nonnull
 	private KeyFormat getKeyFormat() {
 		final KeyFormat value = keyFormatBox.getValue();
 		return value == null ? KeyFormat.values()[0] : value;
@@ -367,8 +383,6 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 		exportForm.asElement().submit();
 	}
 
-	private void setFrom(final String from) {
-		hiddenFrom.value = from;
-	}
+	private void setFrom(final String from) { hiddenFrom.value = from; }
 
 }

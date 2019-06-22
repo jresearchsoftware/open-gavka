@@ -29,7 +29,7 @@ public class MessageDataSource {
 	private final Stack<PagingParameters> pages;
 	private boolean reload = false;
 	private boolean loading = false;
-	private MessageParameters currentPrameters = new MessageParameters();
+	private MessageParameters currentPrameters = null;
 
 	@Inject
 	public MessageDataSource(@Nonnull final GavkaMessageRestService srv, @Nonnull final Bus bus) {
@@ -75,9 +75,7 @@ public class MessageDataSource {
 		}
 	}
 
-	public boolean isPreviousePartExist() {
-		return pages.size() > 2;
-	}
+	public boolean isPreviousePartExist() { return pages.size() > 2; }
 
 	private void initPages() {
 		pages.clear();

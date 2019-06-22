@@ -3,7 +3,9 @@ package org.jresearch.gavka.srv;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
-import java.time.ZoneId;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -65,10 +67,10 @@ public class KafkaMessageService extends AbstractMessageService {
 	public MessagePortion getMessages(final String connectionId, final PagingParameters pagingParameters, final MessageFilter filter) {
 		final Properties props = getProperties(connectionId);
 
-		props.put("key.deserializer", getKeyDeserializer(filter.getKeyFormat()));
-		props.put("value.deserializer", getMessageDeserializer(filter.getMessageFormat()));
+		props.put("key.deserializer", getKeyDeserializer(filter.keyFormat()));
+		props.put("value.deserializer", getMessageDeserializer(filter.messageFormat()));
 		props.put("auto.offset.reset", "earliest");
-		LOGGER.debug("Retreiving data from topic : {} ", filter.getTopic());
+		LOGGER.debug("Retreiving data from topic : {} ", filter.topic());
 		try (final KafkaConsumer<Object, Object> consumer = new KafkaConsumer<>(props)) {
 			final Map<Integer, Long> partitionOffsets = new HashMap<>();
 			final Map<Integer, TopicPartition> partitions = initConsumer(filter, consumer);
@@ -104,13 +106,13 @@ public class KafkaMessageService extends AbstractMessageService {
 					if (consumerRecord.key() != null) {
 						stringKey = consumerRecord.key().toString();
 					}
-					
+
 					String stringValue = "";
 					if (consumerRecord.value() != null) {
 						stringValue = consumerRecord.value().toString();
 					}
-					
-					if ((!filter.getKey().isEmpty() && !filter.getKey().equals(stringKey)) || ((!filter.getValuePattern().isEmpty() && !stringValue.contains(filter.getValuePattern())))) {
+
+					if (!filter.key().isEmpty() && !filter.key().equals(stringKey) || !filter.valuePattern().isEmpty() && !stringValue.contains(filter.valuePattern())) {
 						partitionOffsets.put(consumerRecord.partition(), consumerRecord.offset() + 1);
 						continue;
 					}
@@ -128,7 +130,7 @@ public class KafkaMessageService extends AbstractMessageService {
 				p.setPartition(partitionOffset);
 				po.add(p);
 			}
-			LOGGER.debug("Message offsets for topic {}:{} ", filter.getTopic(), po);
+			LOGGER.debug("Message offsets for topic {}:{} ", filter.topic(), po);
 			return new MessagePortion(po, messages);
 		} catch (final Exception e) {
 			LOGGER.error("Exception reading records", e);
@@ -139,8 +141,8 @@ public class KafkaMessageService extends AbstractMessageService {
 	protected Map<Integer, TopicPartition> initConsumer(final MessageFilter filter, final KafkaConsumer<Object, Object> consumer) {
 		final Map<Integer, TopicPartition> partitions = new HashMap<>();
 		// get all partitions for the topic
-		for (final PartitionInfo partition : consumer.partitionsFor(filter.getTopic())) {
-			final TopicPartition tp = new TopicPartition(filter.getTopic(), partition.partition());
+		for (final PartitionInfo partition : consumer.partitionsFor(filter.topic())) {
+			final TopicPartition tp = new TopicPartition(filter.topic(), partition.partition());
 			partitions.put(partition.partition(), tp);
 		}
 		consumer.assign(partitions.values());
@@ -148,15 +150,15 @@ public class KafkaMessageService extends AbstractMessageService {
 	}
 
 	private static void positionConsumer(final Map<Integer, TopicPartition> partitions, final MessageFilter filter, final KafkaConsumer<Object, Object> consumer, final Map<Integer, Long> partitionOffsets) {
-		if (filter.getFrom() == null) {
+		final Optional<Long> out = filter.from().map(t -> t.atOffset(ZoneOffset.UTC)).map(OffsetDateTime::toInstant).map(Instant::toEpochMilli);
+		if (!out.isPresent()) {
 			// no start time, position to the beginning
 			consumer.seekToBeginning(partitions.values());
 		} else {
 			// position to time offsets
 			final Map<TopicPartition, Long> query = new HashMap<>();
-			final long out = Date.from(filter.getFrom().atZone(ZoneId.of("UTC")).toInstant()).getTime();
 			for (final TopicPartition topicPartition : partitions.values()) {
-				query.put(topicPartition, out);
+				query.put(topicPartition, out.get());
 			}
 			final Map<TopicPartition, OffsetAndTimestamp> result = consumer.offsetsForTimes(query);
 			result.entrySet().stream().forEach(entry -> {
@@ -223,8 +225,8 @@ public class KafkaMessageService extends AbstractMessageService {
 	public void exportMessages(final String connectionId, final OutputStream bos, final MessageFilter filter) throws IOException {
 		final SimpleDateFormat sf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 		final Properties props = getProperties(connectionId);
-		props.put("key.deserializer", getKeyDeserializer(filter.getKeyFormat()));
-		props.put("value.deserializer", getMessageDeserializer(filter.getMessageFormat()));
+		props.put("key.deserializer", getKeyDeserializer(filter.keyFormat()));
+		props.put("value.deserializer", getMessageDeserializer(filter.messageFormat()));
 		props.put("auto.offset.reset", "earliest");
 
 		final long stopTime = System.currentTimeMillis();
@@ -244,7 +246,7 @@ public class KafkaMessageService extends AbstractMessageService {
 					if (consumerRecord.value() != null) {
 						stringValue = consumerRecord.value().toString();
 					}
-					if ((!filter.getKey().isEmpty() && !filter.getKey().equals(stringKey)) || ((!filter.getValuePattern().isEmpty() && !stringValue.contains(filter.getValuePattern())))) {
+					if ((!filter.key().isEmpty() && !filter.key().equals(stringKey)) || ((!filter.valuePattern().isEmpty() && !stringValue.contains(filter.valuePattern())))) {
 						continue;
 					}
 					currentTime = consumerRecord.timestamp();

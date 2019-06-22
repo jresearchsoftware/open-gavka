@@ -3,8 +3,8 @@ package org.jresearch.gavka.web;
 import java.util.List;
 
 import org.jresearch.commons.gwt.server.tool.ServerDates;
-import org.jresearch.commons.gwt.shared.model.time.GwtLocalDateTimeModel;
 import org.jresearch.gavka.domain.Connection;
+import org.jresearch.gavka.domain.ImmutableMessageFilter;
 import org.jresearch.gavka.domain.KeyFormat;
 import org.jresearch.gavka.domain.MessageFilter;
 import org.jresearch.gavka.domain.MessageFormat;
@@ -43,36 +43,45 @@ public class GavkaController implements GavkaMessageService {
 	public MessagePortion get(@RequestBody final RequestMessagesParameters parameters) {
 		final MessageParameters messageParameters = parameters.getMessageParameters();
 		final PagingParameters pagingParameters = parameters.getPagingParameters();
-		return messageService.getMessages(messageParameters.getConnection(), pagingParameters, toMessageFilter(messageParameters));
+		return messageService.getMessages(messageParameters.connection(), pagingParameters, toMessageFilter(messageParameters));
 	}
 
+	@SuppressWarnings("null")
 	private static MessageFilter toMessageFilter(final MessageParameters parameters) {
-		final MessageFilter result = new MessageFilter();
-		final GwtLocalDateTimeModel gwtFrom = parameters.getFrom();
-		result.setFrom(gwtFrom == null ? null : ServerDates.localDateTime(gwtFrom.getDate(), gwtFrom.getTime()));
-		result.setKey(parameters.getKey());
-		result.setKeyFormat(parameters.getKeyFormat());
-		result.setMessageFormat(parameters.getMessageFormat());
-		result.setTopic(parameters.getTopic());
-		return result;
-
+		return ImmutableMessageFilter
+				.builder()
+				.from(parameters.from().map(f -> ServerDates.localDateTime(f.getDate(), f.getTime())))
+				.key(parameters.key())
+				.keyFormat(parameters.keyFormat())
+				.messageFormat(parameters.messageFormat())
+				.topic(parameters.topic())
+				.valuePattern(parameters.valuePattern())
+				.build();
 	}
 
 	@Override
 	@GetMapping(M_R_TOPICS)
-	public List<String> topics(@PathVariable final String connectionId) { return messageService.getMessageTopics(connectionId); }
+	public List<String> topics(@PathVariable final String connectionId) {
+		return messageService.getMessageTopics(connectionId);
+	}
 
 	@Override
 	@GetMapping(M_R_KEY_FORMATS)
-	public List<KeyFormat> keyFormats(@PathVariable final String connectionId) { return ImmutableList.copyOf(KeyFormat.values()); }
+	public List<KeyFormat> keyFormats(@PathVariable final String connectionId) {
+		return ImmutableList.copyOf(KeyFormat.values());
+	}
 
 	@Override
 	@GetMapping(M_R_MESSAGE_FORMATS)
-	public List<MessageFormat> messageFormats(@PathVariable final String connectionId) { return ImmutableList.copyOf(MessageFormat.values()); }
+	public List<MessageFormat> messageFormats(@PathVariable final String connectionId) {
+		return ImmutableList.copyOf(MessageFormat.values());
+	}
 
 	@Override
 	@GetMapping(M_R_CONNECTIONS)
-	public List<ConnectionLabel> connections() { return StreamEx.of(connectionService.connections()).map(GavkaController::map).toList(); }
+	public List<ConnectionLabel> connections() {
+		return StreamEx.of(connectionService.connections()).map(GavkaController::map).toList();
+	}
 
 	private static ConnectionLabel map(final Connection conn) {
 		return new ImmutableConnectionLabel.Builder().id(conn.getId()).label(conn.getLabel()).build();
