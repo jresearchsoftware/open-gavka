@@ -1,10 +1,10 @@
 package org.jresearch.gavka.srv;
 
-public class MessageRetreivalException extends Exception{
+public class MessageRetrievalException extends Exception{
 
 	private static final long serialVersionUID = 799365790285599186L;
 
-	public MessageRetreivalException(String message, Throwable cause) {
+	public MessageRetrievalException(String message, Throwable cause) {
 		super(message, cause);
 	}
 
