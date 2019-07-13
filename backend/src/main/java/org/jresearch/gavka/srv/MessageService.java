@@ -11,11 +11,11 @@ import org.jresearch.gavka.rest.api.PagingParameters;
 
 public interface MessageService {
 
-	MessagePortion getMessages(String connectionId, PagingParameters pagingParameters, MessageFilter messageFilter) throws MessageRetreivalException;
+	MessagePortion getMessages(String connectionId, PagingParameters pagingParameters, MessageFilter messageFilter) throws MessageRetrievalException;
 
 	List<String> getMessageTopics(String connectionId);
 
-	void exportMessages(String connectionId, OutputStream bos, MessageFilter filter) throws MessageRetreivalException,IOException;
+	void exportMessages(String connectionId, OutputStream bos, MessageFilter filter) throws MessageRetrievalException,IOException;
 
 	TopicInfo getTopic(String connectionId, String topicName);
 

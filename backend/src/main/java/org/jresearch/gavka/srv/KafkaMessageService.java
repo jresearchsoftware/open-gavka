@@ -65,7 +65,7 @@ public class KafkaMessageService extends AbstractMessageService {
 
 	@Override
 	@SuppressWarnings({ "null" })
-	public MessagePortion getMessages(final String connectionId, final PagingParameters pagingParameters, final MessageFilter filter) throws MessageRetreivalException{
+	public MessagePortion getMessages(final String connectionId, final PagingParameters pagingParameters, final MessageFilter filter) throws MessageRetrievalException{
 		final Properties props = getProperties(connectionId);
 
 		props.put("key.deserializer", getKeyDeserializer(filter.keyFormat()));
@@ -135,7 +135,7 @@ public class KafkaMessageService extends AbstractMessageService {
 			return new MessagePortion(po, messages);
 		} catch (final Exception e) {
 			LOGGER.error("Exception reading records", e);
-			throw new MessageRetreivalException("Exception getting records", e);
+			throw new MessageRetrievalException("Exception getting records", e);
 		}
 	}
 
@@ -223,7 +223,7 @@ public class KafkaMessageService extends AbstractMessageService {
 	}
 
 	@Override
-	public void exportMessages(final String connectionId, final OutputStream bos, final MessageFilter filter) throws MessageRetreivalException, IOException {
+	public void exportMessages(final String connectionId, final OutputStream bos, final MessageFilter filter) throws MessageRetrievalException, IOException {
 		final SimpleDateFormat sf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 		final Properties props = getProperties(connectionId);
 		props.put("key.deserializer", getKeyDeserializer(filter.keyFormat()));
