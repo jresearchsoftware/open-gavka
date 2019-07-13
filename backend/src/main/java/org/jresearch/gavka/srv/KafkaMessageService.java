@@ -18,6 +18,7 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.kafka.clients.admin.AdminClient;
@@ -265,7 +266,7 @@ public class KafkaMessageService extends AbstractMessageService {
 	}
 
 	@Override
-	public TopicInfo getTopic(final String connectionId, final String topicName) {
+	public TopicInfo getTopic(final String connectionId, final String topicName) throws ConsumerRetrievalException{
 		final TopicInfo ti = new TopicInfo();
 		ti.setName(topicName);
 
@@ -284,7 +285,7 @@ public class KafkaMessageService extends AbstractMessageService {
 			final List<ConsumerGroupForTopic> cgf = new LinkedList<>();
 			final List<String> groupIds = kafkaClient.listConsumerGroups().all().get().stream().map(s -> s.groupId())
 					.collect(Collectors.toList());
-			final Map<String, ConsumerGroupDescription> groups = kafkaClient.describeConsumerGroups(groupIds).all().get();
+			final Map<String, ConsumerGroupDescription> groups = kafkaClient.describeConsumerGroups(groupIds).all().get(20, TimeUnit.SECONDS);
 			for (final String groupId : groupIds) {
 				final ConsumerGroupDescription descr = groups.get(groupId);
 				final Optional<TopicPartition> tp = descr.members().stream().map(s -> s.assignment().topicPartitions())
@@ -315,6 +316,7 @@ public class KafkaMessageService extends AbstractMessageService {
 
 		} catch (final Exception e) {
 			LOGGER.error("Exception getting consumer groups", e);
+			throw new ConsumerRetrievalException("Exception getting consumer groups",e);
 		}
 		return ti;
 	}

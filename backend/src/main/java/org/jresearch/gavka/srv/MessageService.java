@@ -17,6 +17,6 @@ public interface MessageService {
 
 	void exportMessages(String connectionId, OutputStream bos, MessageFilter filter) throws MessageRetrievalException,IOException;
 
-	TopicInfo getTopic(String connectionId, String topicName);
+	TopicInfo getTopic(String connectionId, String topicName) throws ConsumerRetrievalException;
 
 }
