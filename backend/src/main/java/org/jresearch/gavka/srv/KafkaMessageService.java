@@ -3,6 +3,7 @@ package org.jresearch.gavka.srv;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -64,7 +65,7 @@ public class KafkaMessageService extends AbstractMessageService {
 
 	@Override
 	@SuppressWarnings({ "null" })
-	public MessagePortion getMessages(final String connectionId, final PagingParameters pagingParameters, final MessageFilter filter) {
+	public MessagePortion getMessages(final String connectionId, final PagingParameters pagingParameters, final MessageFilter filter) throws MessageRetreivalException{
 		final Properties props = getProperties(connectionId);
 
 		props.put("key.deserializer", getKeyDeserializer(filter.keyFormat()));
@@ -94,7 +95,7 @@ public class KafkaMessageService extends AbstractMessageService {
 			}
 			final List<Message> messages = new ArrayList<>();
 
-			ConsumerRecords<Object, Object> records = consumer.poll(1000);
+			ConsumerRecords<Object, Object> records = consumer.poll(Duration.ofMillis(1000));
 			final int pagesSize = pagingParameters.getAmount();
 			while (messages.size() < pagesSize && !records.isEmpty()) {
 				LOGGER.debug("Getting {} records ", records.count());
@@ -121,7 +122,7 @@ public class KafkaMessageService extends AbstractMessageService {
 							consumerRecord.partition(), consumerRecord.timestamp()));
 					partitionOffsets.put(consumerRecord.partition(), consumerRecord.offset() + 1);
 				}
-				records = consumer.poll(1000);
+				records = consumer.poll(Duration.ofMillis(1000));
 			}
 			final List<PartitionOffset> po = new ArrayList<>();
 			for (final Integer partitionOffset : partitionOffsets.keySet()) {
@@ -134,7 +135,7 @@ public class KafkaMessageService extends AbstractMessageService {
 			return new MessagePortion(po, messages);
 		} catch (final Exception e) {
 			LOGGER.error("Exception reading records", e);
-			return null;
+			throw new MessageRetreivalException("Exception getting records", e);
 		}
 	}
 
@@ -222,7 +223,7 @@ public class KafkaMessageService extends AbstractMessageService {
 	}
 
 	@Override
-	public void exportMessages(final String connectionId, final OutputStream bos, final MessageFilter filter) throws IOException {
+	public void exportMessages(final String connectionId, final OutputStream bos, final MessageFilter filter) throws MessageRetreivalException, IOException {
 		final SimpleDateFormat sf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 		final Properties props = getProperties(connectionId);
 		props.put("key.deserializer", getKeyDeserializer(filter.keyFormat()));
@@ -235,7 +236,7 @@ public class KafkaMessageService extends AbstractMessageService {
 			final Map<Integer, TopicPartition> partitions = initConsumer(filter, consumer);
 
 			positionConsumer(partitions, filter, consumer, new HashMap<>());
-			ConsumerRecords<Object, Object> records = consumer.poll(1000);
+			ConsumerRecords<Object, Object> records = consumer.poll(Duration.ofMillis(1000));
 			while (!records.isEmpty()) {
 				for (final ConsumerRecord<Object, Object> consumerRecord : records) {
 					String stringKey = "";
@@ -257,7 +258,7 @@ public class KafkaMessageService extends AbstractMessageService {
 				if (currentTime >= stopTime) {
 					break;
 				}
-				records = consumer.poll(1000);
+				records = consumer.poll(Duration.ofMillis(1000));
 			}
 
 		}
