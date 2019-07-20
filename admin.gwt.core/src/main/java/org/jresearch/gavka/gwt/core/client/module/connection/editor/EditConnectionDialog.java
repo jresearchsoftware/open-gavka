@@ -18,6 +18,8 @@ import org.dominokit.domino.ui.grid.Row;
 import org.dominokit.domino.ui.icons.Icons;
 import org.dominokit.domino.ui.modals.ModalDialog;
 import org.dominokit.domino.ui.style.Color;
+import org.dominokit.domino.ui.style.Style;
+import org.dominokit.domino.ui.style.Unit;
 import org.dominokit.domino.ui.tag.TagsInput;
 import org.jboss.gwt.elemento.core.builder.HtmlContentBuilder;
 import org.jresearch.commons.gwt.client.mvc.event.Bus;
@@ -30,6 +32,7 @@ import com.google.gwt.editor.client.SimpleBeanEditorDriver;
 
 import elemental2.dom.Event;
 import elemental2.dom.HTMLDivElement;
+import elemental2.dom.HTMLElement;
 
 public class EditConnectionDialog implements Editor<ModifiableConnection>, PropertySelectHandler {
 
@@ -65,7 +68,7 @@ public class EditConnectionDialog implements Editor<ModifiableConnection>, Prope
 
 	private final HtmlContentBuilder<HTMLDivElement> colorMark = div().style("width: 2rem; height: 2rem;");
 
-	private final Button propertyAdd;
+//	private final Button propertyAdd;
 
 	@Inject
 	public EditConnectionDialog(@Nonnull final Bus bus) {
@@ -102,7 +105,7 @@ public class EditConnectionDialog implements Editor<ModifiableConnection>, Prope
 				.setRightAddon(colorMark)
 				.addChangeHandler(this::onColor);
 
-		bootstrapServersString = TextBox.create("Bootstrap servers")
+		bootstrapServersString = TextBox.create("Bootstrap servers (comma separated list)")
 				.setRequired(true)
 				.setAutoValidation(true)
 				.groupBy(fieldsGrouping)
@@ -139,7 +142,7 @@ public class EditConnectionDialog implements Editor<ModifiableConnection>, Prope
 				.setPlaceholder("New property value")
 				.floating()
 				.setLeftAddon(Icons.ALL.treasure_chest_mdi());
-		propertyAdd = Button.createSuccess(Icons.ALL.plus_mdi()).circle().addClickListener(this::onPropertyAdd);
+		final Style<HTMLElement, Button> propertyAdd = Button.createSuccess(Icons.ALL.plus_mdi()).circle().addClickListener(this::onPropertyAdd).style().setMargin(Unit.px.of(5));
 
 		properties = new PropertiesEditor(propertyTags);
 

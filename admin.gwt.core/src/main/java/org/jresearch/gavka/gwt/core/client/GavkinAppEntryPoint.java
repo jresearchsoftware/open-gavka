@@ -7,7 +7,7 @@ import org.jresearch.gavka.gwt.core.client.gin.GavkaGinjector;
 
 import com.google.gwt.core.shared.GWT;
 
-public class GavminAppEntryPoint extends AbstractModuleEntryPoint {
+public class GavkinAppEntryPoint extends AbstractModuleEntryPoint {
 
 	@Override
 	protected AbstractModule getModule() {

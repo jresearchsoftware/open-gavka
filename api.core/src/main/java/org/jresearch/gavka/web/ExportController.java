@@ -3,11 +3,13 @@ package org.jresearch.gavka.web;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import org.jresearch.commons.gwt.server.rest.BaseSpringController;
 import org.jresearch.gavka.domain.ImmutableMessageFilter;
 import org.jresearch.gavka.domain.KeyFormat;
 import org.jresearch.gavka.domain.MessageFilter;
 import org.jresearch.gavka.domain.MessageFormat;
 import org.jresearch.gavka.rest.api.GavkaMessageService;
+import org.jresearch.gavka.srv.MessageRetrievalException;
 import org.jresearch.gavka.srv.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -23,7 +25,9 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 
 @Controller
 @RequestMapping(GavkaMessageService.SRV_PATH)
-public class ExportController {
+public class ExportController extends BaseSpringController {
+
+	public static final String DISPOSITION = ContentDisposition.builder("attachment").filename("gavka.export").build().toString();
 
 	@Autowired
 	private MessageService messageService;
@@ -32,12 +36,17 @@ public class ExportController {
 	@PostMapping(GavkaMessageService.M_R_EXPORT)
 	public ResponseEntity<StreamingResponseBody> export(@RequestParam final String connectionId, @RequestParam final Optional<String> valuePattern, @RequestParam final Optional<String> topic, @RequestParam final Optional<String> key, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") final Optional<LocalDateTime> from, @RequestParam final Optional<KeyFormat> keyFormat, @RequestParam final Optional<MessageFormat> messageFormat) {
 		final MessageFilter filter = toMessageFilter(valuePattern, topic, key, from, keyFormat, messageFormat);
-		final ContentDisposition disposition = ContentDisposition.builder("attachment").filename("gavka.export").build();
 		return ResponseEntity
 				.ok()
 				.contentType(MediaType.APPLICATION_OCTET_STREAM)
-				.header(HttpHeaders.CONTENT_DISPOSITION, disposition.toString())
-				.body(out -> messageService.exportMessages(connectionId, out, filter));
+				.header(HttpHeaders.CONTENT_DISPOSITION, DISPOSITION)
+				.body(out -> {
+					try {
+						messageService.exportMessages(connectionId, out, filter);
+					} catch (final MessageRetrievalException e) {
+						throw new RuntimeException(e);
+					}
+				});
 	}
 
 	@SuppressWarnings({ "null", "nls" })

@@ -5,6 +5,7 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 
+import org.jresearch.commons.gwt.server.rest.BaseSpringController;
 import org.jresearch.gavka.domain.ConsumerGroupForTopic;
 import org.jresearch.gavka.domain.PartitionInfoForConsumerGroup;
 import org.jresearch.gavka.domain.PartitionOffsetInfo;
@@ -16,6 +17,7 @@ import org.jresearch.gavka.rest.data.ImmutablePartitionInfo;
 import org.jresearch.gavka.rest.data.ImmutableTopicRestInfo;
 import org.jresearch.gavka.rest.data.PartitionInfo;
 import org.jresearch.gavka.rest.data.TopicRestInfo;
+import org.jresearch.gavka.srv.ConsumerRetrievalException;
 import org.jresearch.gavka.srv.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,7 +29,7 @@ import one.util.streamex.StreamEx;
 
 @RestController
 @RequestMapping(GavkaConsumerService.SRV_PATH)
-public class GavkaConsumerController implements GavkaConsumerService {
+public class GavkaConsumerController extends BaseSpringController implements GavkaConsumerService {
 
 	@Autowired
 	private MessageService messageService;
@@ -35,8 +37,11 @@ public class GavkaConsumerController implements GavkaConsumerService {
 	@Override
 	@GetMapping(M_R_GET)
 	public TopicRestInfo get(@PathVariable final String connectionId, @PathVariable final String topic) {
-		final TopicInfo info = messageService.getTopic(connectionId, topic);
-		return toRest(info);
+		try {
+			return toRest(messageService.getTopic(connectionId, topic));
+		} catch (final ConsumerRetrievalException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@SuppressWarnings("null")

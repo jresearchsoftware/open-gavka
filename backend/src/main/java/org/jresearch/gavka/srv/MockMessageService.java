@@ -41,10 +41,14 @@ public class MockMessageService extends AbstractMessageService {
 	}
 
 	@Override
-	public void exportMessages(final String connectionId, final OutputStream bos, final MessageFilter filter) throws IOException {
-		final List<Message> messages = Messages.getMessages();
-		for (final Message message : messages) {
-			bos.write(message.toString().getBytes());
+	public void exportMessages(final String connectionId, final OutputStream bos, final MessageFilter filter) throws MessageRetrievalException {
+		try {
+			final List<Message> messages = Messages.getMessages();
+			for (final Message message : messages) {
+				bos.write(message.toString().getBytes());
+			}
+		} catch (final IOException e) {
+			throw new MessageRetrievalException(e.getMessage(), e);
 		}
 	}
 

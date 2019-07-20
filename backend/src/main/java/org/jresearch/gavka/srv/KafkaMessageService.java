@@ -66,7 +66,7 @@ public class KafkaMessageService extends AbstractMessageService {
 
 	@Override
 	@SuppressWarnings({ "null" })
-	public MessagePortion getMessages(final String connectionId, final PagingParameters pagingParameters, final MessageFilter filter) throws MessageRetrievalException{
+	public MessagePortion getMessages(final String connectionId, final PagingParameters pagingParameters, final MessageFilter filter) throws MessageRetrievalException {
 		final Properties props = getProperties(connectionId);
 
 		props.put("key.deserializer", getKeyDeserializer(filter.keyFormat()));
@@ -224,49 +224,52 @@ public class KafkaMessageService extends AbstractMessageService {
 	}
 
 	@Override
-	public void exportMessages(final String connectionId, final OutputStream bos, final MessageFilter filter) throws MessageRetrievalException, IOException {
-		final SimpleDateFormat sf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
-		final Properties props = getProperties(connectionId);
-		props.put("key.deserializer", getKeyDeserializer(filter.keyFormat()));
-		props.put("value.deserializer", getMessageDeserializer(filter.messageFormat()));
-		props.put("auto.offset.reset", "earliest");
+	public void exportMessages(final String connectionId, final OutputStream bos, final MessageFilter filter) throws MessageRetrievalException {
+		try {
+			final SimpleDateFormat sf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+			final Properties props = getProperties(connectionId);
+			props.put("key.deserializer", getKeyDeserializer(filter.keyFormat()));
+			props.put("value.deserializer", getMessageDeserializer(filter.messageFormat()));
+			props.put("auto.offset.reset", "earliest");
 
-		final long stopTime = System.currentTimeMillis();
-		long currentTime = 0;
-		try (final KafkaConsumer<Object, Object> consumer = new KafkaConsumer<>(props)) {
-			final Map<Integer, TopicPartition> partitions = initConsumer(filter, consumer);
+			final long stopTime = System.currentTimeMillis();
+			long currentTime = 0;
+			try (final KafkaConsumer<Object, Object> consumer = new KafkaConsumer<>(props)) {
+				final Map<Integer, TopicPartition> partitions = initConsumer(filter, consumer);
 
-			positionConsumer(partitions, filter, consumer, new HashMap<>());
-			ConsumerRecords<Object, Object> records = consumer.poll(Duration.ofMillis(1000));
-			while (!records.isEmpty()) {
-				for (final ConsumerRecord<Object, Object> consumerRecord : records) {
-					String stringKey = "";
-					if (consumerRecord.key() != null) {
-						stringKey = consumerRecord.key().toString();
+				positionConsumer(partitions, filter, consumer, new HashMap<>());
+				ConsumerRecords<Object, Object> records = consumer.poll(Duration.ofMillis(1000));
+				while (!records.isEmpty()) {
+					for (final ConsumerRecord<Object, Object> consumerRecord : records) {
+						String stringKey = "";
+						if (consumerRecord.key() != null) {
+							stringKey = consumerRecord.key().toString();
+						}
+						String stringValue = "";
+						if (consumerRecord.value() != null) {
+							stringValue = consumerRecord.value().toString();
+						}
+						if ((!filter.key().isEmpty() && !filter.key().equals(stringKey)) || ((!filter.valuePattern().isEmpty() && !stringValue.contains(filter.valuePattern())))) {
+							continue;
+						}
+						currentTime = consumerRecord.timestamp();
+						bos.write(getStringForExport(new Message(stringKey, stringValue, consumerRecord.offset(), consumerRecord.partition(), consumerRecord.timestamp()), sf).getBytes());
 					}
-					String stringValue = "";
-					if (consumerRecord.value() != null) {
-						stringValue = consumerRecord.value().toString();
+					bos.flush();
+					if (currentTime >= stopTime) {
+						break;
 					}
-					if ((!filter.key().isEmpty() && !filter.key().equals(stringKey)) || ((!filter.valuePattern().isEmpty() && !stringValue.contains(filter.valuePattern())))) {
-						continue;
-					}
-					currentTime = consumerRecord.timestamp();
-					bos.write(getStringForExport(new Message(stringKey, stringValue, consumerRecord.offset(),
-							consumerRecord.partition(), consumerRecord.timestamp()), sf).getBytes());
+					records = consumer.poll(Duration.ofMillis(1000));
 				}
-				bos.flush();
-				if (currentTime >= stopTime) {
-					break;
-				}
-				records = consumer.poll(Duration.ofMillis(1000));
+
 			}
-
+		} catch (final IOException e) {
+			throw new MessageRetrievalException(e.getMessage(), e);
 		}
 	}
 
 	@Override
-	public TopicInfo getTopic(final String connectionId, final String topicName) throws ConsumerRetrievalException{
+	public TopicInfo getTopic(final String connectionId, final String topicName) throws ConsumerRetrievalException {
 		final TopicInfo ti = new TopicInfo();
 		ti.setName(topicName);
 
@@ -316,7 +319,7 @@ public class KafkaMessageService extends AbstractMessageService {
 
 		} catch (final Exception e) {
 			LOGGER.error("Exception getting consumer groups", e);
-			throw new ConsumerRetrievalException("Exception getting consumer groups",e);
+			throw new ConsumerRetrievalException("Exception getting consumer groups", e);
 		}
 		return ti;
 	}

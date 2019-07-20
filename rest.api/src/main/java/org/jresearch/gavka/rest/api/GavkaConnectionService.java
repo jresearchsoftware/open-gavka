@@ -2,6 +2,8 @@ package org.jresearch.gavka.rest.api;
 
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 import org.jresearch.gavka.domain.Connection;
 
 public interface GavkaConnectionService extends GavkaBaseService {
@@ -15,9 +17,12 @@ public interface GavkaConnectionService extends GavkaBaseService {
 	/** {@link #remove(String)} method id */
 	String M_P_REMOVE = "/remove"; //$NON-NLS-1$
 
+	@Nonnull
 	List<Connection> get();
 
-	Connection save(Connection connection);
+	@Nonnull
+	Connection save(@Nonnull Connection connection);
 
-	boolean remove(String connectionId);
+	boolean remove(@Nonnull String connectionId);
+
 }

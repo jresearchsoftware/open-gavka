@@ -7,6 +7,7 @@ import java.util.Properties;
 import javax.annotation.Nonnull;
 
 import org.jresearch.gavka.domain.Connection;
+import org.jresearch.gavka.domain.ConnectionList;
 
 public interface ConnectionService {
 
@@ -27,5 +28,21 @@ public interface ConnectionService {
 
 	@Nonnull
 	Optional<Properties> getKafkaConnectionProperties(@Nonnull String connectionId, @Nonnull KafkaVersion ver);
+
+	/**
+	 * Imports connections from given list<br>
+	 * Connections will be added to existing. Skip connections exist in DB already
+	 *
+	 * @param connections to import
+	 */
+	void importConnections(@Nonnull ConnectionList connections);
+
+	/**
+	 * Export all connection.
+	 *
+	 * @return
+	 */
+	@Nonnull
+	ConnectionList exportConnections();
 
 }

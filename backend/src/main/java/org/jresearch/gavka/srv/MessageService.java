@@ -1,6 +1,5 @@
 package org.jresearch.gavka.srv;
 
-import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
@@ -15,7 +14,7 @@ public interface MessageService {
 
 	List<String> getMessageTopics(String connectionId);
 
-	void exportMessages(String connectionId, OutputStream bos, MessageFilter filter) throws MessageRetrievalException,IOException;
+	void exportMessages(String connectionId, OutputStream bos, MessageFilter filter) throws MessageRetrievalException;
 
 	TopicInfo getTopic(String connectionId, String topicName) throws ConsumerRetrievalException;
 

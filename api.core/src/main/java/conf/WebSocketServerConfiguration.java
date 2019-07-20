@@ -3,6 +3,7 @@ package conf;
 import java.util.concurrent.Executors;
 
 import org.jresearch.gavka.web.ws.ConsumerWebSocketHandler;
+import org.jresearch.gavka.web.ws.ErrorWebSocketHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,11 +19,15 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 public class WebSocketServerConfiguration implements WebSocketConfigurer {
 
 	@Autowired
-	protected ConsumerWebSocketHandler consumerWebSocketHandler;
+	private ConsumerWebSocketHandler consumerWebSocketHandler;
+
+	@Autowired
+	private ErrorWebSocketHandler errorWebSocketHandler;
 
 	@Override
 	public void registerWebSocketHandlers(final WebSocketHandlerRegistry registry) {
 		registry.addHandler(consumerWebSocketHandler, "/consumer").setAllowedOrigins("*");
+		registry.addHandler(errorWebSocketHandler, "/error").setAllowedOrigins("*");
 	}
 
 	@Bean

@@ -2,6 +2,7 @@ package org.jresearch.gavka.web;
 
 import java.util.List;
 
+import org.jresearch.commons.gwt.server.rest.BaseSpringController;
 import org.jresearch.commons.gwt.server.tool.ServerDates;
 import org.jresearch.gavka.domain.Connection;
 import org.jresearch.gavka.domain.ImmutableMessageFilter;
@@ -16,6 +17,7 @@ import org.jresearch.gavka.rest.api.MessagePortion;
 import org.jresearch.gavka.rest.api.PagingParameters;
 import org.jresearch.gavka.rest.api.RequestMessagesParameters;
 import org.jresearch.gavka.srv.ConnectionService;
+import org.jresearch.gavka.srv.MessageRetrievalException;
 import org.jresearch.gavka.srv.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,7 +33,7 @@ import one.util.streamex.StreamEx;
 
 @RestController
 @RequestMapping(GavkaMessageService.SRV_PATH)
-public class GavkaController implements GavkaMessageService {
+public class GavkaController extends BaseSpringController implements GavkaMessageService {
 
 	@Autowired
 	private ConnectionService connectionService;
@@ -41,9 +43,13 @@ public class GavkaController implements GavkaMessageService {
 	@Override
 	@PostMapping(M_R_GET)
 	public MessagePortion get(@RequestBody final RequestMessagesParameters parameters) {
-		final MessageParameters messageParameters = parameters.getMessageParameters();
-		final PagingParameters pagingParameters = parameters.getPagingParameters();
-		return messageService.getMessages(messageParameters.connection(), pagingParameters, toMessageFilter(messageParameters));
+		try {
+			final MessageParameters messageParameters = parameters.getMessageParameters();
+			final PagingParameters pagingParameters = parameters.getPagingParameters();
+			return messageService.getMessages(messageParameters.connection(), pagingParameters, toMessageFilter(messageParameters));
+		} catch (final MessageRetrievalException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@SuppressWarnings("null")
