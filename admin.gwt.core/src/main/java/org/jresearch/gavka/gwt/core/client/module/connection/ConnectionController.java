@@ -65,6 +65,8 @@ public class ConnectionController extends AbstractModuleController<ConnectionVie
 		gavkaAppController.addSubmodule(ID, connection.getId(), connection.getLabel());
 	}
 
-	public void refreshConnections() { REST.withCallback(new GwtMethodCallback<>(bus, this::onLoad)).call(srv).get(); }
+	public void refreshConnections() {
+		REST.withCallback(new GwtMethodCallback<>(bus, this::onLoad)).call(srv).get();
+	}
 
 }

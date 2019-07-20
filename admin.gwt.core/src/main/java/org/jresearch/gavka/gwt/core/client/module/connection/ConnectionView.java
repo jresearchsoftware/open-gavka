@@ -10,16 +10,19 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.dominokit.domino.ui.button.Button;
+import org.dominokit.domino.ui.cards.Card;
 import org.dominokit.domino.ui.grid.Column;
 import org.dominokit.domino.ui.grid.Row;
 import org.dominokit.domino.ui.grid.Row_12;
 import org.dominokit.domino.ui.header.BlockHeader;
-import org.dominokit.domino.ui.icons.BaseIcon;
 import org.dominokit.domino.ui.icons.Icons;
-import org.dominokit.domino.ui.infoboxes.InfoBox;
+import org.dominokit.domino.ui.icons.MdiIcon;
+import org.dominokit.domino.ui.modals.ModalDialog;
 import org.dominokit.domino.ui.style.Color;
+import org.dominokit.domino.ui.utils.TextNode;
 import org.fusesource.restygwt.client.REST;
 import org.jboss.gwt.elemento.core.Elements;
+import org.jboss.gwt.elemento.core.IsElement;
 import org.jresearch.commons.gwt.client.mvc.AbstractView;
 import org.jresearch.commons.gwt.client.mvc.GwtMethodCallback;
 import org.jresearch.commons.gwt.client.mvc.INotificator;
@@ -81,9 +84,21 @@ public class ConnectionView extends AbstractView<ConnectionController> {
 		edit(connection);
 	}
 
-	private void save(final ModifiableConnection connection) { REST.withCallback(new GwtMethodCallback<>(bus, this::load)).call(gavkaConnectionRestService).save(connection); }
+	private void save(@Nonnull final ModifiableConnection connection) {
+		REST.withCallback(new GwtMethodCallback<>(bus, this::load)).call(gavkaConnectionRestService).save(connection);
+	}
 
-	private void load(@SuppressWarnings("unused") final Connection added) { controller().refreshConnections(); }
+	private void load(@SuppressWarnings("unused") final Connection added) {
+		controller().refreshConnections();
+	}
+
+	private void remove(@Nonnull final Connection connection) {
+		REST.withCallback(new GwtMethodCallback<>(bus, this::onRemove)).call(gavkaConnectionRestService).remove(connection.getId());
+	}
+
+	private void onRemove(final Boolean removed) {
+		controller().refreshConnections();
+	}
 
 	void edit(final ModifiableConnection connection) {
 		conectionEditor.edit(connection);
@@ -123,18 +138,43 @@ public class ConnectionView extends AbstractView<ConnectionController> {
 		return result;
 	}
 
-	private Column toColumn(final Connection connection) { return Column
-			.span3()
-			.appendChild(toInfoBox(connection)); }
+	private Column toColumn(final Connection connection) {
+		return Column
+				.span3()
+				.appendChild(toBox(connection));
+	}
 
-	private InfoBox toInfoBox(final Connection connection) { return InfoBox.create(getIcon(connection), connection.getBootstrapServers().stream().findAny().orElse("No bootstrap servers"), connection.getLabel())
-			.setBackground(getColor(connection))
-			.setHoverEffect(InfoBox.HoverEffect.ZOOM)
-			.addClickListener(e -> edit(ModifiableConnection.create().from(connection))); }
+	private IsElement<?> toBox(final Connection connection) {
+		return Card
+				.create(connection.getLabel(), connection.getBootstrapServers().stream().findAny().orElse("No bootstrap servers"))
+				.hide()
+				.setHeaderBackground(getColor(connection))
+				.addClickListener(e -> edit(ModifiableConnection.create().from(connection)))
+				.setHeaderLogo(getIcon(connection).size48())
+				.addHeaderAction(Icons.ALL.delete(), e -> remove(e, connection));
+	}
 
-	private static BaseIcon<?> getIcon(final Connection connection) { return Icons.of(connection.getIcon()); }
+	private void remove(final Event evt, final Connection connection) {
+		evt.stopPropagation();
+		final ModalDialog modal = ModalDialog.create("Remove connection");
+		modal.setAutoClose(true)
+				.appendChild(TextNode.of("Are you sure to remove the connection?"))
+				.appendFooterChild(Button.create("YES").linkify().addClickListener(e -> {
+					modal.close();
+					remove(connection);
+				}))
+				.appendFooterChild(Button.create("NO").linkify().addClickListener(e -> modal.close()))
+				.setModalColor(Color.ORANGE)
+				.open();
+	}
 
-	private static Color getColor(final Connection connection) { return Color.of(connection.getColor()); }
+	private static MdiIcon getIcon(final Connection connection) {
+		return MdiIcon.create(connection.getIcon());
+	}
+
+	private static Color getColor(final Connection connection) {
+		return Color.of(connection.getColor());
+	}
 
 	@Override
 	public HTMLElement getContent() { return element; }

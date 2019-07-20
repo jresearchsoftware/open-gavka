@@ -25,6 +25,7 @@ import org.jboss.gwt.elemento.core.builder.HtmlContentBuilder;
 import org.jresearch.commons.gwt.client.mvc.event.Bus;
 import org.jresearch.commons.gwt.client.widget.OptionalEditorWrapper;
 import org.jresearch.gavka.domain.ModifiableConnection;
+import org.jresearch.gavka.gwt.core.client.resource.GavkaRs;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.Editor;
@@ -61,15 +62,15 @@ public class EditConnectionDialog implements Editor<ModifiableConnection>, Prope
 	PropertiesEditor properties;
 
 	private Consumer<ModifiableConnection> onCreateHandler = c -> {
+		// nothing
 	};
 
 	private final FieldsGrouping fieldsGrouping = FieldsGrouping.create();
 	private ModifiableConnection connection;
 
-	private final HtmlContentBuilder<HTMLDivElement> colorMark = div().style("width: 2rem; height: 2rem;");
+	private final HtmlContentBuilder<HTMLDivElement> colorMark = div().style("width: 2rem; height: 2rem;"); //$NON-NLS-1$
 
-//	private final Button propertyAdd;
-
+	@SuppressWarnings({ "boxing", "null" })
 	@Inject
 	public EditConnectionDialog(@Nonnull final Bus bus) {
 
@@ -77,27 +78,27 @@ public class EditConnectionDialog implements Editor<ModifiableConnection>, Prope
 
 		id = TextBox.create()
 				.groupBy(fieldsGrouping)
-				.setPlaceholder("Connection id")
+				.setPlaceholder(GavkaRs.MSG.idPlaceholder())
 				.floating()
 				.setReadOnly(true)
 				.setLeftAddon(Icons.ALL.barcode_scan_mdi());
 
-		label = TextBox.create("Label")
+		label = TextBox.create(GavkaRs.MSG.labelField())
 				.setRequired(true)
 				.setAutoValidation(true)
 				.groupBy(fieldsGrouping)
-				.setPlaceholder("Connection label")
+				.setPlaceholder(GavkaRs.MSG.labelPlaceholder())
 				.floating()
 				.setLeftAddon(Icons.ALL.label_mdi());
 
-		icon = MdIconSelect.create("Icon")
+		icon = MdIconSelect.create(GavkaRs.MSG.iconField())
 				.setRequired(true)
 				.setAutoValidation(true)
 				.groupBy(fieldsGrouping)
 				.setLeftAddon(Icons.ALL.paw_mdi())
 				.addChangeHandler(this::onIcon);
 
-		color = MdColorSelect.create("Color")
+		color = MdColorSelect.create(GavkaRs.MSG.colorField())
 				.setRequired(true)
 				.setAutoValidation(true)
 				.groupBy(fieldsGrouping)
@@ -105,41 +106,41 @@ public class EditConnectionDialog implements Editor<ModifiableConnection>, Prope
 				.setRightAddon(colorMark)
 				.addChangeHandler(this::onColor);
 
-		bootstrapServersString = TextBox.create("Bootstrap servers (comma separated list)")
+		bootstrapServersString = TextBox.create(GavkaRs.MSG.bootstrapServersField())
 				.setRequired(true)
 				.setAutoValidation(true)
 				.groupBy(fieldsGrouping)
-				.setPlaceholder("hostnames or IP's separated by comma")
+				.setPlaceholder(GavkaRs.MSG.bootstrapServersPlaceholder())
 				.floating()
 				.setLeftAddon(Icons.ALL.bootstrap_mdi());
 		bootstrapServers = new StringsEditorWrapper(bootstrapServersString);
 
-		final TextBox schemaRegistryUrlBox = TextBox.create("Schema registry URL")
+		final TextBox schemaRegistryUrlBox = TextBox.create(GavkaRs.MSG.schemaRegistryUrlField())
 				.setRequired(false)
 				.setAutoValidation(true)
 				.groupBy(fieldsGrouping)
-				.setPlaceholder("hostname or IP of a schema registry")
+				.setPlaceholder(GavkaRs.MSG.schemaRegistryUrlPlaceholder())
 				.floating()
 				.setLeftAddon(Icons.ALL.registered_trademark_mdi());
 
 		schemaRegistryUrl = new OptionalEditorWrapper<>(schemaRegistryUrlBox);
 
-		propertyTags = PropertyInput.create("Custom properties", bus)
+		propertyTags = PropertyInput.create(GavkaRs.MSG.propertyTagsField(), bus)
 				.disableUserInput()
 				.groupBy(fieldsGrouping)
-				.setPlaceholder("Custom properties, use fields bellow to add")
+				.setPlaceholder(GavkaRs.MSG.propertyTagsPlaceholder())
 				.floating()
 				.setLeftAddon(Icons.ALL.settings_mdi());
-		propertyKey = TextBox.create("Key")
+		propertyKey = TextBox.create(GavkaRs.MSG.propertyKeyField())
 				.setAutoValidation(true)
 				.groupBy(fieldsGrouping)
-				.setPlaceholder("New property key")
+				.setPlaceholder(GavkaRs.MSG.propertyKeyPlaceholder())
 				.floating()
 				.setLeftAddon(Icons.ALL.key_mdi());
-		propertyValue = TextBox.create("Value")
+		propertyValue = TextBox.create(GavkaRs.MSG.propertyValueField())
 				.setAutoValidation(true)
 				.groupBy(fieldsGrouping)
-				.setPlaceholder("New property value")
+				.setPlaceholder(GavkaRs.MSG.propertyValuePlaceholder())
 				.floating()
 				.setLeftAddon(Icons.ALL.treasure_chest_mdi());
 		final Style<HTMLElement, Button> propertyAdd = Button.createSuccess(Icons.ALL.plus_mdi()).circle().addClickListener(this::onPropertyAdd).style().setMargin(Unit.px.of(5));
@@ -168,22 +169,23 @@ public class EditConnectionDialog implements Editor<ModifiableConnection>, Prope
 						.span1(column -> column.appendChild(propertyAdd)))
 				.appendFooterChild(Button.create(Icons.ALL.clear())
 						.linkify()
-						.setContent("CANCEL")
-						.styler(style -> style.setMinWidth("100px"))
+						.setContent(GavkaRs.MSG.buttonCancel().toUpperCase())
+						.styler(style -> style.setMinWidth(Unit.px.of(100)))
 						.addClickListener(this::onCancel))
 				.appendFooterChild(Button.createPrimary(Icons.ALL.save())
-						.setContent("SAVE")
-						.styler(style -> style.setMinWidth("100px"))
+						.setContent(GavkaRs.MSG.buttonSave().toUpperCase())
+						.styler(style -> style.setMinWidth(Unit.px.of(100)))
 						.addClickListener(evt -> onSave()));
 
 		driver.initialize(this);
 	}
 
-	private void onPropertyAdd(final Event evt) {
+	private void onPropertyAdd(@SuppressWarnings("unused") final Event evt) {
 		propertyKey.setRequired(true);
 		propertyValue.setRequired(true);
 		if (propertyKey.validate().isValid() & propertyValue.validate().isValid()) {
 			final List<Property> list = new ArrayList<>(propertyTags.getValue());
+			@SuppressWarnings("null")
 			final PropertyTuple newProp = PropertyTuple.of(propertyKey.getValue(), propertyValue.getValue());
 			final int i = list.indexOf(newProp);
 			if (i == -1) {
@@ -202,7 +204,7 @@ public class EditConnectionDialog implements Editor<ModifiableConnection>, Prope
 		}
 	}
 
-	private void onCancel(final Event evt) {
+	private void onCancel(@SuppressWarnings("unused") final Event evt) {
 		propertyKey.clear();
 		propertyValue.clear();
 		modalDialog.close();
@@ -212,8 +214,8 @@ public class EditConnectionDialog implements Editor<ModifiableConnection>, Prope
 		try {
 			colorMark.asElement().style.backgroundColor = Color.of(value).getHex();
 			color.clearInvalid();
-		} catch (final IllegalArgumentException e) {
-			icon.invalidate("Color doesn't exist");
+		} catch (@SuppressWarnings("unused") final IllegalArgumentException e) {
+			icon.invalidate(GavkaRs.MSG.invalidColor());
 		}
 	}
 
@@ -221,8 +223,8 @@ public class EditConnectionDialog implements Editor<ModifiableConnection>, Prope
 		try {
 			icon.setRightAddon(Icons.of(value));
 			icon.clearInvalid();
-		} catch (final IllegalArgumentException e) {
-			icon.invalidate("Icon doesn't exist");
+		} catch (@SuppressWarnings("unused") final IllegalArgumentException e) {
+			icon.invalidate(GavkaRs.MSG.invalidIcon());
 		}
 	}
 
@@ -243,16 +245,16 @@ public class EditConnectionDialog implements Editor<ModifiableConnection>, Prope
 
 	public ModalDialog getModalDialog() { return modalDialog; }
 
-	public void edit(final ModifiableConnection connection) {
-		driver.edit(connection);
+	public void edit(final ModifiableConnection conn) {
+		driver.edit(conn);
 		fieldsGrouping.clearInvalid();
-		this.connection = connection;
+		this.connection = conn;
 	}
 
 	public ModifiableConnection getConnection() { return this.connection; }
 
-	public EditConnectionDialog onSave(final Consumer<ModifiableConnection> onCreateHandler) {
-		this.onCreateHandler = onCreateHandler;
+	public EditConnectionDialog onSave(final Consumer<ModifiableConnection> handler) {
+		this.onCreateHandler = handler;
 		return this;
 	}
 
