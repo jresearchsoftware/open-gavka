@@ -12,10 +12,6 @@
 	<url>https://bitbucket.org/JRS/open-gavka</url>
 	<dependencies>
 		<dependency>
-			<groupId>org.slieb</groupId>
-			<artifactId>throwable-interfaces</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>com.fasterxml.jackson.dataformat</groupId>
 			<artifactId>jackson-dataformat-yaml</artifactId>
 		</dependency>
