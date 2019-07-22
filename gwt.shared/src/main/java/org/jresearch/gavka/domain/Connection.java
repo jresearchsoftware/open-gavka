@@ -1,7 +1,5 @@
 package org.jresearch.gavka.domain;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.immutables.value.Value;
@@ -14,24 +12,28 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 @Value.Style(get = { "get*", "is*" }, builder = "new", optionalAcceptNullable = true)
 //For GWT deserialization
 @JsonDeserialize(builder = ImmutableConnection.Builder.class)
-public interface Connection {
+public interface Connection extends ConnectionParameters {
 
 	@Value.Default
-	default String getId() { return ""; }
+	default String getId() {
+		return "";
+	}
 
 	@Value.Default
-	default String getLabel() { return ""; }
+	default String getLabel() {
+		return "";
+	}
 
 	@Value.Default
-	default String getIcon() { return "mdi-hubspot"; }
+	default String getIcon() {
+		return "mdi-hubspot";
+	}
 
 	@Value.Default
-	default String getColor() { return "TEAL LIGHTEN 5"; }
+	default String getColor() {
+		return "TEAL LIGHTEN 5";
+	}
 
-	List<String> getBootstrapServers();
-
-	Optional<String> getSchemaRegistryUrl();
-
-	Map<String, String> getProperties();
+	Optional<ConnectionCheck> connectionCheck();
 
 }

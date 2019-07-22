@@ -72,6 +72,11 @@ public interface MessageText extends Messages {
 	@DefaultMessage("Cancel")
 	String buttonCancel();
 
+	/** Test connection on connection edit dialog */
+	@Nonnull
+	@DefaultMessage("Test")
+	String buttonTest();
+
 	@Nonnull
 	@DefaultMessage("Save")
 	String buttonSave();
@@ -83,5 +88,10 @@ public interface MessageText extends Messages {
 	@Nonnull
 	@DefaultMessage("Icon doesn''t exist")
 	String invalidIcon();
+
+	/** Message while connection testing on the server */
+	@Nonnull
+	@DefaultMessage("Checking...")
+	String loaderChecking();
 
 }

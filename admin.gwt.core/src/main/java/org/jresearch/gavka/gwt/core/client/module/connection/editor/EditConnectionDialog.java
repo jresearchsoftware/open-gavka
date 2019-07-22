@@ -15,16 +15,34 @@ import org.dominokit.domino.ui.forms.FieldsGrouping;
 import org.dominokit.domino.ui.forms.Select;
 import org.dominokit.domino.ui.forms.TextBox;
 import org.dominokit.domino.ui.grid.Row;
+import org.dominokit.domino.ui.grid.flex.FlexAlign;
+import org.dominokit.domino.ui.grid.flex.FlexItem;
+import org.dominokit.domino.ui.grid.flex.FlexLayout;
+import org.dominokit.domino.ui.header.BlockHeader;
 import org.dominokit.domino.ui.icons.Icons;
+import org.dominokit.domino.ui.icons.MdiIcon;
+import org.dominokit.domino.ui.loaders.Loader;
+import org.dominokit.domino.ui.loaders.LoaderEffect;
+import org.dominokit.domino.ui.modals.IsModalDialog;
 import org.dominokit.domino.ui.modals.ModalDialog;
+import org.dominokit.domino.ui.modals.Window;
 import org.dominokit.domino.ui.style.Color;
 import org.dominokit.domino.ui.style.Style;
 import org.dominokit.domino.ui.style.Unit;
 import org.dominokit.domino.ui.tag.TagsInput;
+import org.dominokit.domino.ui.utils.TextNode;
+import org.fusesource.restygwt.client.REST;
+import org.jboss.gwt.elemento.core.Elements;
+import org.jboss.gwt.elemento.core.EventType;
 import org.jboss.gwt.elemento.core.builder.HtmlContentBuilder;
+import org.jresearch.commons.gwt.client.mvc.GwtMethodCallback;
 import org.jresearch.commons.gwt.client.mvc.event.Bus;
 import org.jresearch.commons.gwt.client.widget.OptionalEditorWrapper;
+import org.jresearch.gavka.domain.ConnectionCheck;
+import org.jresearch.gavka.domain.ListCheck;
 import org.jresearch.gavka.domain.ModifiableConnection;
+import org.jresearch.gavka.domain.SimpleCheck;
+import org.jresearch.gavka.gwt.core.client.module.connection.srv.GavkaConnectionRestService;
 import org.jresearch.gavka.gwt.core.client.resource.GavkaRs;
 
 import com.google.gwt.core.client.GWT;
@@ -32,8 +50,10 @@ import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.SimpleBeanEditorDriver;
 
 import elemental2.dom.Event;
+import elemental2.dom.EventListener;
 import elemental2.dom.HTMLDivElement;
 import elemental2.dom.HTMLElement;
+import elemental2.dom.Text;
 
 public class EditConnectionDialog implements Editor<ModifiableConnection>, PropertySelectHandler {
 
@@ -61,6 +81,10 @@ public class EditConnectionDialog implements Editor<ModifiableConnection>, Prope
 	TextBox propertyValue;
 	PropertiesEditor properties;
 
+	private final Text testResult = TextNode.of("Not tested yet");
+	private final FlexItem detailsLink = FlexItem.create().appendChild(Elements.a().textContent("Details...").style("margin-left: 10px;").asElement()).hide();
+	private EventListener detailListener;
+
 	private Consumer<ModifiableConnection> onCreateHandler = c -> {
 		// nothing
 	};
@@ -70,10 +94,17 @@ public class EditConnectionDialog implements Editor<ModifiableConnection>, Prope
 
 	private final HtmlContentBuilder<HTMLDivElement> colorMark = div().style("width: 2rem; height: 2rem;"); //$NON-NLS-1$
 
+	@Nonnull
+	private final GavkaConnectionRestService srv;
+	@Nonnull
+	private final Bus bus;
+
 	@SuppressWarnings({ "boxing", "null" })
 	@Inject
-	public EditConnectionDialog(@Nonnull final Bus bus) {
+	public EditConnectionDialog(@Nonnull final Bus bus, @Nonnull final GavkaConnectionRestService srv) {
 
+		this.bus = bus;
+		this.srv = srv;
 		bus.addHandler(PropertySelectEvent.TYPE, this);
 
 		id = TextBox.create()
@@ -144,6 +175,7 @@ public class EditConnectionDialog implements Editor<ModifiableConnection>, Prope
 				.floating()
 				.setLeftAddon(Icons.ALL.treasure_chest_mdi());
 		final Style<HTMLElement, Button> propertyAdd = Button.createSuccess(Icons.ALL.plus_mdi()).circle().addClickListener(this::onPropertyAdd).style().setMargin(Unit.px.of(5));
+		final Style<HTMLElement, Button> testDetails = Button.createSuccess(Icons.ALL.details_mdi()).circle().disable().style().setMargin(Unit.px.of(5));
 
 		properties = new PropertiesEditor(propertyTags);
 
@@ -167,6 +199,16 @@ public class EditConnectionDialog implements Editor<ModifiableConnection>, Prope
 						.span5(column -> column.appendChild(propertyKey))
 						.span6(column -> column.appendChild(propertyValue))
 						.span1(column -> column.appendChild(propertyAdd)))
+				.appendChild(Row.create()
+						.span1(c -> c.appendChild(Icons.ALL.bug_check_outline_mdi()))
+						.span11(c -> c.appendChild(FlexLayout.create()
+								.appendChild(FlexItem.create().appendChild(testResult))
+								.appendChild(detailsLink))))
+				.appendFooterChild(Button.create(Icons.ALL.check())
+						.linkify()
+						.setContent(GavkaRs.MSG.buttonTest().toUpperCase())
+						.styler(style -> style.setMinWidth(Unit.px.of(100)))
+						.addClickListener(this::onTest))
 				.appendFooterChild(Button.create(Icons.ALL.clear())
 						.linkify()
 						.setContent(GavkaRs.MSG.buttonCancel().toUpperCase())
@@ -202,6 +244,132 @@ public class EditConnectionDialog implements Editor<ModifiableConnection>, Prope
 			propertyKey.setRequired(false);
 			propertyValue.setRequired(false);
 		}
+	}
+
+	private void onTest(@SuppressWarnings("unused") final Event evt) {
+		if (fieldsGrouping.validate().isValid()) {
+			final ModifiableConnection toTest = driver.flush();
+			fieldsGrouping.clearInvalid();
+			final Loader loader = Loader.create(modalDialog, LoaderEffect.PROGRESS_BAR)
+					.setLoadingText(GavkaRs.MSG.loaderChecking())
+					.start();
+			REST.withCallback(new GwtMethodCallback<ConnectionCheck>(bus, r -> onCheck(r, loader), e -> onCheckFail(loader))).call(srv).check(toTest);
+		}
+	}
+
+	private void onCheck(final ConnectionCheck result, final Loader loader) {
+		loader.stop();
+		testResult.data = result.reason().orElseGet(() -> getStatus(result));
+		if (detailListener != null) {
+			detailsLink.removeEventListener(EventType.click, detailListener);
+		}
+		detailsLink.addClickListener(detailListener = e -> onDetails(result));
+		detailsLink.show();
+
+	}
+
+	private void onDetails(final ConnectionCheck result) {
+		new Window("Connection check details.")
+				.setFixed()
+				.setSize(IsModalDialog.ModalSize.SMALL)
+				.setModal(true)
+				.setHeaderBackground(getColor(result))
+				.apply((self) -> self
+						.appendChild(bootstrapServerCheck(result.bootstrapServerCheck()))
+						.appendChild(schemaRegistryUrlCheck(result.schemaRegistryUrlCheck()))
+						.appendChild(propertiesCheck(result.propertiesCheck())))
+				.open();
+	}
+
+	private static HTMLDivElement propertiesCheck(final ListCheck<String> propertiesCheck) {
+		final HTMLDivElement element = div().asElement();
+		final boolean empty = propertiesCheck.checks().isEmpty();
+		final BlockHeader header = empty ? BlockHeader.create("Properties check", "No custom properties defined") : BlockHeader.create("Properties check");
+		element.appendChild(header.asElement());
+		if (!empty) {
+			element.appendChild(record("General", propertiesCheck));
+			propertiesCheck.checks().stream().map(EditConnectionDialog::record).forEach(element::appendChild);
+		}
+		return element;
+	}
+
+	private static HTMLDivElement schemaRegistryUrlCheck(final SimpleCheck<String> schemaRegistryUrlCheck) {
+		final HTMLDivElement element = div().style("margin-bottom: 15px;").asElement();
+		final BlockHeader header = BlockHeader.create("Schema registry server status");
+		element.appendChild(header.asElement());
+		element.appendChild(record(schemaRegistryUrlCheck));
+		return element;
+	}
+
+	private static HTMLDivElement bootstrapServerCheck(final ListCheck<String> bootstrapServerCheck) {
+		final HTMLDivElement element = div().style("margin-bottom: 15px;").asElement();
+		final BlockHeader header = BlockHeader.create("Bootstrap servers status");
+		element.appendChild(header.asElement());
+		element.appendChild(record("General", bootstrapServerCheck));
+		bootstrapServerCheck.checks().stream().map(EditConnectionDialog::record).forEach(element::appendChild);
+		return element;
+	}
+
+	private static HTMLDivElement record(final SimpleCheck<String> check) {
+		return record(check.subject(), check);
+	}
+
+	@SuppressWarnings("boxing")
+	private static HTMLDivElement record(final String name, final SimpleCheck<?> check) {
+		return FlexLayout.create()
+				.appendChild(FlexItem.create().appendChild(getIcon(check).styler(s -> s.setColor(getColor(check).getHex()))).styler(s -> s.setMargin(Unit.px.of(5))))
+				.appendChild(FlexItem.create().appendChild(TextNode.of(name)).styler(s -> s.setMargin(Unit.px.of(5))))
+				.appendChild(FlexItem.create().appendChild(TextNode.of(getReason(check))).styler(s -> s.setMargin(Unit.px.of(5))))
+				.setAlignItems(FlexAlign.CENTER)
+				.asElement();
+	}
+
+	private static MdiIcon getIcon(final SimpleCheck<?> result) {
+		switch (result.status()) {
+		case ERROR:
+			return Icons.ALL.alert_decagram_mdi();
+		case OK_WITH_WARNING:
+			return Icons.ALL.alert_outline_mdi();
+		case OK:
+			return Icons.ALL.check_all_mdi();
+		default:
+			return Icons.ALL.infinity_mdi();
+		}
+	}
+
+	private static Color getColor(final SimpleCheck<?> result) {
+		switch (result.status()) {
+		case ERROR:
+			return Color.RED_DARKEN_1;
+		case OK_WITH_WARNING:
+			return Color.ORANGE_DARKEN_1;
+		case OK:
+			return Color.GREEN_DARKEN_1;
+		default:
+			return Color.RED_DARKEN_4;
+		}
+	}
+
+	private static String getReason(final SimpleCheck<?> result) {
+		return result.reason().orElseGet(() -> getStatus(result));
+	}
+
+	private static String getStatus(final SimpleCheck<?> result) {
+		switch (result.status()) {
+		case ERROR:
+			return "Something wrong";
+		case OK_WITH_WARNING:
+			return "Connection is Ok, but there are some warrinigs";
+		case OK:
+			return "Connection is Ok";
+		default:
+			return "Unknown status: " + result.status();
+		}
+	}
+
+	private boolean onCheckFail(final Loader loader) {
+		loader.stop();
+		return false;
 	}
 
 	private void onCancel(@SuppressWarnings("unused") final Event evt) {
@@ -243,7 +411,9 @@ public class EditConnectionDialog implements Editor<ModifiableConnection>, Prope
 		}
 	}
 
-	public ModalDialog getModalDialog() { return modalDialog; }
+	public ModalDialog getModalDialog() {
+		return modalDialog;
+	}
 
 	public void edit(final ModifiableConnection conn) {
 		driver.edit(conn);
@@ -251,7 +421,9 @@ public class EditConnectionDialog implements Editor<ModifiableConnection>, Prope
 		this.connection = conn;
 	}
 
-	public ModifiableConnection getConnection() { return this.connection; }
+	public ModifiableConnection getConnection() {
+		return this.connection;
+	}
 
 	public EditConnectionDialog onSave(final Consumer<ModifiableConnection> handler) {
 		this.onCreateHandler = handler;

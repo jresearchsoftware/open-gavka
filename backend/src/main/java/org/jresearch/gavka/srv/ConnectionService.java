@@ -7,7 +7,9 @@ import java.util.Properties;
 import javax.annotation.Nonnull;
 
 import org.jresearch.gavka.domain.Connection;
+import org.jresearch.gavka.domain.ConnectionCheck;
 import org.jresearch.gavka.domain.ConnectionList;
+import org.jresearch.gavka.domain.ConnectionParameters;
 
 public interface ConnectionService {
 
@@ -44,5 +46,14 @@ public interface ConnectionService {
 	 */
 	@Nonnull
 	ConnectionList exportConnections();
+
+	/**
+	 * Check the connection parameters
+	 *
+	 * @param connectionParameters - parameters to check
+	 * @return result of check
+	 */
+	@Nonnull
+	ConnectionCheck check(@Nonnull ConnectionParameters connectionParameters);
 
 }

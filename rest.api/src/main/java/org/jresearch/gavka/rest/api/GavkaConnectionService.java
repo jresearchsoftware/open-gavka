@@ -5,6 +5,8 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 import org.jresearch.gavka.domain.Connection;
+import org.jresearch.gavka.domain.ConnectionCheck;
+import org.jresearch.gavka.domain.ConnectionParameters;
 
 public interface GavkaConnectionService extends GavkaBaseService {
 
@@ -16,6 +18,8 @@ public interface GavkaConnectionService extends GavkaBaseService {
 	String M_P_SAVE = "/save"; //$NON-NLS-1$
 	/** {@link #remove(String)} method id */
 	String M_P_REMOVE = "/remove"; //$NON-NLS-1$
+	/** {@link #check(ConnectionParameters)} method id */
+	String M_P_CHECK = "/check"; //$NON-NLS-1$
 
 	@Nonnull
 	List<Connection> get();
@@ -24,5 +28,8 @@ public interface GavkaConnectionService extends GavkaBaseService {
 	Connection save(@Nonnull Connection connection);
 
 	boolean remove(@Nonnull String connectionId);
+
+	@Nonnull
+	ConnectionCheck check(@Nonnull ConnectionParameters connectionParameters);
 
 }

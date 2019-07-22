@@ -5,7 +5,9 @@ import java.io.InputStream;
 import java.util.List;
 
 import org.jresearch.gavka.domain.Connection;
+import org.jresearch.gavka.domain.ConnectionCheck;
 import org.jresearch.gavka.domain.ConnectionList;
+import org.jresearch.gavka.domain.ConnectionParameters;
 import org.jresearch.gavka.rest.api.GavkaConnectionService;
 import org.jresearch.gavka.srv.ConnectionService;
 import org.slf4j.Logger;
@@ -81,6 +83,12 @@ public class ConnectionController implements GavkaConnectionService {
 				.contentType(YAML_MEDIA_TYPE)
 				.header(HttpHeaders.CONTENT_DISPOSITION, disposition.toString())
 				.body(body);
+	}
+
+	@Override
+	@PostMapping(M_P_CHECK)
+	public ConnectionCheck check(@RequestBody final ConnectionParameters connectionParameters) {
+		return connectionService.check(connectionParameters);
 	}
 
 }
