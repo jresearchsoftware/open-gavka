@@ -13,7 +13,7 @@ public interface ConnectionCheck extends SimpleCheck<ConnectionParameters> {
 
 	ListCheck<String> bootstrapServerCheck();
 
-	SimpleCheck<String> schemaRegistryUrlCheck();
+	ListCheck<String> schemaRegistryUrlCheck();
 
 	ListCheck<String> propertiesCheck();
 

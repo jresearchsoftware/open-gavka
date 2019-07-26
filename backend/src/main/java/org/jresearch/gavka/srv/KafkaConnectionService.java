@@ -24,6 +24,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Splitter;
+import com.google.common.collect.ImmutableList;
 
 import one.util.streamex.StreamEx;
 
@@ -99,7 +100,12 @@ public class KafkaConnectionService extends AbstractConnectionService {
 						.reason(NOT_IMPLEMENTED_REASON)
 						.checks(listCheck(connectionParameters.getBootstrapServers()))
 						.build())
-				.schemaRegistryUrlCheck(stringCheck(connectionParameters.getSchemaRegistryUrl().orElse("")))
+				.schemaRegistryUrlCheck(new ImmutableListCheck.Builder<String>()
+						.subject(connectionParameters.getBootstrapServers())
+						.status(CheckStatus.OK_WITH_WARNING)
+						.reason(NOT_IMPLEMENTED_REASON)
+						.checks(listCheck(connectionParameters.getSchemaRegistryUrl().map(ImmutableList::of).orElseGet(ImmutableList::of)))
+						.build())
 				.propertiesCheck(new ImmutableListCheck.Builder<String>()
 						.subject(connectionParameters.getProperties().keySet())
 						.status(CheckStatus.OK_WITH_WARNING)
