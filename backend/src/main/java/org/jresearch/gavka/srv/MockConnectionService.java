@@ -83,7 +83,7 @@ public class MockConnectionService extends AbstractConnectionService {
 						.subject(connectionParameters.getBootstrapServers())
 						.status(CheckStatus.OK_WITH_WARNING)
 						.reason(MOCK_REASON)
-						.checks(listCheck(connectionParameters.getSchemaRegistryUrl().map(ImmutableList::of).orElseGet(ImmutableList::of)))
+						.checks(listCheck(connectionParameters.getSchemaRegistryUrl()))
 						.build())
 				.propertiesCheck(new ImmutableListCheck.Builder<String>()
 						.subject(connectionParameters.getProperties().keySet())

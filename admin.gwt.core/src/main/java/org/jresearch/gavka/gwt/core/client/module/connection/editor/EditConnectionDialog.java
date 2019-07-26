@@ -37,7 +37,6 @@ import org.jboss.gwt.elemento.core.EventType;
 import org.jboss.gwt.elemento.core.builder.HtmlContentBuilder;
 import org.jresearch.commons.gwt.client.mvc.GwtMethodCallback;
 import org.jresearch.commons.gwt.client.mvc.event.Bus;
-import org.jresearch.commons.gwt.client.widget.OptionalEditorWrapper;
 import org.jresearch.gavka.domain.ConnectionCheck;
 import org.jresearch.gavka.domain.ListCheck;
 import org.jresearch.gavka.domain.ModifiableConnection;
@@ -72,7 +71,9 @@ public class EditConnectionDialog implements Editor<ModifiableConnection>, Prope
 	@Ignore
 	TextBox bootstrapServersString;
 	StringsEditorWrapper bootstrapServers;
-	OptionalEditorWrapper<String> schemaRegistryUrl;
+	@Ignore
+	TextBox schemaRegistryUrlString;
+	StringsEditorWrapper schemaRegistryUrl;
 	@Ignore
 	TagsInput<Property> propertyTags;
 	@Ignore
@@ -146,15 +147,14 @@ public class EditConnectionDialog implements Editor<ModifiableConnection>, Prope
 				.setLeftAddon(Icons.ALL.bootstrap_mdi());
 		bootstrapServers = new StringsEditorWrapper(bootstrapServersString);
 
-		final TextBox schemaRegistryUrlBox = TextBox.create(GavkaRs.MSG.schemaRegistryUrlField())
+		schemaRegistryUrlString = TextBox.create(GavkaRs.MSG.schemaRegistryUrlField())
 				.setRequired(false)
 				.setAutoValidation(true)
 				.groupBy(fieldsGrouping)
 				.setPlaceholder(GavkaRs.MSG.schemaRegistryUrlPlaceholder())
 				.floating()
 				.setLeftAddon(Icons.ALL.registered_trademark_mdi());
-
-		schemaRegistryUrl = new OptionalEditorWrapper<>(schemaRegistryUrlBox);
+		schemaRegistryUrl = new StringsEditorWrapper(schemaRegistryUrlString);
 
 		propertyTags = PropertyInput.create(GavkaRs.MSG.propertyTagsField(), bus)
 				.disableUserInput()
@@ -175,7 +175,6 @@ public class EditConnectionDialog implements Editor<ModifiableConnection>, Prope
 				.floating()
 				.setLeftAddon(Icons.ALL.treasure_chest_mdi());
 		final Style<HTMLElement, Button> propertyAdd = Button.createSuccess(Icons.ALL.plus_mdi()).circle().addClickListener(this::onPropertyAdd).style().setMargin(Unit.px.of(5));
-		final Style<HTMLElement, Button> testDetails = Button.createSuccess(Icons.ALL.details_mdi()).circle().disable().style().setMargin(Unit.px.of(5));
 
 		properties = new PropertiesEditor(propertyTags);
 
@@ -188,7 +187,7 @@ public class EditConnectionDialog implements Editor<ModifiableConnection>, Prope
 				.appendChild(Row.create()
 						.fullSpan(column -> column.appendChild(bootstrapServersString)))
 				.appendChild(Row.create()
-						.fullSpan(column -> column.appendChild(schemaRegistryUrlBox)))
+						.fullSpan(column -> column.appendChild(schemaRegistryUrlString)))
 				.appendChild(Row.create()
 						.fullSpan(column -> column.appendChild(icon)))
 				.appendChild(Row.create()

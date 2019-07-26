@@ -33,15 +33,15 @@ public interface MessageText extends Messages {
 	String bootstrapServersField();
 
 	@Nonnull
-	@DefaultMessage("hostnames or IP separated by comma")
+	@DefaultMessage("hostnames or IPs separated by comma")
 	String bootstrapServersPlaceholder();
 
 	@Nonnull
-	@DefaultMessage("Schema registry URL")
+	@DefaultMessage("Schema registry URLs (comma separated list)")
 	String schemaRegistryUrlField();
 
 	@Nonnull
-	@DefaultMessage("hostname or IP of a schema registry server")
+	@DefaultMessage("hostnames or IPs separated by comma")
 	String schemaRegistryUrlPlaceholder();
 
 	@Nonnull

@@ -24,7 +24,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Splitter;
-import com.google.common.collect.ImmutableList;
 
 import one.util.streamex.StreamEx;
 
@@ -38,7 +37,7 @@ public class KafkaConnectionService extends AbstractConnectionService {
 	@Value("${bootstrap.servers}")
 	private String serverUrl;
 
-	@Value("${schema.registry.url:#{null}}")
+	@Value("${schema.registry.url:''}")
 	private String schemaRegistryUrl;
 
 	@Autowired
@@ -54,7 +53,7 @@ public class KafkaConnectionService extends AbstractConnectionService {
 				.orElseGet(ImmutableConnection.Builder::new)
 				.label("Default connection")
 				.bootstrapServers(Splitter.on(',').splitToList(serverUrl))
-				.schemaRegistryUrl(Optional.ofNullable(schemaRegistryUrl))
+				.schemaRegistryUrl(Splitter.on(',').splitToList(schemaRegistryUrl))
 				.build();
 		update(connection);
 	}
@@ -104,7 +103,7 @@ public class KafkaConnectionService extends AbstractConnectionService {
 						.subject(connectionParameters.getBootstrapServers())
 						.status(CheckStatus.OK_WITH_WARNING)
 						.reason(NOT_IMPLEMENTED_REASON)
-						.checks(listCheck(connectionParameters.getSchemaRegistryUrl().map(ImmutableList::of).orElseGet(ImmutableList::of)))
+						.checks(listCheck(connectionParameters.getSchemaRegistryUrl()))
 						.build())
 				.propertiesCheck(new ImmutableListCheck.Builder<String>()
 						.subject(connectionParameters.getProperties().keySet())

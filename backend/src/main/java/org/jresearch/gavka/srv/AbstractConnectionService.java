@@ -25,7 +25,7 @@ public abstract class AbstractConnectionService implements ConnectionService {
 	private static Properties toProperties(@Nonnull final Connection conection) {
 		final Properties result = new Properties();
 		result.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, String.join(",", conection.getBootstrapServers()));
-		conection.getSchemaRegistryUrl().ifPresent(url -> result.put(PROP_SCHEMA_REGISTRY_URL, url));
+		result.put(PROP_SCHEMA_REGISTRY_URL, String.join(",", conection.getSchemaRegistryUrl()));
 		result.putAll(conection.getProperties());
 		return result;
 	}

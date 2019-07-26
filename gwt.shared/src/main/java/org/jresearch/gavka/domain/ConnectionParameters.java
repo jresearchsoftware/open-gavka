@@ -2,7 +2,6 @@ package org.jresearch.gavka.domain;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.immutables.value.Value;
 
@@ -17,7 +16,7 @@ public interface ConnectionParameters {
 
 	List<String> getBootstrapServers();
 
-	Optional<String> getSchemaRegistryUrl();
+	List<String> getSchemaRegistryUrl();
 
 	Map<String, String> getProperties();
 
