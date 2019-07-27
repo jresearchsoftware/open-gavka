@@ -19,6 +19,7 @@ import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import org.apache.kafka.clients.admin.AdminClient;
@@ -179,11 +180,10 @@ public class KafkaMessageService extends AbstractMessageService {
 	}
 
 	@Override
-	public List<String> getMessageTopics(final String connectionId) {
-		List<String> list = new ArrayList<>();
+	public List<String> getMessageTopics(final String connectionId) {		List<String> list = new ArrayList<>();
 		try (AdminClient kafkaClient = getClient(connectionId)) {
-			list = new ArrayList<>(kafkaClient.listTopics().names().get());
-		} catch (final InterruptedException | ExecutionException e) {
+			list = new ArrayList<>(kafkaClient.listTopics().names().get(20, TimeUnit.SECONDS));
+		} catch (final InterruptedException | ExecutionException | TimeoutException e) {
 			LOGGER.error("Error getting topics", e);
 		}
 		Collections.sort(list);
@@ -296,7 +296,7 @@ public class KafkaMessageService extends AbstractMessageService {
 				if (tp.isPresent()) {
 					final ConsumerGroupForTopic gr = new ConsumerGroupForTopic();
 					gr.setGroupId(groupId);
-					kafkaClient.listConsumerGroupOffsets(groupId).partitionsToOffsetAndMetadata().get()
+					kafkaClient.listConsumerGroupOffsets(groupId).partitionsToOffsetAndMetadata().get(20, TimeUnit.SECONDS)
 							.forEach((k, v) -> {
 								if (k.topic().equals(topicName)) {
 									final PartitionInfoForConsumerGroup pi = new PartitionInfoForConsumerGroup();
