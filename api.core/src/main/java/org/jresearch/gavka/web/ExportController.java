@@ -9,7 +9,7 @@ import org.jresearch.gavka.domain.KeyFormat;
 import org.jresearch.gavka.domain.MessageFilter;
 import org.jresearch.gavka.domain.MessageFormat;
 import org.jresearch.gavka.rest.api.GavkaMessageService;
-import org.jresearch.gavka.srv.MessageRetrievalException;
+import org.jresearch.gavka.srv.KafkaException;
 import org.jresearch.gavka.srv.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -43,7 +43,7 @@ public class ExportController extends BaseSpringController {
 				.body(out -> {
 					try {
 						messageService.exportMessages(connectionId, out, filter);
-					} catch (final MessageRetrievalException e) {
+					} catch (final KafkaException e) {
 						throw new RuntimeException(e);
 					}
 				});

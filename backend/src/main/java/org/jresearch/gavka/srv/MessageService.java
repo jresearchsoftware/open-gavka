@@ -10,12 +10,12 @@ import org.jresearch.gavka.rest.api.PagingParameters;
 
 public interface MessageService {
 
-	MessagePortion getMessages(String connectionId, PagingParameters pagingParameters, MessageFilter messageFilter) throws MessageRetrievalException;
+	MessagePortion getMessages(String connectionId, PagingParameters pagingParameters, MessageFilter messageFilter) throws KafkaException;
 
 	List<String> getMessageTopics(String connectionId);
 
-	void exportMessages(String connectionId, OutputStream bos, MessageFilter filter) throws MessageRetrievalException;
+	void exportMessages(String connectionId, OutputStream bos, MessageFilter filter) throws KafkaException;
 
-	TopicInfo getTopic(String connectionId, String topicName) throws ConsumerRetrievalException;
+	TopicInfo getTopic(String connectionId, String topicName) throws KafkaException;
 
 }
