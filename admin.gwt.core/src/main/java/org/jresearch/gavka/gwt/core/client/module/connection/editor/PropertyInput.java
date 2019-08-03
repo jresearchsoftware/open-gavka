@@ -29,9 +29,12 @@ public class PropertyInput extends TagsInput<Property> {
 	public void appendChip(final Chip chip, final Property value) {
 		if (value != null) {
 			chip.addClickListener(e -> bus.fire(new PropertySelectEvent(value)));
+			chip.getTextContainer().styler(s -> s
+					.setMaxWidth(Unit.px.of(250))
+					.setOverFlow("hidden") //$NON-NLS-1$
+					.setProperty("text-overflow", "ellipsis")); //$NON-NLS-1$ //$NON-NLS-2$
+			Tooltip.create(chip, value.value()).position(PopupPosition.TOP);
 		}
-		chip.getTextContainer().styler(s -> s.setMaxWidth(Unit.px.of(250)).setProperty("text-overflow", "ellipsis")); //$NON-NLS-1$ //$NON-NLS-2$
-		Tooltip.create(chip, value.value()).position(PopupPosition.TOP);
 		super.appendChip(chip, value);
 	}
 
