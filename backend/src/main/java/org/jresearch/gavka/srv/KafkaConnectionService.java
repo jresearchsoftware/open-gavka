@@ -15,6 +15,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.PostConstruct;
 
 import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.ListTopicsOptions;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.jresearch.gavka.dao.IConnectionDao;
 import org.jresearch.gavka.domain.CheckStatus;
@@ -46,6 +47,8 @@ public class KafkaConnectionService extends AbstractConnectionService {
 
 	private static final String INVALID_URL = "Invalid URL";
 
+	private static final Integer TIMEOUT = 10000;
+	
 	private static final Logger LOGGER = LoggerFactory.getLogger(KafkaConnectionService.class);
 
 	@Value("${bootstrap.servers}")
@@ -112,8 +115,10 @@ public class KafkaConnectionService extends AbstractConnectionService {
 		props.putAll(connectionParameters.getProperties());
 		props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, connectionParameters.getBootstrapServers());
 		AdminClient client = AdminClient.create(props);
+		ListTopicsOptions options = new ListTopicsOptions();
+		options.timeoutMs(TIMEOUT);
 		try {
-			client.listTopics();
+			client.listTopics(options);
 		} catch (Exception e) {
 			LOGGER.error("Error in creating admin client", e);
 			status = CheckStatus.ERROR;
