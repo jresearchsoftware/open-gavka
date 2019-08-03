@@ -267,7 +267,7 @@ public class EditConnectionDialog implements Editor<ModifiableConnection>, Prope
 
 	}
 
-	private void onDetails(final ConnectionCheck result) {
+	private static void onDetails(final ConnectionCheck result) {
 		new Window("Connection check details.")
 				.setFixed()
 				.setSize(IsModalDialog.ModalSize.SMALL)
@@ -370,7 +370,7 @@ public class EditConnectionDialog implements Editor<ModifiableConnection>, Prope
 		}
 	}
 
-	private boolean onCheckFail(final Loader loader) {
+	private static boolean onCheckFail(final Loader loader) {
 		loader.stop();
 		return false;
 	}

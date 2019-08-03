@@ -11,7 +11,7 @@ public interface FormatText extends Messages {
 	String appender(String name, String className);
 
 	@Nonnull
-	@DefaultMessage("{0} -> {1}")
+	@DefaultMessage("{0}: {1}")
 	String property(String key, String value);
 
 }
