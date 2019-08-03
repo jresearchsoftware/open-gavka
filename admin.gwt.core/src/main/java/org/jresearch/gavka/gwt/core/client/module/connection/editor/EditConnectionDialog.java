@@ -15,6 +15,7 @@ import org.dominokit.domino.ui.forms.FieldsGrouping;
 import org.dominokit.domino.ui.forms.Select;
 import org.dominokit.domino.ui.forms.TextBox;
 import org.dominokit.domino.ui.grid.Row;
+import org.dominokit.domino.ui.grid.Row_12;
 import org.dominokit.domino.ui.grid.flex.FlexAlign;
 import org.dominokit.domino.ui.grid.flex.FlexItem;
 import org.dominokit.domino.ui.grid.flex.FlexLayout;
@@ -82,8 +83,8 @@ public class EditConnectionDialog implements Editor<ModifiableConnection>, Prope
 	TextBox propertyValue;
 	PropertiesEditor properties;
 
-	private final Text testResult = TextNode.of("Not tested yet");
-	private final FlexItem detailsLink = FlexItem.create().appendChild(Elements.a().textContent("Details...").style("margin-left: 10px;").asElement()).hide();
+	private final Text testResult = TextNode.of(GavkaRs.MSG.testResultNotTested());
+	private final FlexItem detailsLink = FlexItem.create().appendChild(Elements.a().textContent(GavkaRs.MSG.testResultDetailLink()).style("margin-left: 10px;").asElement()).hide(); //$NON-NLS-1$
 	private EventListener detailListener;
 
 	private Consumer<ModifiableConnection> onCreateHandler = c -> {
@@ -99,6 +100,8 @@ public class EditConnectionDialog implements Editor<ModifiableConnection>, Prope
 	private final GavkaConnectionRestService srv;
 	@Nonnull
 	private final Bus bus;
+	@Nonnull
+	private final Row_12 testRow;
 
 	@SuppressWarnings({ "boxing", "null" })
 	@Inject
@@ -198,7 +201,7 @@ public class EditConnectionDialog implements Editor<ModifiableConnection>, Prope
 						.span5(column -> column.appendChild(propertyKey))
 						.span6(column -> column.appendChild(propertyValue))
 						.span1(column -> column.appendChild(propertyAdd)))
-				.appendChild(Row.create()
+				.appendChild(testRow = Row.create()
 						.span1(c -> c.appendChild(Icons.ALL.bug_check_outline_mdi()))
 						.span11(c -> c.appendChild(FlexLayout.create()
 								.appendChild(FlexItem.create().appendChild(testResult))
@@ -245,30 +248,36 @@ public class EditConnectionDialog implements Editor<ModifiableConnection>, Prope
 		}
 	}
 
+	@SuppressWarnings("null")
 	private void onTest(@SuppressWarnings("unused") final Event evt) {
 		if (fieldsGrouping.validate().isValid()) {
 			final ModifiableConnection toTest = driver.flush();
 			fieldsGrouping.clearInvalid();
-			final Loader loader = Loader.create(modalDialog, LoaderEffect.PROGRESS_BAR)
-					.setLoadingText(GavkaRs.MSG.loaderChecking())
+			final Loader loader = Loader.create(testRow, LoaderEffect.PROGRESS_BAR)
+					.setRemoveLoadingText(true)
 					.start();
-			REST.withCallback(new GwtMethodCallback<ConnectionCheck>(bus, r -> onCheck(r, loader), e -> onCheckFail(loader))).call(srv).check(toTest);
+			REST.withCallback(new GwtMethodCallback<ConnectionCheck>(bus, r -> onCheck(r, loader), e -> onCheckFail(e, loader))).call(srv).check(toTest);
 		}
 	}
 
+	private void onCheck(final ConnectionCheck result) {
+		onCheck(result, null);
+	}
+
 	private void onCheck(final ConnectionCheck result, final Loader loader) {
-		loader.stop();
-		testResult.data = result.reason().orElseGet(() -> getStatus(result));
+		if (loader != null) {
+			loader.stop();
+		}
+		testResult.data = result.reason().orElseGet(() -> GavkaRs.MSG.testResultStatus(result.status()));
 		if (detailListener != null) {
 			detailsLink.removeEventListener(EventType.click, detailListener);
 		}
 		detailsLink.addClickListener(detailListener = e -> onDetails(result));
 		detailsLink.show();
-
 	}
 
 	private static void onDetails(final ConnectionCheck result) {
-		new Window("Connection check details.")
+		new Window(GavkaRs.MSG.testResultWindowsHeader())
 				.setFixed()
 				.setSize(IsModalDialog.ModalSize.SMALL)
 				.setModal(true)
@@ -283,32 +292,32 @@ public class EditConnectionDialog implements Editor<ModifiableConnection>, Prope
 	private static HTMLDivElement propertiesCheck(final ListCheck<String> propertiesCheck) {
 		final HTMLDivElement element = div().asElement();
 		final boolean empty = propertiesCheck.checks().isEmpty();
-		final BlockHeader header = empty ? BlockHeader.create("Properties check", "No custom properties defined") : BlockHeader.create("Properties check");
+		final BlockHeader header = empty ? BlockHeader.create(GavkaRs.MSG.testResultPropSectionHeader(), GavkaRs.MSG.testResultPropSectionEmpty()) : BlockHeader.create(GavkaRs.MSG.testResultPropSectionHeader());
 		element.appendChild(header.asElement());
 		if (!empty) {
-			element.appendChild(record("General", propertiesCheck));
+			element.appendChild(record(GavkaRs.MSG.testResultSectionGeneral(), propertiesCheck));
 			propertiesCheck.checks().stream().map(EditConnectionDialog::record).forEach(element::appendChild);
 		}
 		return element;
 	}
 
 	private static HTMLDivElement schemaRegistryUrlCheck(final ListCheck<String> schemaRegistryUrlCheck) {
-		final HTMLDivElement element = div().style("margin-bottom: 15px;").asElement();
+		final HTMLDivElement element = div().style("margin-bottom: 15px;").asElement(); //$NON-NLS-1$
 		final boolean empty = schemaRegistryUrlCheck.checks().isEmpty();
-		final BlockHeader header = empty ? BlockHeader.create("Schema registry servers status", "No schema registry servers defined") : BlockHeader.create("Schema registry server status");
+		final BlockHeader header = empty ? BlockHeader.create(GavkaRs.MSG.testResultSchemaRegSectionHeader(), GavkaRs.MSG.testResultSchemaRegSectionEmpty()) : BlockHeader.create(GavkaRs.MSG.testResultSchemaRegSectionHeader());
 		element.appendChild(header.asElement());
 		if (!empty) {
-			element.appendChild(record("General", schemaRegistryUrlCheck));
+			element.appendChild(record(GavkaRs.MSG.testResultSectionGeneral(), schemaRegistryUrlCheck));
 			schemaRegistryUrlCheck.checks().stream().map(EditConnectionDialog::record).forEach(element::appendChild);
 		}
 		return element;
 	}
 
 	private static HTMLDivElement bootstrapServerCheck(final ListCheck<String> bootstrapServerCheck) {
-		final HTMLDivElement element = div().style("margin-bottom: 15px;").asElement();
-		final BlockHeader header = BlockHeader.create("Bootstrap servers status");
+		final HTMLDivElement element = div().style("margin-bottom: 15px;").asElement(); //$NON-NLS-1$
+		final BlockHeader header = BlockHeader.create(GavkaRs.MSG.testResultBootstrapSectionHeader());
 		element.appendChild(header.asElement());
-		element.appendChild(record("General", bootstrapServerCheck));
+		element.appendChild(record(GavkaRs.MSG.testResultSectionGeneral(), bootstrapServerCheck));
 		bootstrapServerCheck.checks().stream().map(EditConnectionDialog::record).forEach(element::appendChild);
 		return element;
 	}
@@ -354,31 +363,17 @@ public class EditConnectionDialog implements Editor<ModifiableConnection>, Prope
 	}
 
 	private static String getReason(final SimpleCheck<?> result) {
-		return result.reason().orElseGet(() -> getStatus(result));
+		return result.reason().orElseGet(() -> GavkaRs.MSG.testResultStatus(result.status()));
 	}
 
-	private static String getStatus(final SimpleCheck<?> result) {
-		switch (result.status()) {
-		case ERROR:
-			return "Something wrong";
-		case OK_WITH_WARNING:
-			return "Connection is Ok, but there are some warrinigs";
-		case OK:
-			return "Connection is Ok";
-		default:
-			return "Unknown status: " + result.status();
-		}
-	}
-
-	private static boolean onCheckFail(final Loader loader) {
+	private boolean onCheckFail(final Throwable exception, final Loader loader) {
 		loader.stop();
+		resetCheck(GavkaRs.MSG.testResultFailed(exception.getMessage()));
 		return false;
 	}
 
 	private void onCancel(@SuppressWarnings("unused") final Event evt) {
-		propertyKey.clear();
-		propertyValue.clear();
-		modalDialog.close();
+		close();
 	}
 
 	private void onColor(final String value) {
@@ -407,11 +402,25 @@ public class EditConnectionDialog implements Editor<ModifiableConnection>, Prope
 		if (fieldsGrouping.validate().isValid()) {
 			if (nonNull(onCreateHandler)) {
 				onCreateHandler.accept(driver.flush());
-				propertyKey.clear();
-				propertyValue.clear();
-				modalDialog.close();
+				close();
 			}
 		}
+	}
+
+	private void close() {
+		propertyKey.clear();
+		propertyValue.clear();
+		resetCheck(GavkaRs.MSG.testResultNotTested());
+		modalDialog.close();
+	}
+
+	private void resetCheck(final String message) {
+		testResult.data = message;
+		if (detailListener != null) {
+			detailsLink.removeEventListener(EventType.click, detailListener);
+			detailListener = null;
+		}
+		detailsLink.hide();
 	}
 
 	public ModalDialog getModalDialog() {
@@ -422,6 +431,7 @@ public class EditConnectionDialog implements Editor<ModifiableConnection>, Prope
 		driver.edit(conn);
 		fieldsGrouping.clearInvalid();
 		this.connection = conn;
+		conn.connectionCheck().ifPresent(this::onCheck);
 	}
 
 	public ModifiableConnection getConnection() {

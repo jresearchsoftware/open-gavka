@@ -2,6 +2,8 @@ package org.jresearch.gavka.gwt.core.client.resource;
 
 import javax.annotation.Nonnull;
 
+import org.jresearch.gavka.domain.CheckStatus;
+
 import com.google.gwt.i18n.client.LocalizableResource.DefaultLocale;
 import com.google.gwt.i18n.client.Messages;
 
@@ -89,9 +91,64 @@ public interface MessageText extends Messages {
 	@DefaultMessage("Icon doesn''t exist")
 	String invalidIcon();
 
-	/** Message while connection testing on the server */
+	/** Message for failed test result */
 	@Nonnull
-	@DefaultMessage("Checking...")
-	String loaderChecking();
+	@DefaultMessage("Can''t check right now: {0}. Try latter.")
+	String testResultFailed(String message);
+
+	/** Message for empty test result */
+	@Nonnull
+	@DefaultMessage("Not tested yet")
+	String testResultNotTested();
+
+	/** Test result detail link */
+	@Nonnull
+	@DefaultMessage("Details...")
+	String testResultDetailLink();
+
+	/** Test result details, windows header */
+	@Nonnull
+	@DefaultMessage("Connection check details.")
+	String testResultWindowsHeader();
+
+	/** Test result details, section general check */
+	@Nonnull
+	@DefaultMessage("General")
+	String testResultSectionGeneral();
+
+	/** Test result details, property section header */
+	@Nonnull
+	@DefaultMessage("Properties check")
+	String testResultPropSectionHeader();
+
+	/** Test result details, property section header empty */
+	@Nonnull
+	@DefaultMessage("No custom properties defined or no detailed checks")
+	String testResultPropSectionEmpty();
+
+	/** Test result details, schema registry section header */
+	@Nonnull
+	@DefaultMessage("Schema registry servers status")
+	String testResultSchemaRegSectionHeader();
+
+	/** Test result details, property section header empty */
+	@Nonnull
+	@DefaultMessage("No schema registry servers defined")
+	String testResultSchemaRegSectionEmpty();
+
+	/** Test result details, bootstrap section header */
+	@Nonnull
+	@DefaultMessage("Bootstrap servers status")
+	String testResultBootstrapSectionHeader();
+
+	/** Test result details, status */
+	@Nonnull
+	@DefaultMessage("Unknown status: {0}")
+	@AlternateMessage({
+			"ERROR", "Something wrong",
+			"OK_WITH_WARNING", "Connection is Ok, but there are some warrinigs",
+			"OK", "Connection is Ok",
+	})
+	String testResultStatus(@Select CheckStatus status);
 
 }
