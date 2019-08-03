@@ -295,7 +295,7 @@ public class EditConnectionDialog implements Editor<ModifiableConnection>, Prope
 	private static HTMLDivElement schemaRegistryUrlCheck(final ListCheck<String> schemaRegistryUrlCheck) {
 		final HTMLDivElement element = div().style("margin-bottom: 15px;").asElement();
 		final boolean empty = schemaRegistryUrlCheck.checks().isEmpty();
-		final BlockHeader header = empty ? BlockHeader.create("Schema registry server status", "No custom properties defined") : BlockHeader.create("Schema registry server status");
+		final BlockHeader header = empty ? BlockHeader.create("Schema registry servers status", "No schema registry servers defined") : BlockHeader.create("Schema registry server status");
 		element.appendChild(header.asElement());
 		if (!empty) {
 			element.appendChild(record("General", schemaRegistryUrlCheck));

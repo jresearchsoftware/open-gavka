@@ -13,7 +13,6 @@ import org.jresearch.gavka.srv.ConnectionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -26,7 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import conf.YamlMapper;
 
 @SuppressWarnings("nls")
 @RestController
@@ -41,8 +40,7 @@ public class ConnectionController implements GavkaConnectionService {
 	private ConnectionService connectionService;
 
 	@Autowired
-	@Qualifier("yamlMapper")
-	private ObjectMapper yamlMapper;
+	private YamlMapper yamlMapper;
 
 	@Override
 	@GetMapping(M_R_GET)

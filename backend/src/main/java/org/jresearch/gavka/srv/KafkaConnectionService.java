@@ -37,7 +37,7 @@ public class KafkaConnectionService extends AbstractConnectionService {
 	@Value("${bootstrap.servers}")
 	private String serverUrl;
 
-	@Value("${schema.registry.url:''}")
+	@Value("${schema.registry.url:}")
 	private String schemaRegistryUrl;
 
 	@Autowired
