@@ -17,7 +17,6 @@ import org.jresearch.gavka.rest.data.ImmutablePartitionInfo;
 import org.jresearch.gavka.rest.data.ImmutableTopicRestInfo;
 import org.jresearch.gavka.rest.data.PartitionInfo;
 import org.jresearch.gavka.rest.data.TopicRestInfo;
-import org.jresearch.gavka.srv.ConsumerRetrievalException;
 import org.jresearch.gavka.srv.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,11 +36,7 @@ public class GavkaConsumerController extends BaseSpringController implements Gav
 	@Override
 	@GetMapping(M_R_GET)
 	public TopicRestInfo get(@PathVariable final String connectionId, @PathVariable final String topic) {
-		try {
-			return toRest(messageService.getTopic(connectionId, topic));
-		} catch (final ConsumerRetrievalException e) {
-			throw new RuntimeException(e);
-		}
+		return toRest(messageService.getTopic(connectionId, topic));
 	}
 
 	@SuppressWarnings("null")

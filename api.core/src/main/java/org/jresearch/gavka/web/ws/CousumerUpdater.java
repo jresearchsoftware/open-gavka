@@ -5,7 +5,6 @@ import java.util.concurrent.TimeUnit;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jresearch.gavka.domain.TopicInfo;
 import org.jresearch.gavka.rest.data.GafkaCoordinates;
-import org.jresearch.gavka.srv.ConsumerRetrievalException;
 import org.jresearch.gavka.srv.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -32,19 +31,14 @@ public class CousumerUpdater {
 	}
 
 	public void check(final GafkaCoordinates coordinates) {
-		try {
-			final TopicInfo topicInfo = messageService.getTopic(coordinates.connectionId(), coordinates.topic());
-			if (topicInfo != null) {
-				@Nullable
-				final TopicInfo prevTopicInfo = updateCache.getIfPresent(coordinates);
-				updateCache.put(coordinates, topicInfo);
-				if (!topicInfo.equals(prevTopicInfo)) {
-					consumerWebSocketHandler.sendConsumerUpdate(coordinates.connectionId(), coordinates.topic(), topicInfo);
-				}
+		final TopicInfo topicInfo = messageService.getTopic(coordinates.connectionId(), coordinates.topic());
+		if (topicInfo != null) {
+			@Nullable
+			final TopicInfo prevTopicInfo = updateCache.getIfPresent(coordinates);
+			updateCache.put(coordinates, topicInfo);
+			if (!topicInfo.equals(prevTopicInfo)) {
+				consumerWebSocketHandler.sendConsumerUpdate(coordinates.connectionId(), coordinates.topic(), topicInfo);
 			}
-		} catch (final ConsumerRetrievalException e) {
-			// TODO
-//			errorWebSocketHandler.sendMessage(uuid, String.format("Can't update consumer info (%s): %s", coordinates.topic(), e.getMessage()));
 		}
 	}
 }
