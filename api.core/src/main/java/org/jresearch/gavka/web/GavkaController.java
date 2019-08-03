@@ -17,7 +17,7 @@ import org.jresearch.gavka.rest.api.MessagePortion;
 import org.jresearch.gavka.rest.api.PagingParameters;
 import org.jresearch.gavka.rest.api.RequestMessagesParameters;
 import org.jresearch.gavka.srv.ConnectionService;
-import org.jresearch.gavka.srv.MessageRetrievalException;
+import org.jresearch.gavka.srv.KafkaException;
 import org.jresearch.gavka.srv.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -47,7 +47,7 @@ public class GavkaController extends BaseSpringController implements GavkaMessag
 			final MessageParameters messageParameters = parameters.getMessageParameters();
 			final PagingParameters pagingParameters = parameters.getPagingParameters();
 			return messageService.getMessages(messageParameters.connection(), pagingParameters, toMessageFilter(messageParameters));
-		} catch (final MessageRetrievalException e) {
+		} catch (final KafkaException e) {
 			throw new RuntimeException(e);
 		}
 	}

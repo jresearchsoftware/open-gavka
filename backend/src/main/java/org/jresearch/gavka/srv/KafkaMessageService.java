@@ -19,6 +19,7 @@ import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import org.apache.kafka.clients.admin.AdminClient;
@@ -66,7 +67,7 @@ public class KafkaMessageService extends AbstractMessageService {
 
 	@Override
 	@SuppressWarnings({ "null" })
-	public MessagePortion getMessages(final String connectionId, final PagingParameters pagingParameters, final MessageFilter filter) throws MessageRetrievalException {
+	public MessagePortion getMessages(final String connectionId, final PagingParameters pagingParameters, final MessageFilter filter) throws KafkaException {
 		final Properties props = getProperties(connectionId);
 
 		props.put("key.deserializer", getKeyDeserializer(filter.keyFormat()));
@@ -136,7 +137,7 @@ public class KafkaMessageService extends AbstractMessageService {
 			return new MessagePortion(po, messages);
 		} catch (final Exception e) {
 			LOGGER.error("Exception reading records", e);
-			throw new MessageRetrievalException("Exception getting records", e);
+			throw new KafkaException("Exception getting records", e);
 		}
 	}
 
@@ -179,12 +180,13 @@ public class KafkaMessageService extends AbstractMessageService {
 	}
 
 	@Override
-	public List<String> getMessageTopics(final String connectionId) {
+	public List<String> getMessageTopics(final String connectionId) {	
 		List<String> list = new ArrayList<>();
 		try (AdminClient kafkaClient = getClient(connectionId)) {
-			list = new ArrayList<>(kafkaClient.listTopics().names().get());
-		} catch (final InterruptedException | ExecutionException e) {
+			list = new ArrayList<>(kafkaClient.listTopics().names().get(20, TimeUnit.SECONDS));
+		} catch (final InterruptedException | ExecutionException | TimeoutException e) {
 			LOGGER.error("Error getting topics", e);
+			throw new KafkaException("Error getting topics", e);
 		}
 		Collections.sort(list);
 		return list;
@@ -224,7 +226,7 @@ public class KafkaMessageService extends AbstractMessageService {
 	}
 
 	@Override
-	public void exportMessages(final String connectionId, final OutputStream bos, final MessageFilter filter) throws MessageRetrievalException {
+	public void exportMessages(final String connectionId, final OutputStream bos, final MessageFilter filter) throws KafkaException {
 		try {
 			final SimpleDateFormat sf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 			final Properties props = getProperties(connectionId);
@@ -264,12 +266,12 @@ public class KafkaMessageService extends AbstractMessageService {
 
 			}
 		} catch (final IOException e) {
-			throw new MessageRetrievalException(e.getMessage(), e);
+			throw new KafkaException(e.getMessage(), e);
 		}
 	}
 
 	@Override
-	public TopicInfo getTopic(final String connectionId, final String topicName) throws ConsumerRetrievalException {
+	public TopicInfo getTopic(final String connectionId, final String topicName) {
 		final TopicInfo ti = new TopicInfo();
 		ti.setName(topicName);
 
@@ -296,7 +298,7 @@ public class KafkaMessageService extends AbstractMessageService {
 				if (tp.isPresent()) {
 					final ConsumerGroupForTopic gr = new ConsumerGroupForTopic();
 					gr.setGroupId(groupId);
-					kafkaClient.listConsumerGroupOffsets(groupId).partitionsToOffsetAndMetadata().get()
+					kafkaClient.listConsumerGroupOffsets(groupId).partitionsToOffsetAndMetadata().get(20, TimeUnit.SECONDS)
 							.forEach((k, v) -> {
 								if (k.topic().equals(topicName)) {
 									final PartitionInfoForConsumerGroup pi = new PartitionInfoForConsumerGroup();
@@ -319,7 +321,7 @@ public class KafkaMessageService extends AbstractMessageService {
 
 		} catch (final Exception e) {
 			LOGGER.error("Exception getting consumer groups", e);
-			throw new ConsumerRetrievalException("Exception getting consumer groups", e);
+			throw new KafkaException("Exception getting consumer groups", e);
 		}
 		return ti;
 	}
