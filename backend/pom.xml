@@ -160,6 +160,9 @@
 						<password>gavkaDev</password>
 					</jdbc>
 					<generator>
+						<generate>
+							<generatedAnnotationType>JAVAX_ANNOTATION_GENERATED</generatedAnnotationType>
+						</generate>
 						<database>
 							<name>org.jooq.meta.postgres.PostgresDatabase</name>
 							<includes>.*</includes>

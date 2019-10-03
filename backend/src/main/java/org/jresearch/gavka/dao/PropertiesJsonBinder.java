@@ -5,6 +5,8 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import org.jooq.JSONB;
+
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigRenderOptions;
@@ -16,11 +18,11 @@ public class PropertiesJsonBinder extends AbstractJsonBinder<Map> {
 		super(Map.class, PropertiesJsonBinder::from, PropertiesJsonBinder::to);
 	}
 
-	private static Object to(@Nullable final Map<String, String> p) {
-		return p == null ? null : ConfigFactory.parseMap(p).root().render(ConfigRenderOptions.concise());
+	private static JSONB to(@Nullable final Map<String, String> p) {
+		return p == null ? null : JSONB.valueOf(ConfigFactory.parseMap(p).root().render(ConfigRenderOptions.concise()));
 	}
 
-	private static Map<String, String> from(@Nullable final Object json) {
+	private static Map<String, String> from(@Nullable final JSONB json) {
 		final HashMap<String, String> properties = new HashMap<>();
 		if (json != null) {
 			final Config config = ConfigFactory.parseString(json.toString());
