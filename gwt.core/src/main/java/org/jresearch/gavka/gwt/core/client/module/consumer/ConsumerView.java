@@ -74,13 +74,13 @@ public class ConsumerView extends AbstractView<ConsumerController> {
 
 		partitionDataStore = new LocalListDataStore<>();
 		partitionTable = new DataTable<>(partitionTableConfig, partitionDataStore);
-		partitionLoader = Loader.create(partitionTable.asElement(), LoaderEffect.WIN8);
+		partitionLoader = Loader.create(partitionTable.element(), LoaderEffect.WIN8);
 
 		final TableConfig<GroupInfo> groupTableConfig = createGroupTableConfig();
 
 		groupDataStore = new LocalListDataStore<>();
 		groupTable = new DataTable<>(groupTableConfig, groupDataStore);
-		groupLoader = Loader.create(groupTable.asElement(), LoaderEffect.WIN8);
+		groupLoader = Loader.create(groupTable.element(), LoaderEffect.WIN8);
 
 		tableCard = Card.create()
 				.appendChild(partitionTable.styler(s -> s.setMarginBottom(1 + Unit.EM.getType())))
@@ -112,7 +112,7 @@ public class ConsumerView extends AbstractView<ConsumerController> {
 	@SuppressWarnings("null")
 	@Override
 	public HTMLElement getContent() {
-		return tableCard.asElement();
+		return tableCard.element();
 	}
 
 	private static TableConfig<PartitionInfo> createPartitionTableConfig() {

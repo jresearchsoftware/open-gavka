@@ -95,17 +95,17 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 		layout = Layout.create("Gavka");
 		layout.fixLeftPanelPosition();
 		layout.getLeftPanel().appendChild(connectionTree = Tree.create("Connections"));
-		connectionTree.getHeader().appendChild(lockIcon.asElement());
+		connectionTree.getHeader().appendChild(lockIcon.element());
 		connectionTree.setHeight(LEFT_PANEL_HEIGHT);
 		lockIcon.addClickListener(evt -> {
 			if (locked) {
 				layout.unfixLeftPanelPosition();
-				lockIcon.asElement().textContent = Icons.ALL.lock_open().getName();
+				lockIcon.element().textContent = Icons.ALL.lock_open().getName();
 				layout.hideLeftPanel();
 				locked = false;
 			} else {
 				layout.fixLeftPanelPosition();
-				lockIcon.asElement().textContent = Icons.ALL.lock().getName();
+				lockIcon.element().textContent = Icons.ALL.lock().getName();
 				locked = true;
 			}
 		});
@@ -115,7 +115,9 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 
 	@Override
 	@Nonnull
-	public HTMLElement getContent() { throw new UnsupportedOperationException(); }
+	public HTMLElement getContent() {
+		throw new UnsupportedOperationException();
+	}
 
 	@Override
 	public boolean updateChildContent(final String viewId, final HTMLElement content) {
@@ -183,7 +185,9 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 	}
 
 	@Override
-	public boolean switchToModule(final String moduleId) { return true; }
+	public boolean switchToModule(final String moduleId) {
+		return true;
+	}
 
 	@Override
 	public void initModules(final List<IAppModule> modules) {
@@ -230,7 +234,9 @@ public class GavkaAppView extends AbstractAppView<GavkaAppController> {
 	}
 
 	@Override
-	public void showContent() { layout.show(); }
+	public void showContent() {
+		layout.show();
+	}
 
 	@SuppressWarnings("null")
 	@Nonnull

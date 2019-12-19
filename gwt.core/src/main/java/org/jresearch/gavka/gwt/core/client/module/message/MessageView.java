@@ -88,12 +88,12 @@ public class MessageView extends AbstractView<MessageController> implements Tabl
 
 		final TableConfig<Message> tableConfig = createBasicTableConfig()
 				.addPlugin(filter)
-				.addPlugin(new RecordDetailsPlugin<>(cell -> new MessageDetails(cell).asElement(), Icons.ALL.folder_open(), Icons.ALL.folder()))
+				.addPlugin(new RecordDetailsPlugin<>(cell -> new MessageDetails(cell).element(), Icons.ALL.folder_open(), Icons.ALL.folder()))
 				.addPlugin(new EmptyStatePlugin<Message>(Icons.ALL.card_bulleted_off_outline_mdi(), "No data"));
 
 		localListDataStore = new LocalListDataStore<>();
 		table = new DataTable<>(tableConfig, localListDataStore);
-		loader = Loader.create(table.asElement(), LoaderEffect.WIN8);
+		loader = Loader.create(table.element(), LoaderEffect.WIN8);
 		tableCard = Card.create()
 				.appendChild(Row.of32Colmns()
 						.appendChild(Column.span1()
@@ -161,7 +161,7 @@ public class MessageView extends AbstractView<MessageController> implements Tabl
 	@SuppressWarnings("null")
 	@Override
 	public HTMLElement getContent() {
-		return tableCard.asElement();
+		return tableCard.element();
 	}
 
 	private static TableConfig<Message> createBasicTableConfig() {

@@ -64,7 +64,7 @@ public class ConnectionView extends AbstractView<ConnectionController> {
 		this.bus = bus;
 		this.conectionEditor = conectionEditor;
 		conectionEditor.onSave(this::save);
-		element.appendChild(BlockHeader.create("Connections", "List of configured connections. To add new use the plus icon in the bottom right conner.").asElement());
+		element.appendChild(BlockHeader.create("Connections", "List of configured connections. To add new use the plus icon in the bottom right conner.").element());
 		addButton = Button.create(Icons.ALL.add())
 				.setBackground(Color.THEME)
 				.setContent("ADD CONNECTION")
@@ -75,7 +75,7 @@ public class ConnectionView extends AbstractView<ConnectionController> {
 						.setProperty("z-index", "9999"))
 				.addClickListener(this::add)
 				.hide();
-		DomGlobal.document.body.appendChild(addButton.asElement());
+		DomGlobal.document.body.appendChild(addButton.element());
 		controller.refreshConnections();
 	}
 
@@ -127,7 +127,7 @@ public class ConnectionView extends AbstractView<ConnectionController> {
 				.collect(Collectors.groupingBy(it -> counter.getAndIncrement() / 4)).values()
 				.stream()
 				.map(this::toRow)
-				.map(Row_12::asElement)
+				.map(Row_12::element)
 				.forEachOrdered(element::appendChild);
 	}
 
@@ -177,6 +177,8 @@ public class ConnectionView extends AbstractView<ConnectionController> {
 	}
 
 	@Override
-	public HTMLElement getContent() { return element; }
+	public HTMLElement getContent() {
+		return element;
+	}
 
 }

@@ -293,7 +293,7 @@ public class EditConnectionDialog implements Editor<ModifiableConnection>, Prope
 		final HTMLDivElement element = div().asElement();
 		final boolean empty = propertiesCheck.checks().isEmpty();
 		final BlockHeader header = empty ? BlockHeader.create(GavkaRs.MSG.testResultPropSectionHeader(), GavkaRs.MSG.testResultPropSectionEmpty()) : BlockHeader.create(GavkaRs.MSG.testResultPropSectionHeader());
-		element.appendChild(header.asElement());
+		element.appendChild(header.element());
 		if (!empty) {
 			element.appendChild(record(GavkaRs.MSG.testResultSectionGeneral(), propertiesCheck));
 			propertiesCheck.checks().stream().map(EditConnectionDialog::record).forEach(element::appendChild);
@@ -305,7 +305,7 @@ public class EditConnectionDialog implements Editor<ModifiableConnection>, Prope
 		final HTMLDivElement element = div().style("margin-bottom: 15px;").asElement(); //$NON-NLS-1$
 		final boolean empty = schemaRegistryUrlCheck.checks().isEmpty();
 		final BlockHeader header = empty ? BlockHeader.create(GavkaRs.MSG.testResultSchemaRegSectionHeader(), GavkaRs.MSG.testResultSchemaRegSectionEmpty()) : BlockHeader.create(GavkaRs.MSG.testResultSchemaRegSectionHeader());
-		element.appendChild(header.asElement());
+		element.appendChild(header.element());
 		if (!empty) {
 			element.appendChild(record(GavkaRs.MSG.testResultSectionGeneral(), schemaRegistryUrlCheck));
 			schemaRegistryUrlCheck.checks().stream().map(EditConnectionDialog::record).forEach(element::appendChild);
@@ -316,7 +316,7 @@ public class EditConnectionDialog implements Editor<ModifiableConnection>, Prope
 	private static HTMLDivElement bootstrapServerCheck(final ListCheck<String> bootstrapServerCheck) {
 		final HTMLDivElement element = div().style("margin-bottom: 15px;").asElement(); //$NON-NLS-1$
 		final BlockHeader header = BlockHeader.create(GavkaRs.MSG.testResultBootstrapSectionHeader());
-		element.appendChild(header.asElement());
+		element.appendChild(header.element());
 		element.appendChild(record(GavkaRs.MSG.testResultSectionGeneral(), bootstrapServerCheck));
 		bootstrapServerCheck.checks().stream().map(EditConnectionDialog::record).forEach(element::appendChild);
 		return element;
@@ -333,7 +333,7 @@ public class EditConnectionDialog implements Editor<ModifiableConnection>, Prope
 				.appendChild(FlexItem.create().appendChild(TextNode.of(name)).styler(s -> s.setMargin(Unit.px.of(5))))
 				.appendChild(FlexItem.create().appendChild(TextNode.of(getReason(check))).styler(s -> s.setMargin(Unit.px.of(5))))
 				.setAlignItems(FlexAlign.CENTER)
-				.asElement();
+				.element();
 	}
 
 	private static MdiIcon getIcon(final SimpleCheck<?> result) {

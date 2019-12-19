@@ -233,7 +233,7 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 	public void onBeforeAddTable(final DataTable<Message> dt) {
 		dataTable = dt;
 		dt.addTableEventListner(SearchClearedEvent.SEARCH_EVENT_CLEARED, this);
-		dt.asElement().appendChild(div.asElement());
+		dt.element().appendChild(div.asElement());
 		searchBtn.enable();
 		autoSearchTimer.schedule(0);
 	}
@@ -268,7 +268,9 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 		autoSearchTimer.schedule(autoSearchDelay);
 	}
 
-	public boolean isAutoSearch() { return autoSearch; }
+	public boolean isAutoSearch() {
+		return autoSearch;
+	}
 
 	public FilterBarPlugin setAutoSearch(final boolean autoSearch) {
 		this.autoSearch = autoSearch;
@@ -301,9 +303,13 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 		return this;
 	}
 
-	public int getAutoSearchDelay() { return autoSearchDelay; }
+	public int getAutoSearchDelay() {
+		return autoSearchDelay;
+	}
 
-	public void setAutoSearchDelay(final int autoSearchDelayInMillies) { this.autoSearchDelay = autoSearchDelayInMillies; }
+	public void setAutoSearchDelay(final int autoSearchDelayInMillies) {
+		this.autoSearchDelay = autoSearchDelayInMillies;
+	}
 
 	private void doSearch() {
 		dataTable.getSearchContext().fireSearchEvent();
@@ -327,15 +333,17 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 		box.resumeChangeHandlers();
 	}
 
-	public MessageParameters getMessageParameters() { return new ImmutableMessageParameters.Builder()
-			.connection(gafkaCoordinates.connectionId())
-			.from(getFrom())
-			.key(getKeyValue())
-			.keyFormat(getKeyFormat())
-			.messageFormat(getMessageFormat())
-			.topic(gafkaCoordinates.topic())
-			.valuePattern(getValuePattern())
-			.build(); }
+	public MessageParameters getMessageParameters() {
+		return new ImmutableMessageParameters.Builder()
+				.connection(gafkaCoordinates.connectionId())
+				.from(getFrom())
+				.key(getKeyValue())
+				.keyFormat(getKeyFormat())
+				.messageFormat(getMessageFormat())
+				.topic(gafkaCoordinates.topic())
+				.valuePattern(getValuePattern())
+				.build();
+	}
 
 	@SuppressWarnings("null")
 	@Nonnull
@@ -383,6 +391,8 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 		exportForm.asElement().submit();
 	}
 
-	private void setFrom(final String from) { hiddenFrom.value = from; }
+	private void setFrom(final String from) {
+		hiddenFrom.value = from;
+	}
 
 }
