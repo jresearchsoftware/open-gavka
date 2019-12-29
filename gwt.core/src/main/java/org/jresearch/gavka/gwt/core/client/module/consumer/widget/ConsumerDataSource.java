@@ -24,16 +24,17 @@ public class ConsumerDataSource {
 		final TopicRestInfoMapper topicRestInfoMapper = GWT.create(TopicRestInfoMapper.class);
 		final GafkaCoordinatesMapper gafkaCoordinatesMapper = GWT.create(GafkaCoordinatesMapper.class);
 		final Location location = DomGlobal.location;
-		final boolean secure = location.protocol.equals("https"); //$NON-NLS-1$
-		final WebSocket socket = new WebSocket(secure ? "wss" : "ws" + "://" + location.host + "/api/ws/consumer");
+		final boolean secure = location.getProtocol().equals("https"); //$NON-NLS-1$
+		final WebSocket socket = new WebSocket(secure ? "wss" : "ws" + "://" + location.getHost() + "/api/ws/consumer");
 		socket.onopen = e -> {
 			// register for connection an topic
 			socket.send(gafkaCoordinatesMapper.write(coordinates));
+			return null;
 		};
-
 		socket.onmessage = m -> {
-			final String json = m.data.asString();
+			final String json = (String) m.data;
 			callback.onLoad(topicRestInfoMapper.read(json));
+			return null;
 		};
 
 	}
