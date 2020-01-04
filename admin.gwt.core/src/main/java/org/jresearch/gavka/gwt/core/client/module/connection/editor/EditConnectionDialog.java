@@ -84,7 +84,7 @@ public class EditConnectionDialog implements Editor<ModifiableConnection>, Prope
 	PropertiesEditor properties;
 
 	private final Text testResult = TextNode.of(GavkaRs.MSG.testResultNotTested());
-	private final FlexItem detailsLink = FlexItem.create().appendChild(Elements.a().textContent(GavkaRs.MSG.testResultDetailLink()).style("margin-left: 10px;").asElement()).hide(); //$NON-NLS-1$
+	private final FlexItem detailsLink = FlexItem.create().appendChild(Elements.a().textContent(GavkaRs.MSG.testResultDetailLink()).style("margin-left: 10px;").element()).hide(); //$NON-NLS-1$
 	private EventListener detailListener;
 
 	private Consumer<ModifiableConnection> onCreateHandler = c -> {
@@ -116,7 +116,7 @@ public class EditConnectionDialog implements Editor<ModifiableConnection>, Prope
 				.setPlaceholder(GavkaRs.MSG.idPlaceholder())
 				.floating()
 				.setReadOnly(true)
-				.setLeftAddon(Icons.ALL.barcode_scan_mdi());
+				.addLeftAddOn(Icons.ALL.barcode_scan_mdi());
 
 		label = TextBox.create(GavkaRs.MSG.labelField())
 				.setRequired(true)
@@ -124,21 +124,21 @@ public class EditConnectionDialog implements Editor<ModifiableConnection>, Prope
 				.groupBy(fieldsGrouping)
 				.setPlaceholder(GavkaRs.MSG.labelPlaceholder())
 				.floating()
-				.setLeftAddon(Icons.ALL.label_mdi());
+				.addLeftAddOn(Icons.ALL.label_mdi());
 
 		icon = MdIconSelect.create(GavkaRs.MSG.iconField())
 				.setRequired(true)
 				.setAutoValidation(true)
 				.groupBy(fieldsGrouping)
-				.setLeftAddon(Icons.ALL.paw_mdi())
+				.addLeftAddOn(Icons.ALL.paw_mdi())
 				.addChangeHandler(this::onIcon);
 
 		color = MdColorSelect.create(GavkaRs.MSG.colorField())
 				.setRequired(true)
 				.setAutoValidation(true)
 				.groupBy(fieldsGrouping)
-				.setLeftAddon(Icons.ALL.palette_mdi())
-				.setRightAddon(colorMark)
+				.addLeftAddOn(Icons.ALL.palette_mdi())
+				.addRightAddOn(colorMark)
 				.addChangeHandler(this::onColor);
 
 		bootstrapServersString = TextBox.create(GavkaRs.MSG.bootstrapServersField())
@@ -147,7 +147,7 @@ public class EditConnectionDialog implements Editor<ModifiableConnection>, Prope
 				.groupBy(fieldsGrouping)
 				.setPlaceholder(GavkaRs.MSG.bootstrapServersPlaceholder())
 				.floating()
-				.setLeftAddon(Icons.ALL.bootstrap_mdi());
+				.addLeftAddOn(Icons.ALL.bootstrap_mdi());
 		bootstrapServers = new StringsEditorWrapper(bootstrapServersString);
 
 		schemaRegistryUrlString = TextBox.create(GavkaRs.MSG.schemaRegistryUrlField())
@@ -156,7 +156,7 @@ public class EditConnectionDialog implements Editor<ModifiableConnection>, Prope
 				.groupBy(fieldsGrouping)
 				.setPlaceholder(GavkaRs.MSG.schemaRegistryUrlPlaceholder())
 				.floating()
-				.setLeftAddon(Icons.ALL.registered_trademark_mdi());
+				.addLeftAddOn(Icons.ALL.registered_trademark_mdi());
 		schemaRegistryUrl = new StringsEditorWrapper(schemaRegistryUrlString);
 
 		propertyTags = PropertyInput.create(GavkaRs.MSG.propertyTagsField(), bus)
@@ -164,19 +164,19 @@ public class EditConnectionDialog implements Editor<ModifiableConnection>, Prope
 				.groupBy(fieldsGrouping)
 				.setPlaceholder(GavkaRs.MSG.propertyTagsPlaceholder())
 				.floating()
-				.setLeftAddon(Icons.ALL.settings_mdi());
+				.addLeftAddOn(Icons.ALL.settings_mdi());
 		propertyKey = TextBox.create(GavkaRs.MSG.propertyKeyField())
 				.setAutoValidation(true)
 				.groupBy(fieldsGrouping)
 				.setPlaceholder(GavkaRs.MSG.propertyKeyPlaceholder())
 				.floating()
-				.setLeftAddon(Icons.ALL.key_mdi());
+				.addLeftAddOn(Icons.ALL.key_mdi());
 		propertyValue = TextBox.create(GavkaRs.MSG.propertyValueField())
 				.setAutoValidation(true)
 				.groupBy(fieldsGrouping)
 				.setPlaceholder(GavkaRs.MSG.propertyValuePlaceholder())
 				.floating()
-				.setLeftAddon(Icons.ALL.treasure_chest_mdi());
+				.addLeftAddOn(Icons.ALL.treasure_chest_mdi());
 		final Style<HTMLElement, Button> propertyAdd = Button.createSuccess(Icons.ALL.plus_mdi()).circle().addClickListener(this::onPropertyAdd).style().setMargin(Unit.px.of(5));
 
 		properties = new PropertiesEditor(propertyTags);
@@ -224,12 +224,12 @@ public class EditConnectionDialog implements Editor<ModifiableConnection>, Prope
 		driver.initialize(this);
 	}
 
+	@SuppressWarnings("null")
 	private void onPropertyAdd(@SuppressWarnings("unused") final Event evt) {
 		propertyKey.setRequired(true);
 		propertyValue.setRequired(true);
 		if (propertyKey.validate().isValid() & propertyValue.validate().isValid()) {
 			final List<Property> list = new ArrayList<>(propertyTags.getValue());
-			@SuppressWarnings("null")
 			final PropertyTuple newProp = PropertyTuple.of(propertyKey.getValue(), propertyValue.getValue());
 			final int i = list.indexOf(newProp);
 			if (i == -1) {
@@ -290,7 +290,7 @@ public class EditConnectionDialog implements Editor<ModifiableConnection>, Prope
 	}
 
 	private static HTMLDivElement propertiesCheck(final ListCheck<String> propertiesCheck) {
-		final HTMLDivElement element = div().asElement();
+		final HTMLDivElement element = div().element();
 		final boolean empty = propertiesCheck.checks().isEmpty();
 		final BlockHeader header = empty ? BlockHeader.create(GavkaRs.MSG.testResultPropSectionHeader(), GavkaRs.MSG.testResultPropSectionEmpty()) : BlockHeader.create(GavkaRs.MSG.testResultPropSectionHeader());
 		element.appendChild(header.element());
@@ -302,7 +302,7 @@ public class EditConnectionDialog implements Editor<ModifiableConnection>, Prope
 	}
 
 	private static HTMLDivElement schemaRegistryUrlCheck(final ListCheck<String> schemaRegistryUrlCheck) {
-		final HTMLDivElement element = div().style("margin-bottom: 15px;").asElement(); //$NON-NLS-1$
+		final HTMLDivElement element = div().style("margin-bottom: 15px;").element(); //$NON-NLS-1$
 		final boolean empty = schemaRegistryUrlCheck.checks().isEmpty();
 		final BlockHeader header = empty ? BlockHeader.create(GavkaRs.MSG.testResultSchemaRegSectionHeader(), GavkaRs.MSG.testResultSchemaRegSectionEmpty()) : BlockHeader.create(GavkaRs.MSG.testResultSchemaRegSectionHeader());
 		element.appendChild(header.element());
@@ -314,7 +314,7 @@ public class EditConnectionDialog implements Editor<ModifiableConnection>, Prope
 	}
 
 	private static HTMLDivElement bootstrapServerCheck(final ListCheck<String> bootstrapServerCheck) {
-		final HTMLDivElement element = div().style("margin-bottom: 15px;").asElement(); //$NON-NLS-1$
+		final HTMLDivElement element = div().style("margin-bottom: 15px;").element(); //$NON-NLS-1$
 		final BlockHeader header = BlockHeader.create(GavkaRs.MSG.testResultBootstrapSectionHeader());
 		element.appendChild(header.element());
 		element.appendChild(record(GavkaRs.MSG.testResultSectionGeneral(), bootstrapServerCheck));
@@ -378,7 +378,7 @@ public class EditConnectionDialog implements Editor<ModifiableConnection>, Prope
 
 	private void onColor(final String value) {
 		try {
-			colorMark.asElement().style.backgroundColor = Color.of(value).getHex();
+			colorMark.element().style.backgroundColor = Color.of(value).getHex();
 			color.clearInvalid();
 		} catch (@SuppressWarnings("unused") final IllegalArgumentException e) {
 			icon.invalidate(GavkaRs.MSG.invalidColor());
@@ -387,7 +387,8 @@ public class EditConnectionDialog implements Editor<ModifiableConnection>, Prope
 
 	private void onIcon(final String value) {
 		try {
-			icon.setRightAddon(Icons.of(value));
+			icon.getRightAddonContainer().clearElement();
+			icon.addRightAddOn(Icons.of(value));
 			icon.clearInvalid();
 		} catch (@SuppressWarnings("unused") final IllegalArgumentException e) {
 			icon.invalidate(GavkaRs.MSG.invalidIcon());

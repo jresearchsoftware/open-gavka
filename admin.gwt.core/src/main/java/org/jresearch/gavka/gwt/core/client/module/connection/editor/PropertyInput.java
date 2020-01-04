@@ -9,7 +9,6 @@ import org.dominokit.domino.ui.style.Unit;
 import org.dominokit.domino.ui.tag.TagsInput;
 import org.jresearch.commons.gwt.client.mvc.event.Bus;
 
-@SuppressWarnings("unchecked")
 public class PropertyInput extends TagsInput<Property> {
 
 	@Nonnull

@@ -44,7 +44,7 @@ public class ConnectionView extends AbstractView<ConnectionController> {
 
 	@SuppressWarnings("null")
 	@Nonnull
-	private final HTMLDivElement element = Elements.div().asElement();
+	private final HTMLDivElement element = Elements.div().element();
 	@Nonnull
 	private final GavkaConnectionRestService gavkaConnectionRestService;
 	@Nonnull
@@ -79,7 +79,8 @@ public class ConnectionView extends AbstractView<ConnectionController> {
 		controller.refreshConnections();
 	}
 
-	private void add(final Event evt) {
+	@SuppressWarnings("null")
+	private void add(@SuppressWarnings("unused") final Event evt) {
 		final ModifiableConnection connection = ModifiableConnection.create().setColor(MdColorSelect.any()).setIcon(MdIconSelect.any());
 		edit(connection);
 	}
@@ -92,11 +93,12 @@ public class ConnectionView extends AbstractView<ConnectionController> {
 		controller().refreshConnections();
 	}
 
+	@SuppressWarnings("null")
 	private void remove(@Nonnull final Connection connection) {
 		REST.withCallback(new GwtMethodCallback<>(bus, this::onRemove)).call(gavkaConnectionRestService).remove(connection.getId());
 	}
 
-	private void onRemove(final Boolean removed) {
+	private void onRemove(@SuppressWarnings("unused") final Boolean removed) {
 		controller().refreshConnections();
 	}
 
@@ -154,7 +156,7 @@ public class ConnectionView extends AbstractView<ConnectionController> {
 				.addHeaderAction(Icons.ALL.delete(), e -> remove(e, connection));
 	}
 
-	private void remove(final Event evt, final Connection connection) {
+	private void remove(final Event evt, final @Nonnull Connection connection) {
 		evt.stopPropagation();
 		final ModalDialog modal = ModalDialog.create("Remove connection");
 		modal.setAutoClose(true)

@@ -44,6 +44,7 @@ public class MdIconSelect extends Select<String> {
 		return builder.build();
 	}
 
+	@SuppressWarnings("null")
 	@Nonnull
 	private static SelectOptionGroup<String> toSelectGroup(final String tag) {
 		return SelectOptionGroup.<String>create(Badge.create(tag).setBackground(MdColorSelect.anyColor()));
@@ -56,6 +57,7 @@ public class MdIconSelect extends Select<String> {
 		return option;
 	}
 
+	@SuppressWarnings("unchecked")
 	public static Select<String> create(final String label) {
 		return new MdIconSelect(label);
 	}

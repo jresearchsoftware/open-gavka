@@ -17,8 +17,11 @@ public class PropertiesEditor implements LeafValueEditor<Map<String, String>> {
 	}
 
 	@Override
-	public Map<String, String> getValue() { return input.getValue().stream().collect(Collectors.toMap(Property::key, Property::value)); }
+	public Map<String, String> getValue() {
+		return input.getValue().stream().collect(Collectors.toMap(Property::key, Property::value));
+	}
 
+	@SuppressWarnings("null")
 	@Override
 	public void setValue(final Map<String, String> value) {
 		final List<Property> values = value.entrySet().stream().map(e -> PropertyTuple.of(e.getKey(), e.getValue())).collect(Collectors.toList());

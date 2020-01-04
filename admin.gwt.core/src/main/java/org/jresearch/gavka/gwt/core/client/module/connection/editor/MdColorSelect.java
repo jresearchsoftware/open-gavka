@@ -24,6 +24,7 @@ public class MdColorSelect extends Select<String> {
 		return SelectOption.create(color.getName(), color.getName()).setBackground(color);
 	}
 
+	@SuppressWarnings("unchecked")
 	public static Select<String> create(final String label) {
 		return new MdColorSelect(label);
 	}
