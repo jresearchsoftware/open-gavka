@@ -16,7 +16,6 @@ import org.dominokit.domino.ui.datatable.events.TableEvent;
 import org.dominokit.domino.ui.datatable.plugins.DataTablePlugin;
 import org.dominokit.domino.ui.datepicker.DateBox;
 import org.dominokit.domino.ui.datepicker.DatePicker.DateSelectionHandler;
-import org.dominokit.domino.ui.forms.FormElement;
 import org.dominokit.domino.ui.forms.Select;
 import org.dominokit.domino.ui.forms.Select.SelectionHandler;
 import org.dominokit.domino.ui.forms.SelectOption;
@@ -25,13 +24,10 @@ import org.dominokit.domino.ui.forms.ValueBox;
 import org.dominokit.domino.ui.grid.Column;
 import org.dominokit.domino.ui.grid.Row;
 import org.dominokit.domino.ui.grid.Row_12;
-import org.dominokit.domino.ui.icons.Icon;
 import org.dominokit.domino.ui.icons.Icons;
 import org.dominokit.domino.ui.icons.MdiIcon;
 import org.dominokit.domino.ui.style.Style;
-import org.dominokit.domino.ui.timepicker.ClockStyle;
 import org.dominokit.domino.ui.timepicker.TimeBox;
-import org.dominokit.domino.ui.timepicker.TimeBox.PickerStyle;
 import org.dominokit.domino.ui.timepicker.TimePicker;
 import org.dominokit.domino.ui.timepicker.TimePicker.TimeSelectionHandler;
 import org.dominokit.domino.ui.utils.HasChangeHandlers.ChangeHandler;
@@ -52,8 +48,6 @@ import org.jresearch.gavka.rest.api.ImmutableMessageParameters;
 import org.jresearch.gavka.rest.api.MessageParameters;
 import org.jresearch.gavka.rest.data.GafkaCoordinates;
 
-import com.google.gwt.dom.client.Style.Cursor;
-
 import elemental2.dom.Event;
 import elemental2.dom.EventListener;
 import elemental2.dom.HTMLDivElement;
@@ -61,6 +55,8 @@ import elemental2.dom.HTMLFormElement;
 import elemental2.dom.HTMLInputElement;
 
 public class FilterBarPlugin implements DataTablePlugin<Message> {
+
+	public static final String INHERIT = "inherit"; //$NON-NLS-1$
 
 	private final HtmlContentBuilder<HTMLDivElement> div = div()
 			.css("header")
@@ -115,39 +111,10 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 			}
 		};
 
-		final Icon clearIconKey = Icons.ALL.clear()
-				.setTooltip("Clear")
-				.style()
-				.setCursor(Cursor.POINTER.getCssName())
-				.get();
-		final Icon clearIconDate = clearIconKey.copy();
-		final Icon clearIconvaluePattern = clearIconKey.copy();
-		final Icon clearIconTime = clearIconKey.copy();
-		final Icon clearIconKeyFormat = clearIconKey.copy();
-		final Icon clearIconMassageFormat = clearIconKey.copy();
-
-		keyBox = TextBox.create("Key")
-				.setRightAddon(clearIconKey)
-				.setName("key")
-				.styler(FilterBarPlugin::zerroBottomMargin);
-		valuePatternBox = TextBox.create("Value pattern")
-				.setRightAddon(clearIconKey)
-				.setName("valuePattern")
-				.styler(FilterBarPlugin::zerroBottomMargin);
-		dateBox = DateBox.create("Date (UTC)")
-				.setRightAddon(clearIconDate)
-				.styler(FilterBarPlugin::zerroBottomMargin);
-		timeBox = TimeBox.create("Time (UTC)", null)
-				.setPickerStyle(PickerStyle.MODAL)
-				.setRightAddon(clearIconTime)
-				.styler(FilterBarPlugin::zerroBottomMargin);
-		timeBox.getTimePicker().setClockStyle(ClockStyle._24);
-		timeBox.clear();
-
-		clearIconKey.addClickListener(e -> clearBox(keyBox, e));
-		clearIconvaluePattern.addClickListener(e -> clearBox(valuePatternBox, e));
-		clearIconDate.addClickListener(e -> clearBox(dateBox, e));
-		clearIconTime.addClickListener(e -> clearBox(timeBox, e));
+		keyBox = FilterTextBox.create("Key", "key", this::clear);
+		valuePatternBox = FilterTextBox.create("Value pattern", "valuePattern", this::clear);
+		dateBox = FilterDateBox.create("Date (UTC)", this::clear);
+		timeBox = FilterTimeBox.create("Time (UTC)", this::clear);
 
 		final Row_12 row1 = Row.create()
 				.addColumn(Column.span4().appendChild(keyBox))
@@ -155,22 +122,13 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 				.addColumn(Column.span4().appendChild(dateBox))
 				.styler(FilterBarPlugin::zerroBottomMargin);
 
-		keyFormatBox = Select.<KeyFormat>create("Key format")
-				.setRightAddon(clearIconKeyFormat)
-				.setName("keyFormat")
-				.styler(FilterBarPlugin::zerroBottomMargin);
-		messageFormatBox = Select.<MessageFormat>create("Message format")
-				.setRightAddon(clearIconMassageFormat)
-				.setName("messageFormat")
-				.styler(FilterBarPlugin::zerroBottomMargin);
+		keyFormatBox = FilterSelect.<KeyFormat>create("Key format", "keyFormat", this::clear);
+		messageFormatBox = FilterSelect.<MessageFormat>create("Message format", "messageFormat", this::clear);
 
 		EnumSet.allOf(KeyFormat.class).stream().map(e -> SelectOption.create(e, e.name())).forEach(keyFormatBox::appendChild);
 		keyFormatBox.selectAt(0);
 		EnumSet.allOf(MessageFormat.class).stream().map(e -> SelectOption.create(e, e.name())).forEach(messageFormatBox::appendChild);
 		messageFormatBox.selectAt(0);
-
-		clearIconKeyFormat.addClickListener(e -> clearSelect(keyFormatBox, e));
-		clearIconMassageFormat.addClickListener(e -> clearSelect(messageFormatBox, e));
 
 		final MdiIcon clearFiltersIcon = Icons.MDI_ICONS.filter_remove_mdi()
 				.setTooltip("Clear filters")
@@ -194,23 +152,23 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 
 	private HtmlContentBuilder<HTMLFormElement> createForm() {
 		final HtmlContentBuilder<HTMLFormElement> form = form();
-		final HTMLFormElement formEl = form.asElement();
+		final HTMLFormElement formEl = form.element();
 		formEl.action = "/api/rest/messages/export";
 		formEl.method = "POST";
 		final InputBuilder<HTMLInputElement> from = input(hidden);
-		hiddenFrom = from.asElement();
+		hiddenFrom = from.element();
 		hiddenFrom.name = "from";
 		final InputBuilder<HTMLInputElement> topic = input(hidden);
-		hiddenTopic = topic.asElement();
+		hiddenTopic = topic.element();
 		hiddenTopic.name = "topic";
 		final InputBuilder<HTMLInputElement> keyFormat = input(hidden);
-		hiddenKeyFormat = keyFormat.asElement();
+		hiddenKeyFormat = keyFormat.element();
 		hiddenKeyFormat.name = "keyFormat";
 		final InputBuilder<HTMLInputElement> messageFormat = input(hidden);
-		hiddenMessageFormat = messageFormat.asElement();
+		hiddenMessageFormat = messageFormat.element();
 		hiddenMessageFormat.name = "messageFormat";
 		final InputBuilder<HTMLInputElement> connectionId = input(hidden);
-		hiddenConnectionId = connectionId.asElement();
+		hiddenConnectionId = connectionId.element();
 		hiddenConnectionId.name = "connectionId";
 		return form.add(from).add(topic).add(messageFormat).add(keyFormat).add(connectionId);
 	}
@@ -225,29 +183,29 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 		doSearch();
 	}
 
-	private static void zerroBottomMargin(final Style<?, ?> style) {
+	protected static void zerroBottomMargin(final Style<?, ?> style) {
 		style.setMarginBottom("0"); //$NON-NLS-1$
+	}
+
+	protected static void filterFieldStyle(final Style<?, ?> style) {
+		style
+				.setBackgroundColor(INHERIT)
+				.setHeight(INHERIT)
+				.setPaddingTop(INHERIT);
+
 	}
 
 	@Override
 	public void onBeforeAddTable(final DataTable<Message> dt) {
 		dataTable = dt;
 		dt.addTableEventListner(SearchClearedEvent.SEARCH_EVENT_CLEARED, this);
-		dt.element().appendChild(div.asElement());
+		dt.element().appendChild(div.element());
 		searchBtn.enable();
 		autoSearchTimer.schedule(0);
 	}
 
-	private void clearSelect(final Select<?> box, final Event evt) {
+	private void clear(final Event evt) {
 		evt.stopPropagation();
-		box.selectAt(0);
-		autoSearchTimer.cancel();
-		doSearch();
-	}
-
-	private void clearBox(final FormElement<?, ?> box, final Event evt) {
-		evt.stopPropagation();
-		box.clear();
 		autoSearchTimer.cancel();
 		doSearch();
 	}
@@ -388,7 +346,7 @@ public class FilterBarPlugin implements DataTablePlugin<Message> {
 		hiddenKeyFormat.value = getKeyFormat().name();
 		hiddenMessageFormat.value = getMessageFormat().name();
 		hiddenConnectionId.value = gafkaCoordinates.connectionId();
-		exportForm.asElement().submit();
+		exportForm.element().submit();
 	}
 
 	private void setFrom(final String from) {
