@@ -70,7 +70,6 @@
 							<entrypoint>-g</entrypoint>
 							<entrypoint>daemon off;</entrypoint>
 						</entrypoint>
-						<useCurrentTimestamp>true</useCurrentTimestamp>
 					</container>
 				</configuration>
 			</plugin>
