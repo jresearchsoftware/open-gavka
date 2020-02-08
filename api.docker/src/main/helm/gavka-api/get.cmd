@@ -1,0 +1,1 @@
+helm get %1-gavka-api --namespace %1 > v.yaml
