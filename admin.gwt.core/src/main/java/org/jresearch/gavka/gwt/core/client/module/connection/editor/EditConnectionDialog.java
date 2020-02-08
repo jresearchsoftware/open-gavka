@@ -1,7 +1,7 @@
 package org.jresearch.gavka.gwt.core.client.module.connection.editor;
 
 import static java.util.Objects.*;
-import static org.jboss.gwt.elemento.core.Elements.*;
+import static org.jboss.elemento.Elements.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,9 +33,9 @@ import org.dominokit.domino.ui.style.Unit;
 import org.dominokit.domino.ui.tag.TagsInput;
 import org.dominokit.domino.ui.utils.TextNode;
 import org.fusesource.restygwt.client.REST;
-import org.jboss.gwt.elemento.core.Elements;
-import org.jboss.gwt.elemento.core.EventType;
-import org.jboss.gwt.elemento.core.builder.HtmlContentBuilder;
+import org.jboss.elemento.Elements;
+import org.jboss.elemento.EventType;
+import org.jboss.elemento.HtmlContentBuilder;
 import org.jresearch.commons.gwt.client.mvc.GwtMethodCallback;
 import org.jresearch.commons.gwt.client.mvc.event.Bus;
 import org.jresearch.gavka.domain.ConnectionCheck;
