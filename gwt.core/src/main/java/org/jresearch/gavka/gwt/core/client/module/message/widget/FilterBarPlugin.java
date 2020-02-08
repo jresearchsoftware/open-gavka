@@ -1,7 +1,7 @@
 package org.jresearch.gavka.gwt.core.client.module.message.widget;
 
-import static org.jboss.gwt.elemento.core.Elements.*;
-import static org.jboss.gwt.elemento.core.InputType.*;
+import static org.jboss.elemento.Elements.*;
+import static org.jboss.elemento.InputType.*;
 
 import java.util.Date;
 import java.util.EnumSet;
@@ -33,9 +33,9 @@ import org.dominokit.domino.ui.timepicker.TimePicker.TimeSelectionHandler;
 import org.dominokit.domino.ui.utils.HasChangeHandlers.ChangeHandler;
 import org.gwtproject.i18n.shared.DateTimeFormatInfo;
 import org.gwtproject.timer.client.Timer;
-import org.jboss.gwt.elemento.core.EventType;
-import org.jboss.gwt.elemento.core.builder.HtmlContentBuilder;
-import org.jboss.gwt.elemento.core.builder.InputBuilder;
+import org.jboss.elemento.EventType;
+import org.jboss.elemento.HtmlContentBuilder;
+import org.jboss.elemento.InputBuilder;
 import org.jresearch.commons.gwt.client.tool.Dates;
 import org.jresearch.commons.gwt.client.widget.Uis;
 import org.jresearch.commons.gwt.shared.model.time.GwtLocalDateModel;
