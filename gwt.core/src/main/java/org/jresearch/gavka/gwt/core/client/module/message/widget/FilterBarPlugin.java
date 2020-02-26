@@ -31,7 +31,7 @@ import org.dominokit.domino.ui.timepicker.TimeBox;
 import org.dominokit.domino.ui.timepicker.TimePicker;
 import org.dominokit.domino.ui.timepicker.TimePicker.TimeSelectionHandler;
 import org.dominokit.domino.ui.utils.HasChangeHandlers.ChangeHandler;
-import org.gwtproject.i18n.shared.DateTimeFormatInfo;
+import org.gwtproject.i18n.shared.cldr.DateTimeFormatInfo;
 import org.gwtproject.timer.client.Timer;
 import org.jboss.elemento.EventType;
 import org.jboss.elemento.HtmlContentBuilder;
