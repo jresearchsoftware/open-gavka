@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: {{ include "gavka-api.fullname" . }}
   labels:
-    {{- include "gavka-api.labels" . | nindent 4 }}
+{{ include "gavka-api.labels" . | indent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports:
@@ -11,5 +11,10 @@ spec:
       targetPort: http
       protocol: TCP
       name: http
+    - port: 5005
+      targetPort: jdwp
+      protocol: TCP
+      name: jdwp
   selector:
-    {{- include "gavka-api.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/name: {{ include "gavka-api.name" . }}
+    app.kubernetes.io/instance: {{ .Chart.Name }}

@@ -3,7 +3,7 @@ kind: Pod
 metadata:
   name: "{{ include "gavka-api.fullname" . }}-test-connection"
   labels:
-{{ include "gavka-api.labels" . | nindent 4 }}
+{{ include "gavka-api.labels" . | indent 4 }}
   annotations:
     "helm.sh/hook": test-success
 spec:

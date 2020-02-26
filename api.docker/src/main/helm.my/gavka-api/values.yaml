@@ -5,8 +5,9 @@
 replicaCount: 1
 
 image:
-  repository: nginx
-  pullPolicy: IfNotPresent
+  repository: gavka/gavka-api
+  tag: ${helm.tag}
+  pullPolicy: Always
 
 imagePullSecrets: []
 nameOverride: ""
@@ -35,17 +36,21 @@ service:
   port: 80
 
 ingress:
-  enabled: false
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
-  hosts:
-    - host: chart-example.local
-      paths: []
+  enabled: true
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    kubernetes.io/ingress.class: fake
+    external-dns.alpha.kubernetes.io/target: 151.106.5.204
+  #default host and tls will be used ($namespace.ch-n-ch.us).
+  #To setup ADDITIONAL hosts add them below
+  hosts: []
+  #  - host: demo.ch-n-ch.us
+  #    paths:
+  #      - /api
   tls: []
-  #  - secretName: chart-example-tls
+  #  - secretName: demo.ch-n-ch.us-tls
   #    hosts:
-  #      - chart-example.local
+  #      - demo.ch-n-ch.us
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
@@ -64,3 +69,20 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+
+## Configuration values for the postgresql dependency.
+## ref: https://github.com/kubernetes/charts/blob/master/stable/postgresql/README.md
+##
+postgresql:
+  install: true
+  image:
+    debug: true
+  fullnameOverride: gavka-postgresql
+  initdbScripts:
+    init.sh: |
+      #!/bin/bash
+      export PGPASSWORD=$POSTGRES_PASSWORD
+      psql -c "CREATE ROLE gavka WITH LOGIN PASSWORD 'gavka'"
+      psql -c "CREATE DATABASE gavka WITH OWNER = gavka ENCODING = 'UTF8'"
+

@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "gavka-api.fullname" . }}
+  labels:
+{{ include "gavka-api.labels" . | indent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "gavka-api.name" . }}
+      app.kubernetes.io/instance: {{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "gavka-api.name" . }}
+        app.kubernetes.io/instance: {{ .Chart.Name }}
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{ template "gavka-api.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+          - name: http
+            containerPort: 8080
+            protocol: TCP
+          - name: jdwp
+            containerPort: 5005
+            protocol: TCP
+          env:
+          - name: JAVA_TOOL_OPTIONS
+            value: -Dspring.profiles.active={{ .Release.Namespace }}
+          - name: DB_HOST
+            value: {{ .Values.postgresql.fullnameOverride }}
+          - name: DB_PORT
+            value: 5432
+          - name: DB_NAME
+            value: gavka
+          - name: DB_USER
+            value: gavka
+          - name: DB_PASSWOR
+            value: gavka
+#          livenessProbe:
+#            httpGet:
+#              path: /v2/api-docs
+#              port: http
+#          readinessProbe:
+#            httpGet:
+#              path: /v2/api-docs
+#              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
