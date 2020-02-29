@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+data:
+  JAVA_TOOL_OPTIONS: -Dspring.profiles.active={{ .Release.Namespace }}
+  DB_HOST: {{ .Values.postgresql.fullnameOverride }}
+  DB_PORT: {{ .Values.postgresql.service.port | quote }}
+  DB_NAME: {{ .Values.postgresql.postgresqlDatabase }}

@@ -35,9 +35,13 @@ spec:
           - name: jdwp
             containerPort: 5005
             protocol: TCP
-          env:
-          - name: JAVA_TOOL_OPTIONS
-            value: -Dspring.profiles.active={{ .Release.Namespace }}
+          envFrom:
+          - configMapRef:
+              name: app-config
+              optional: true
+          - secretRef:
+              name: app-secret
+              optional: true
           livenessProbe:
             httpGet:
               path: /
