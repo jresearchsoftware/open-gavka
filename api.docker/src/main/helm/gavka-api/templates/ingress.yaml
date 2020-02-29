@@ -60,7 +60,8 @@ metadata:
 spec:
   stripPrefix:
     prefixes:
-    - /api
+    - /api/rest
+    - /api/ws
 
 ---
 apiVersion: traefik.containo.us/v1alpha1
