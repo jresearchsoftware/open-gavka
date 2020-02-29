@@ -52,7 +52,7 @@ spec:
   {{- end }}
 
 ---
-# Strip prefix /api
+# Strip prefix /admin
 apiVersion: traefik.containo.us/v1alpha1
 kind: Middleware
 metadata:
@@ -64,6 +64,36 @@ spec:
 
 ---
 apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: {{ $fullName }}-redirect-admin
+spec:
+  redirectRegex:
+    regex: .*
+    replacement: https://{{ $host }}/admin/
+    permanent: true
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ $fullName }}-redirect-tls
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`{{ $host }}`) && PathPrefix(`/admin`)
+      middlewares:
+      - name: {{ $fullName }}-redirect-admin
+      kind: Rule
+      services:
+        - name: {{ $fullName }}
+          port: {{ $svcPort }}
+  tls:
+    secretName: {{ $host }}-tls
+
+---
+apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
   name: {{ $fullName }}-tls
@@ -71,7 +101,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`{{ $host }}`) && PathPrefix(`/admin`)
+    - match: Host(`{{ $host }}`) && PathPrefix(`/admin/`)
       middlewares:
       - name: {{ $fullName }}-stripprefix-admin
       kind: Rule
