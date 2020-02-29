@@ -11,5 +11,9 @@ spec:
       targetPort: http
       protocol: TCP
       name: http
+    - port: 5005
+      targetPort: jdwp
+      protocol: TCP
+      name: jdwp
   selector:
     {{- include "gavka-api.selectorLabels" . | nindent 4 }}

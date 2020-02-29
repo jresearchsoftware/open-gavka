@@ -10,6 +10,9 @@
 	<artifactId>org.jresearch.gavka.api.docker</artifactId>
 	<name>JRS kafka UI: Apache Kafka admin application - boot application in docker</name>
 	<url>https://bitbucket.org/JRS/open-gavka</url>
+	<properties>
+		<helm.name>gavka-api</helm.name>
+	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>org.postgresql</groupId>
@@ -92,6 +95,11 @@
 						</environment> -->
 					</container>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>com.deviceinsight.helm</groupId>
+				<artifactId>helm-maven-plugin</artifactId>
+				<version>2.3.0-SNAPSHOT</version>
 			</plugin>
 		</plugins>
 	</build>

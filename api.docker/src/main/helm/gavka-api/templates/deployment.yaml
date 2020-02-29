@@ -1,3 +1,4 @@
+{{- $host := include "gavka-api.host" . -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -25,12 +26,18 @@ spec:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Chart.AppVersion }}"
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - name: http
-              containerPort: 80
-              protocol: TCP
+          - name: http
+            containerPort: 8080
+            protocol: TCP
+          - name: jdwp
+            containerPort: 5005
+            protocol: TCP
+          env:
+          - name: JAVA_TOOL_OPTIONS
+            value: -Dspring.profiles.active={{ .Release.Namespace }}
           livenessProbe:
             httpGet:
               path: /
