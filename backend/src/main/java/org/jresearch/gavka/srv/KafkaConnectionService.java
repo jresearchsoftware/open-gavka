@@ -48,10 +48,10 @@ public class KafkaConnectionService extends AbstractConnectionService {
 	private static final String INVALID_URL = "Invalid URL";
 
 	private static final Integer TIMEOUT = 10000;
-	
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(KafkaConnectionService.class);
 
-	@Value("${bootstrap.servers}")
+	@Value("${bootstrap.servers:}")
 	private String serverUrl;
 
 	@Value("${schema.registry.url:}")
@@ -62,6 +62,9 @@ public class KafkaConnectionService extends AbstractConnectionService {
 
 	@PostConstruct
 	protected void init() {
+		if (serverUrl.isEmpty() && schemaRegistryUrl.isEmpty()) {
+			return;
+		}
 		final Optional<Connection> defaultConnection = iConnectionDao.getByLabel("Default connection");
 
 		@SuppressWarnings("null")
@@ -106,20 +109,20 @@ public class KafkaConnectionService extends AbstractConnectionService {
 	@Override
 	public ConnectionCheck check(final ConnectionParameters connectionParameters) {
 
-		ImmutableListCheck<String> bootstrapChecks = checkBootstrapServers(connectionParameters.getBootstrapServers());
-		ImmutableListCheck<String> registryChecks = checkSchemaRegistry(connectionParameters.getSchemaRegistryUrl());
+		final ImmutableListCheck<String> bootstrapChecks = checkBootstrapServers(connectionParameters.getBootstrapServers());
+		final ImmutableListCheck<String> registryChecks = checkSchemaRegistry(connectionParameters.getSchemaRegistryUrl());
 
 		CheckStatus status = bootstrapChecks.status();
 		Optional<String> reason = bootstrapChecks.reason();
-		Properties props = new Properties();
+		final Properties props = new Properties();
 		props.putAll(connectionParameters.getProperties());
 		props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, connectionParameters.getBootstrapServers());
-		AdminClient client = AdminClient.create(props);
-		ListTopicsOptions options = new ListTopicsOptions();
+		final AdminClient client = AdminClient.create(props);
+		final ListTopicsOptions options = new ListTopicsOptions();
 		options.timeoutMs(TIMEOUT);
 		try {
 			client.listTopics(options);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			LOGGER.error("Error in creating admin client", e);
 			status = CheckStatus.ERROR;
 			reason = Optional.of(e.getMessage());
@@ -136,25 +139,25 @@ public class KafkaConnectionService extends AbstractConnectionService {
 				.build();
 	}
 
-	private ImmutableListCheck<String> checkBootstrapServers(List<String> bootstraps) {
+	private ImmutableListCheck<String> checkBootstrapServers(final List<String> bootstraps) {
 		CheckStatus status = CheckStatus.OK;
 		Optional<String> reason = Optional.empty();
-		List<SimpleCheck<String>> checks = new ArrayList<>();
+		final List<SimpleCheck<String>> checks = new ArrayList<>();
 		long errors = 0;
-		for (String server : bootstraps) {
-			String[] tokens = server.split(":");
+		for (final String server : bootstraps) {
+			final String[] tokens = server.split(":");
 			try {
-				SimpleCheck<String> check = checkServer(tokens[0], Integer.parseInt(tokens[1]));
+				final SimpleCheck<String> check = checkServer(tokens[0], Integer.parseInt(tokens[1]));
 				if (check.status() == CheckStatus.ERROR) {
 					errors++;
 					if (errors == bootstraps.size()) {
 						status = CheckStatus.ERROR;
-					}else {
+					} else {
 						status = CheckStatus.OK_WITH_WARNING;
 					}
 				}
 				checks.add(check);
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				LOGGER.error("Runtime error in bootstraps", e);
 				status = CheckStatus.ERROR;
 				reason = Optional.of(INVALID_URL);
@@ -164,12 +167,12 @@ public class KafkaConnectionService extends AbstractConnectionService {
 				.build();
 	}
 
-	private ImmutableListCheck<String> checkSchemaRegistry(List<String> servers) {
+	private static ImmutableListCheck<String> checkSchemaRegistry(final List<String> servers) {
 		CheckStatus status = CheckStatus.OK;
-		Optional<String> reason = Optional.empty();
-		List<SimpleCheck<String>> checks = StreamEx.of(servers).map(KafkaConnectionService::checkSchemaRegistry)
+		final Optional<String> reason = Optional.empty();
+		final List<SimpleCheck<String>> checks = StreamEx.of(servers).map(KafkaConnectionService::checkSchemaRegistry)
 				.toImmutableList();
-		long errors = checks.stream().filter(s -> (s.status() == CheckStatus.ERROR)).count();
+		final long errors = checks.stream().filter(s -> (s.status() == CheckStatus.ERROR)).count();
 		if (errors > 0) {
 			if (errors == servers.size()) {
 				status = CheckStatus.ERROR;
@@ -181,12 +184,12 @@ public class KafkaConnectionService extends AbstractConnectionService {
 				.build();
 	}
 
-	private SimpleCheck<String> checkServer(String serverUrl, int serverPort) {
+	private static SimpleCheck<String> checkServer(final String serverUrl, final int serverPort) {
 		CheckStatus status = CheckStatus.OK;
 		Optional<String> reason = Optional.empty();
 		try (Socket s = new Socket(serverUrl, serverPort)) {
-
-		} catch (IOException ex) {
+//do nothing
+		} catch (final IOException ex) {
 			LOGGER.error("Runtime error in server connection", ex);
 			status = CheckStatus.ERROR;
 			reason = Optional.of(ex.getMessage());
@@ -194,29 +197,28 @@ public class KafkaConnectionService extends AbstractConnectionService {
 		return new ImmutableSimpleCheck.Builder<String>().subject(serverUrl).status(status).reason(reason).build();
 	}
 
-	private static SimpleCheck<String> checkSchemaRegistry(String serverUrl) {
+	private static SimpleCheck<String> checkSchemaRegistry(final String serverUrl) {
 		CheckStatus status = CheckStatus.ERROR;
 		Optional<String> reason = Optional.empty();
 		try {
-			URL url = new URL(serverUrl + "/subjects");
+			final URL url = new URL(serverUrl + "/subjects");
 			HttpURLConnection.setFollowRedirects(false);
-			HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+			final HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
 			httpURLConnection.setRequestMethod("GET");
-			int responseCode = httpURLConnection.getResponseCode();
+			final int responseCode = httpURLConnection.getResponseCode();
 			if (responseCode == HttpURLConnection.HTTP_OK) {
 				status = CheckStatus.OK;
 			} else {
 				status = CheckStatus.ERROR;
 				reason = Optional.of(httpURLConnection.getResponseMessage());
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			LOGGER.error("Runtime error in schema registry", e);
 			reason = Optional.of(e.getMessage());
 		}
 		return new ImmutableSimpleCheck.Builder<String>().subject(serverUrl).status(status).reason(reason).build();
 	}
 
-	@SuppressWarnings("null")
 	@Nonnull
 	private static List<SimpleCheck<String>> listCheck(@Nonnull final Collection<String> toCheck) {
 		return StreamEx.of(toCheck).map(KafkaConnectionService::stringCheck).toImmutableList();
