@@ -9,6 +9,9 @@
 	</parent>
 	<artifactId>org.jresearch.gavka.admin.gwt.docker</artifactId>
 	<name>JRS kafka UI: Apache Kafka admin application - MD admin docker image</name>
+	<properties>
+		<helm.name>gavka-admin</helm.name>
+	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>org.jresearch.gavka</groupId>
@@ -72,6 +75,11 @@
 						</entrypoint>
 					</container>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>com.deviceinsight.helm</groupId>
+				<artifactId>helm-maven-plugin</artifactId>
+				<version>2.3.0-SNAPSHOT</version>
 			</plugin>
 		</plugins>
 	</build>

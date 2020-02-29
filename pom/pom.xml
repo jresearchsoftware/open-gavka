@@ -15,8 +15,8 @@
 		<connection>scm:hg:https://foal@bitbucket.org/JRS/open-gavka</connection>
 		<developerConnection>scm:hg:ssh://hg@bitbucket.org/JRS/open-gavka</developerConnection>
 		<url>https://bitbucket.org/JRS/open-gavka</url>
-	  <tag>HEAD</tag>
-  </scm>
+		<tag>HEAD</tag>
+	</scm>
 	<modules>
 		<module>../api.docker</module>
 		<module>../api.core</module>

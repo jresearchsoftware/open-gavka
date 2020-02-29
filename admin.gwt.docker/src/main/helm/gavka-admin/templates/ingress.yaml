@@ -1,0 +1,114 @@
+{{- if .Values.ingress.enabled -}}
+{{- $host := include "gavka-admin.host" . -}}
+{{- $fullName := include "gavka-admin.fullname" . -}}
+{{- $svcPort := .Values.service.port -}}
+{{- if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1beta1
+{{- else -}}
+apiVersion: extensions/v1beta1
+{{- end }}
+kind: Ingress
+metadata:
+  name: {{ $fullName }}
+  labels:
+    traefik2: 'true'
+    {{- include "gavka-admin.labels" . | nindent 4 }}
+  {{- with .Values.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  tls:
+    - hosts:
+        - {{ $host }}
+      secretName: {{ $host }}-tls
+{{- if .Values.ingress.tls }}
+  {{- range .Values.ingress.tls }}
+    - hosts:
+      {{- range .hosts }}
+        - {{ . | quote }}
+      {{- end }}
+      secretName: {{ .secretName }}
+  {{- end }}
+{{- end }}
+  rules:
+    - host: {{ $host }}
+      http:
+        paths:
+          - path: /admin/will-never-call-it
+            backend:
+              serviceName: {{ $fullName }}
+              servicePort: {{ $svcPort }}
+  {{- range .Values.ingress.hosts }}
+    - host: {{ .host | quote }}
+      http:
+        paths:
+        {{- range .paths }}
+          - path: {{ . }}
+            backend:
+              serviceName: {{ $fullName }}
+              servicePort: {{ $svcPort }}
+        {{- end }}
+  {{- end }}
+
+---
+# Strip prefix /admin
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: {{ $fullName }}-stripprefix-admin
+spec:
+  stripPrefix:
+    prefixes:
+    - /admin
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: {{ $fullName }}-redirect-admin
+spec:
+  redirectRegex:
+    regex: .*
+    replacement: https://{{ $host }}/admin/
+    permanent: true
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ $fullName }}-redirect-tls
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`{{ $host }}`) && PathPrefix(`/admin`)
+      middlewares:
+      - name: {{ $fullName }}-redirect-admin
+      kind: Rule
+      services:
+        - name: {{ $fullName }}
+          port: {{ $svcPort }}
+  tls:
+    secretName: {{ $host }}-tls
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ $fullName }}-tls
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`{{ $host }}`) && PathPrefix(`/admin/`)
+      middlewares:
+      - name: {{ $fullName }}-stripprefix-admin
+      kind: Rule
+      services:
+        - name: {{ $fullName }}
+          port: {{ $svcPort }}
+  tls:
+    secretName: {{ $host }}-tls
+
+{{- end }}
