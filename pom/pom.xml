@@ -102,4 +102,40 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>com.deviceinsight.helm</groupId>
+					<artifactId>helm-maven-plugin</artifactId>
+					<version>2.3.0-SNAPSHOT</version>
+					<configuration>
+						<chartName>${helm.name}</chartName>
+						<chartRepoUrl>https://helm.ch-n-ch.us</chartRepoUrl>
+						<skipSnapshots>false</skipSnapshots>
+						<deployAtEnd>true</deployAtEnd>
+						<helmVersion>3.1.1</helmVersion>
+						<helmDownloadUrl>https://get.helm.sh/</helmDownloadUrl>
+					</configuration>
+					<executions>
+						<execution>
+							<id>phase_1</id>
+							<goals>
+								<goal>package</goal>
+								<goal>lint</goal>
+								<goal>template</goal>
+							</goals>
+						</execution>
+						<execution>
+							<id>phase_2</id>
+							<phase>install</phase>
+							<goals>
+								<goal>deploy</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
 </project>
