@@ -98,6 +98,10 @@
 					</container>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>com.deviceinsight.helm</groupId>
+				<artifactId>helm-maven-plugin</artifactId>
+			</plugin>
 		</plugins>
 	</build>
 </project>
