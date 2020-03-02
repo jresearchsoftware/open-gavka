@@ -57,12 +57,12 @@ public abstract class AbstractJsonBinder<U> implements Binding<JSONB, U> {
 
 	@Override
 	public void get(final BindingGetResultSetContext<U> ctx) throws SQLException {
-		ctx.convert(this.converter()).value((JSONB) ctx.resultSet().getObject(ctx.index()));
+		ctx.convert(this.converter()).value(JSONB.valueOf(ctx.resultSet().getString(ctx.index())));
 	}
 
 	@Override
 	public void get(final BindingGetStatementContext<U> ctx) throws SQLException {
-		ctx.convert(this.converter()).value((JSONB) ctx.statement().getObject(ctx.index()));
+		ctx.convert(this.converter()).value(JSONB.valueOf(ctx.statement().getString(ctx.index())));
 	}
 
 	@Override

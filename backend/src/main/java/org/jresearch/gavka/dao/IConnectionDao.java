@@ -20,6 +20,6 @@ public interface IConnectionDao {
 	void removeConnection(@Nonnull String id);
 
 	@Nonnull
-	Optional<Connection> getByLabel(@Nonnull String laber);
+	Optional<Connection> getByLabel(@Nonnull String label);
 
 }
