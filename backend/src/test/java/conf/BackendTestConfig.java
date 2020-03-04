@@ -13,7 +13,7 @@ public class BackendTestConfig {
 	@Bean
 	public DataSource getDataSource() {
 		final DriverManagerDataSource dataSource = new DriverManagerDataSource();
-		dataSource.setUrl("jdbc:postgresql://localhost:5433/gavkaDev");
+		dataSource.setUrl("jdbc:postgresql://localhost:54321/gavkaDev");
 		dataSource.setUsername("gavkaDev");
 		dataSource.setPassword("gavkaDev");
 		return dataSource;
