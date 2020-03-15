@@ -15,7 +15,7 @@
 		<connection>scm:hg:https://foal@bitbucket.org/JRS/open-gavka</connection>
 		<developerConnection>scm:hg:ssh://hg@bitbucket.org/JRS/open-gavka</developerConnection>
 		<url>https://bitbucket.org/JRS/open-gavka</url>
-	  <tag>HEAD</tag>
+		<tag>HEAD</tag>
 	</scm>
 	<modules>
 		<module>../api.docker</module>
@@ -38,9 +38,15 @@
 		<domino.version>1.0.127-SNAPSHOT</domino.version>
 		<gwtCldr.version>1.0.10-SNAPSHOT</gwtCldr.version>
 		<gwtTimer.version>1.4.2-SNAPSHOT</gwtTimer.version>
+		<gwtEditor.version>1.1-SNAPSHOT</gwtEditor.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
+			<dependency>
+				<groupId>org.jresearch.gwtproject</groupId>
+				<artifactId>editors</artifactId>
+				<version>${gwtEditor.version}</version>
+			</dependency>
 			<dependency>
 				<groupId>org.jresearch.gwtproject.timer</groupId>
 				<artifactId>gwt-timer</artifactId>

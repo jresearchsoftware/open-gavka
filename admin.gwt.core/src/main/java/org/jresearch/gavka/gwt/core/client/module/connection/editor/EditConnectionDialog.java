@@ -33,6 +33,9 @@ import org.dominokit.domino.ui.style.Unit;
 import org.dominokit.domino.ui.tag.TagsInput;
 import org.dominokit.domino.ui.utils.TextNode;
 import org.fusesource.restygwt.client.REST;
+import org.gwtproject.editor.client.Editor;
+import org.gwtproject.editor.client.SimpleBeanEditorDriver;
+import org.gwtproject.editor.client.annotation.IsDriver;
 import org.jboss.elemento.Elements;
 import org.jboss.elemento.EventType;
 import org.jboss.elemento.HtmlContentBuilder;
@@ -45,10 +48,6 @@ import org.jresearch.gavka.domain.SimpleCheck;
 import org.jresearch.gavka.gwt.core.client.module.connection.srv.GavkaConnectionRestService;
 import org.jresearch.gavka.gwt.core.client.resource.GavkaRs;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.editor.client.Editor;
-import com.google.gwt.editor.client.SimpleBeanEditorDriver;
-
 import elemental2.dom.Event;
 import elemental2.dom.EventListener;
 import elemental2.dom.HTMLDivElement;
@@ -57,8 +56,10 @@ import elemental2.dom.Text;
 
 public class EditConnectionDialog implements Editor<ModifiableConnection>, PropertySelectHandler {
 
-	private final Driver driver = GWT.create(Driver.class);
+//	private final Driver driver = new EditConnectionDialog_Driver_Impl();
+	private final Driver driver = null;
 
+	@IsDriver
 	interface Driver extends SimpleBeanEditorDriver<ModifiableConnection, EditConnectionDialog> {
 		// nothing
 	}
