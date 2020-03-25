@@ -5,10 +5,10 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 import org.dominokit.domino.ui.forms.TextBox;
+import org.gwtproject.editor.client.LeafValueEditor;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
-import com.google.gwt.editor.client.LeafValueEditor;
 
 public class StringsEditorWrapper implements LeafValueEditor<List<String>> {
 

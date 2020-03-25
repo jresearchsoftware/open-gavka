@@ -5,8 +5,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.dominokit.domino.ui.tag.TagsInput;
-
-import com.google.gwt.editor.client.LeafValueEditor;
+import org.gwtproject.editor.client.LeafValueEditor;
 
 public class PropertiesEditor implements LeafValueEditor<Map<String, String>> {
 
