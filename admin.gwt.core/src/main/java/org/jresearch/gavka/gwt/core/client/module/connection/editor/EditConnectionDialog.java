@@ -56,8 +56,7 @@ import elemental2.dom.Text;
 
 public class EditConnectionDialog implements Editor<ModifiableConnection>, PropertySelectHandler {
 
-//	private final Driver driver = new EditConnectionDialog_Driver_Impl();
-	private final Driver driver = null;
+	private final Driver driver = new EditConnectionDialog_Driver_Impl();
 
 	@IsDriver
 	interface Driver extends SimpleBeanEditorDriver<ModifiableConnection, EditConnectionDialog> {

@@ -171,11 +171,19 @@ public class ConnectionView extends AbstractView<ConnectionController> {
 	}
 
 	private static MdiIcon getIcon(final Connection connection) {
-		return MdiIcon.create(connection.getIcon());
+		try {
+			return MdiIcon.create(connection.getIcon());
+		} catch (final IllegalArgumentException e) {
+			return MdiIcon.create(Connection.DEFAULT_ICON);
+		}
 	}
 
 	private static Color getColor(final Connection connection) {
-		return Color.of(connection.getColor());
+		try {
+			return Color.of(connection.getColor());
+		} catch (final IllegalArgumentException e) {
+			return Color.of(Connection.DEFAULT_COLOR);
+		}
 	}
 
 	@Override

@@ -14,6 +14,9 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 @JsonDeserialize(builder = ImmutableConnection.Builder.class)
 public interface Connection extends ConnectionParameters {
 
+	public static final String DEFAULT_ICON = "mdi-hubspot";
+	public static final String DEFAULT_COLOR = "TEAL LIGHTEN 5";
+
 	@Value.Default
 	default String getId() {
 		return "";
@@ -26,12 +29,12 @@ public interface Connection extends ConnectionParameters {
 
 	@Value.Default
 	default String getIcon() {
-		return "mdi-hubspot";
+		return DEFAULT_ICON;
 	}
 
 	@Value.Default
 	default String getColor() {
-		return "TEAL LIGHTEN 5";
+		return DEFAULT_COLOR;
 	}
 
 	Optional<ConnectionCheck> connectionCheck();
