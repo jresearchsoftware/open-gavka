@@ -75,13 +75,21 @@ affinity: {}
 ## ref: https://github.com/kubernetes/charts/blob/master/stable/postgresql/README.md
 ##
 postgresql:
+## Set to false if use EXTERNAL PostgreSQL
   install: true
   image:
     debug: true
-  fullnameOverride: gavka-postgresql          
-  postgresqlUsername: gavka
-  postgresqlPassword: gavka
+## service.port port of PostgreSQL service OR port of EXTERNAL PostgreSQL
+  service:
+    port: 5432
+## fullnameOverride name of PostgreSQL service OR hostname of EXTERNAL PostgreSQL
+  fullnameOverride: gavka-postgresql
+## postgresqlDatabase database name of PostgreSQL service OR of EXTERNAL PostgreSQL
   postgresqlDatabase: gavka
+## postgresqlUsername database user of PostgreSQL service OR of EXTERNAL PostgreSQL
+  postgresqlUsername: gavka
+## postgresqlPassword database password of PostgreSQL service OR of EXTERNAL PostgreSQL
+  postgresqlPassword: gavka
 #  initdbScripts:
 #    init.sh: |
 #      #!/bin/bash
