@@ -7,7 +7,7 @@
 	</parent>
 	<groupId>org.jresearch.gavka</groupId>
 	<artifactId>org.jresearch.gavka.pom</artifactId>
-	<version>1.0.64-SNAPSHOT</version>
+	<version>1.0.64</version>
 	<packaging>pom</packaging>
 	<name>JRS kafka UI: Apache Kafka admin application - project POM</name>
 	<url>https://bitbucket.org/JRS/open-gavka</url>
@@ -15,7 +15,7 @@
 		<connection>scm:hg:https://foal@bitbucket.org/JRS/open-gavka</connection>
 		<developerConnection>scm:hg:ssh://hg@bitbucket.org/JRS/open-gavka</developerConnection>
 		<url>https://bitbucket.org/JRS/open-gavka</url>
-		<tag>HEAD</tag>
+		<tag>1.0.64</tag>
 	</scm>
 	<modules>
 		<module>../api.docker</module>
@@ -34,10 +34,10 @@
 	</modules>
 	<properties>
 		<!-- Used by the project -->
-		<gwtBase.version>1.0.204-SNAPSHOT</gwtBase.version>
-		<domino.version>1.0.130-SNAPSHOT</domino.version>
-		<gwtCldr.version>1.0.10-SNAPSHOT</gwtCldr.version>
-		<gwtTimer.version>1.4.2-SNAPSHOT</gwtTimer.version>
+		<gwtBase.version>1.0.203</gwtBase.version>
+		<domino.version>1.0.129</domino.version>
+		<gwtCldr.version>1.0.10</gwtCldr.version>
+		<gwtTimer.version>1.4.1</gwtTimer.version>
 		<gwtEditor.version>1.2-SNAPSHOT</gwtEditor.version>
 	</properties>
 	<dependencyManagement>
