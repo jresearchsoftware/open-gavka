@@ -24,13 +24,19 @@ If you are successfully connected to Kafka Cluster then you can see your topics 
 
 ### How to get sources ###
 
-Main repository (hg): https://bitbucket.org/JRS/open-gavka
+Main repository (hg): https://helixteamhub.cloud/JRS/projects/gavka/repositories/gavka
 
 Mirror on GitHub (git): https://github.com/jresearchsoftware/open-gavka
 
 ### How to Build ###
 
-Clone the repository then
+Clone the parent POM repository (https://github.com/jresearchsoftware/open-pom) and install them 
+
+`cd pom`
+
+`mvn install`
+
+Clone this repository then
 
 `cd pom`
 
